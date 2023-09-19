@@ -10,6 +10,8 @@
 #include "AdditionOperator.hpp"
 #include "SubtractionOperator.hpp"
 
+#include "Parser.hpp"
+
 std::vector<std::string> split(std::string line, std::string delimiter = " ") {
     std::vector<std::string> res;
     std::string sub;
@@ -29,30 +31,10 @@ std::vector<std::string> split(std::string line, std::string delimiter = " ") {
     return res;
 }
 
-template <typename T>
-void printVector(std::vector<T> lines) {
-    std::size_t count = lines.size();
-    std::cout << '[' << lines[0];
-    for (std::size_t i = 1; i < count; ++i) {
-        std::cout << ", " << lines[i];
-    }
-    std::cout << ']' << std::endl;
-}
-
-
 int main() {
-    IExpression * a = new LeafExpression(1);
-    IExpression * b = new LeafExpression(-2);
-
-    IOperator * plus = new AdditionOperator();
-    IOperator * minus = new SubtractionOperator();
-
-    IExpression * c = new NodeExpression(minus, {a, b});
-
-    IExpression * d = new LeafExpression(10);
-    IExpression * e = new NodeExpression(plus, {d, c});
-
-    std::cout << e->calculate() << std::endl;
+    std::string line = "(1 * ab + c * 3ds) + (2 -- 3)";
+    Parser prs;
+    prs.parseString(line);
 
     return 0;
 }
