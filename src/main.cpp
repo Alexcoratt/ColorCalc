@@ -32,7 +32,7 @@ std::vector<std::string> split(std::string line, std::string delimiter = " ") {
 }
 
 int main() {
-    std::string line = "(1 * ab + c * 3ds) + (2 -- 3)";
+    std::string line = "(1 ** 2)/ 3 (2 / [2.2 *23])";
     Parser prs;
     prs.parseString(line);
 

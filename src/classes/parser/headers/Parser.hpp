@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <map>
+#include <stack>
 
 #include <cctype>
 
@@ -33,26 +35,44 @@ bool stringContainsChar(std::string const & str, char const & chr) {
     return std::string(str).find(chr) != std::string::npos;
 }
 
-int defineSymbolType(char symbol) {
-    if (stringContainsChar("\t ", symbol))
-        return SPACE_TYPE;
+std::map<std::string, int> priorityMap({
+    {"+", 0},
+    {"-", 0},
+    {"*", 1},
+    {"/", 1},
+    {"**", 2}
+});
 
-    else if (symbol == '.')
-        return DOT_TYPE;
+class Parser {
+public:
+    void parseString(std::string line) {
+        // std::cout << line << std::endl;
+        std::vector<std::string> lexems = extractLexems(line);
+        printVector(lexems);
+        std::cout << bracketsCheck(lexems) << std::endl;
+        std::cout << findLessPriorityOperator(lexems) << std::endl;
+    }
 
-    else if (std::isdigit(symbol))
-        return DIGIT_TYPE;
+    int defineSymbolType(char symbol) {
+        if (stringContainsChar("\t ", symbol))
+            return SPACE_TYPE;
 
-    else if (stringContainsChar("+-*/^", symbol))
-        return OPERATOR_TYPE;
+        else if (symbol == '.')
+            return DOT_TYPE;
 
-    else if (stringContainsChar("()[]{}", symbol))
-        return BRACKET_TYPE;
+        else if (std::isdigit(symbol))
+            return DIGIT_TYPE;
 
-    return ALPHA_TYPE;
-}
+        else if (stringContainsChar("+-*/^", symbol))
+            return OPERATOR_TYPE;
 
-std::vector<std::string> extractLexems(std::string line) {
+        else if (stringContainsChar("()[]{}", symbol))
+            return BRACKET_TYPE;
+
+        return ALPHA_TYPE;
+    }
+
+    std::vector<std::string> extractLexems(std::string line) {
         std::vector<std::string> lexems;
         std::string lexem;
         int lexemType;
@@ -60,7 +80,6 @@ std::vector<std::string> extractLexems(std::string line) {
         for (char & symbol : line) {
             if (lexem.length() == 0)
                 lexemType = defineSymbolType(symbol);
-            std::cout << lexemType << std::endl;
 
             switch (defineSymbolType(symbol)) {
                 case SPACE_TYPE:
@@ -110,11 +129,46 @@ std::vector<std::string> extractLexems(std::string line) {
         return lexems;
     }
 
-class Parser {
-public:
-    void parseString(std::string line) {
-        // std::cout << line << std::endl;
-        printVector(extractLexems(line));
+    std::size_t findLessPriorityOperator(std::vector<std::string> const & lexems) {
+        std::size_t res = lexems.size();   
+        int maxPriority = 3;   // replace with max priority (+ 1) found inside priorityMap
+        for (std::size_t i = lexems.size(); i > 0; --i) {
+            auto search = priorityMap.find(lexems[i - 1]);
+            if (search != priorityMap.end()) {
+                if (maxPriority > search->second) {
+                    res = i - 1;
+                    maxPriority = search->second;
+                }
+            }
+
+            if (std::string(")]}").find(lexems[i - 1]) != std::string::npos) {
+                std::stack<std::string> brackets;
+                brackets.push(lexems[i - 1]);
+
+                while (!brackets.empty() && --i > 0) {
+                    if (std::string(")]}").find(lexems[i - 1]) != std::string::npos)
+                        brackets.push(lexems[i - 1]);
+                    std::vector<std::string> pairs({"()", "[]", "{}"});
+                    for (std::string pair : pairs)
+                        if (lexems[i - 1] == pair.substr(0, 1) && brackets.top() == pair.substr(1, 2))
+                            brackets.pop();
+                }
+            }
+        }
+        return res;
+    }
+
+    bool bracketsCheck(std::vector<std::string> const & lexems) {
+        std::stack<std::string> brackets;
+        for (std::size_t i = 0; i < lexems.size(); ++i) {
+            if (std::string("([{").find(lexems[i]) != std::string::npos)
+                brackets.push(lexems[i]);
+            std::vector<std::string> pairs({"()", "[]", "{}"});
+            for (std::string pair : pairs)
+                if (lexems[i] == pair.substr(1, 2) && brackets.top() == pair.substr(0, 1))
+                    brackets.pop();
+        }
+        return brackets.empty();
     }
 };
 
