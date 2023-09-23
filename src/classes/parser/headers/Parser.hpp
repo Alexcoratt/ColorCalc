@@ -9,12 +9,8 @@
 
 #include <cctype>
 
-#define DIGIT_TYPE 0
-#define ALPHA_TYPE 1
-#define OPERATOR_TYPE 2
-#define SPACE_TYPE 3
-#define DOT_TYPE 4
-#define BRACKET_TYPE 5
+#include "IOperatorFactory.hpp"
+#include "AdditionOperatorFactory.hpp"
 
 template <typename T>
 void printVector(std::vector<T> lines) {
@@ -35,15 +31,12 @@ bool stringContainsChar(std::string const & str, char const & chr) {
     return std::string(str).find(chr) != std::string::npos;
 }
 
-std::map<std::string, int> priorityMap({
-    {"+", 0},
-    {"-", 0},
-    {"*", 1},
-    {"/", 1},
-    {"**", 2}
-});
-
 class Parser {
+private:
+    std::map<std::string, IOperatorFactory *> operatorMap = {
+        {"+", new AdditionOperatorFactory}
+    };
+
 public:
     void parseString(std::string line) {
         std::cout << line << std::endl;

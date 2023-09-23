@@ -1,11 +1,18 @@
 #ifndef MINUS_OPERATOR_HPP
 #define MINUS_OPERATOR_HPP
 
-#include "IOperator.hpp"
+#include "AbstractOperator.hpp"
 
-class SubtractionOperator : public IOperator {
+class SubtractionOperator : public AbstractOperator
+{
 public:
-    double execute(std::vector<IExpression *> expressions) {
+    SubtractionOperator()
+    {
+        _basePriority = 0;
+    }
+
+    double execute(std::vector<IExpression *> expressions)
+    {
         double res = expressions[0]->calculate();
         for (std::size_t i = 1; i < expressions.size(); ++i)
             res -= expressions[i]->calculate();

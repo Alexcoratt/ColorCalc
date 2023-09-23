@@ -6,7 +6,7 @@
 #include "NodeExpression.hpp"
 #include "LeafExpression.hpp"
 
-#include "IOperator.hpp"
+#include "AbstractOperator.hpp"
 #include "AdditionOperator.hpp"
 #include "SubtractionOperator.hpp"
 
