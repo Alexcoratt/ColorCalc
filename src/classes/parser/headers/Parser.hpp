@@ -9,8 +9,9 @@
 
 #include <cctype>
 
-#include "IOperatorFactory.hpp"
+#include "AbstractOperatorFactory.hpp"
 #include "AdditionOperatorFactory.hpp"
+#include "SubtractionOperatorFactory.hpp"
 
 template <typename T>
 void printVector(std::vector<T> lines) {
@@ -33,13 +34,15 @@ bool stringContainsChar(std::string const & str, char const & chr) {
 
 class Parser {
 private:
-    std::map<std::string, IOperatorFactory *> operatorMap = {
-        {"+", new AdditionOperatorFactory}
+    std::map<std::string, AbstractOperatorFactory *> operatorMap = {
+        {"+", new AdditionOperatorFactory},
+        {"-", new SubtractionOperatorFactory}
     };
 
 public:
     void parseString(std::string line) {
         std::cout << line << std::endl;
+        std::stack<AbstractOperator *> lexems;
     }
 };
 

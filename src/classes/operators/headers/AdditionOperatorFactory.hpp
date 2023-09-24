@@ -1,10 +1,10 @@
 #ifndef ADDITION_OPERATOR_FACTORY_HPP
 #define ADDITION_OPERATOR_FACTORY_HPP
 
-#include "IOperatorFactory.hpp"
+#include "AbstractOperatorFactory.hpp"
 #include "AdditionOperator.hpp"
 
-class AdditionOperatorFactory : public IOperatorFactory
+class AdditionOperatorFactory : public AbstractOperatorFactory
 {
     AbstractOperator * build() const { return new AdditionOperator; }
 };

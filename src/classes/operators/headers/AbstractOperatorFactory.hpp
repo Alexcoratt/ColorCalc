@@ -3,7 +3,7 @@
 
 #include "AbstractOperator.hpp"
 
-class IOperatorFactory
+class AbstractOperatorFactory
 {
 public:
     virtual AbstractOperator * build() const = 0;
