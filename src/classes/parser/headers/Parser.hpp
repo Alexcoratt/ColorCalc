@@ -47,23 +47,12 @@ bool isKeyExist(std::string const & key, std::map<std::string const, VALUE_TYPE>
     return false;
 }
 
-bool isKeyStartsWithExist(std::string const & keyPart, std::map<std::string const, AbstractOperatorFactory *> const & mp) {
+template <typename VALUE_TYPE>
+bool isKeyStartsWithExist(std::string const & keyPart, std::map<std::string const, VALUE_TYPE> const & mp) {
     for (auto iter = mp.begin(); iter != mp.end(); ++iter)
         if (iter->first.find(keyPart) == 0)
             return true;
     return false;
-}
-
-void pushLexem(std::stack<std::string> & lexems, std::string & lexem) {
-    if (!lexem.empty()) {
-        lexems.push(lexem);
-        lexem.clear();
-    }
-}
-
-void pushToLexem(std::string & lexem, char const & symbol) {
-    if (symbol != ' ')
-        lexem.push_back(symbol);
 }
 
 class Parser {
@@ -72,56 +61,46 @@ private:
         {"+", new AdditionOperatorFactory},
         {"-", new SubtractionOperatorFactory},
         {"*", new AdditionOperatorFactory},
+        {"*-*+", new AdditionOperatorFactory},
         {"**", new AdditionOperatorFactory}
     };
 
 public:
     void parseString(std::string line) {
         std::cout << line << std::endl;
-        line.push_back(' ');    // костыль, чтобы сделать один дополнительный шаг в конце
         std::stack<std::string> lexems;
-        std::string lexem;
-        std::string sublexem;
 
-        std::size_t len = line.length();
-        char symbol;
+        std::size_t left = 0;
 
-        bool addStatus = false; // addStatus истинен, если стоит произвести донабор лексемы для поиска ее в мапе
+        std::size_t lineLen = line.length();
 
-        for (std::size_t i = 0; i < len; ++i) {
-            symbol = line[i];
-            if (!addStatus) {
-                if (symbol == ' ') 
-                    pushLexem(lexems, lexem);
-
-                else if (isKeyStartsWithExist(std::string(1, symbol), operatorMap)) {
-                    pushLexem(lexems, lexem);
-                    pushToLexem(lexem, symbol);
-                    addStatus = true;
-                }
-
-                else
-                    pushToLexem(lexem, symbol);
+        for (std::size_t i = 0; i < lineLen; ++i) {
+            if (line[i] == ' ') {
+                if (i - left > 0)
+                    lexems.push(line.substr(left, i - left));
+                left = i + 1;
             }
-            
-            else {
-                if (isKeyStartsWithExist(lexem, operatorMap)) {
-                    if (isKeyExist(lexem, operatorMap))
-                        sublexem = lexem;
-                    pushToLexem(lexem, symbol);
+
+            else if (isKeyStartsWithExist(std::string(1, line[i]), operatorMap)) {
+                if (i - left > 0)
+                    lexems.push(line.substr(left, i - left));
+                left = i;
+                std::size_t lexemLen = 1;
+
+                for (std::size_t j = 2; j < lineLen - i; ++j) {
+                    if (isKeyExist(line.substr(i, j), operatorMap))
+                        lexemLen = j;
+                    else if (!isKeyStartsWithExist(line.substr(i, j - 1), operatorMap))
+                        break;
                 }
-                else {
-                    lexem = lexem.substr(lexem.length() - 1);   // при переходе в потерянное состояние в лексеме содержится оператор +1 символ, не входящий в оператор (он стоит последним)
-                    --i;    // возвращаемся на шаг назад, чтобы не потерять текущий символ после того, который перевел цикл в потерянное состояние
-                    pushLexem(lexems, sublexem);
-                    addStatus = false;
-                }
+
+                lexems.push(line.substr(left, lexemLen));
+                left += lexemLen;
+                i += lexemLen - 1;
             }
         }
-        lexems.push(lexem);
-        lexem.clear();
+        lexems.push(line.substr(left));
 
-        lexems.pop();   // убираем лишний пробел в конце, который появился из-за костыля
         printStack(lexems);
     }
 };
