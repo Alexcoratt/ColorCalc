@@ -3,15 +3,14 @@
 
 #include <string>
 #include <vector>
+#include <stack>
 #include <iostream>
 #include <map>
-#include <stack>
 
 #include <cctype>
 
-#include "AbstractOperatorFactory.hpp"
-#include "AdditionOperatorFactory.hpp"
-#include "SubtractionOperatorFactory.hpp"
+#include "IExpressionFactory.hpp"
+#include "AdditionExpressionFactory.hpp"
 
 template <typename T>
 void printVector(std::vector<T> lines) {
@@ -27,11 +26,6 @@ void printVector(std::vector<T> lines) {
     }
     std::cout << ']' << std::endl;
 }
-
-bool stringContainsChar(std::string const & str, char const & chr) {
-    return std::string(str).find(chr) != std::string::npos;
-}
-
 
 void printStack(std::stack<std::string> st) {
     while (!st.empty()) {
@@ -57,51 +51,51 @@ bool isKeyStartsWithExist(std::string const & keyPart, std::map<std::string cons
 
 class Parser {
 private:
-    std::map<std::string const, AbstractOperatorFactory *> operatorMap = {
-        {"+", new AdditionOperatorFactory},
-        {"-", new SubtractionOperatorFactory},
-        {"*", new AdditionOperatorFactory},
-        {"*-*+", new AdditionOperatorFactory},
-        {"**", new AdditionOperatorFactory}
+
+    std::map<std::string const, std::pair<IExpressionFactory *, int>> _operatorMap = {
+        {"+", std::pair<IExpressionFactory *, int>(new AdditionExpressionFactory, 0)}
     };
 
 public:
+    
+
     void parseString(std::string line) {
-        std::cout << line << std::endl;
-        std::stack<std::string> lexems;
+        printVector(extractLexems(line));
+    }
 
+    std::vector<std::string> extractLexems(std::string line) {
+        std::vector<std::string> lexems;
         std::size_t left = 0;
-
         std::size_t lineLen = line.length();
 
         for (std::size_t i = 0; i < lineLen; ++i) {
             if (line[i] == ' ') {
                 if (i - left > 0)
-                    lexems.push(line.substr(left, i - left));
+                    lexems.push_back(line.substr(left, i - left));
                 left = i + 1;
             }
 
-            else if (isKeyStartsWithExist(std::string(1, line[i]), operatorMap)) {
+            else if (isKeyStartsWithExist(std::string(1, line[i]), _operatorMap)) {
                 if (i - left > 0)
-                    lexems.push(line.substr(left, i - left));
+                    lexems.push_back(line.substr(left, i - left));
                 left = i;
                 std::size_t lexemLen = 1;
 
                 for (std::size_t j = 2; j < lineLen - i; ++j) {
-                    if (isKeyExist(line.substr(i, j), operatorMap))
+                    if (isKeyExist(line.substr(i, j), _operatorMap))
                         lexemLen = j;
-                    else if (!isKeyStartsWithExist(line.substr(i, j - 1), operatorMap))
+                    else if (!isKeyStartsWithExist(line.substr(i, j - 1), _operatorMap))
                         break;
                 }
 
-                lexems.push(line.substr(left, lexemLen));
+                lexems.push_back(line.substr(left, lexemLen));
                 left += lexemLen;
                 i += lexemLen - 1;
             }
         }
-        lexems.push(line.substr(left));
+        lexems.push_back(line.substr(left));
 
-        printStack(lexems);
+        return lexems;
     }
 };
 

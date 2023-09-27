@@ -1,6 +1,7 @@
 #ifndef LEAF_EXPRESSION_HPP
 #define LEAF_EXPRESSION_HPP
 
+#include <vector>
 #include "IExpression.hpp"
 
 class LeafExpression : public IExpression {
@@ -10,7 +11,7 @@ private:
 public:
     LeafExpression(double value) : _value(value) {}
 
-    double calculate() { return _value; }
+    std::vector<double> calculate() { return std::vector<double>(_value); }
 };
 
 #endif

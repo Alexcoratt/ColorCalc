@@ -11,6 +11,6 @@ add_executable(main src/main.cpp ${SOURCES})
 target_include_directories(
     main
     PUBLIC src/classes/expressions/headers
-    PUBLIC src/classes/operators/headers
+    PUBLIC src/classes/factories/headers
     PUBLIC src/classes/parser/headers
 )
