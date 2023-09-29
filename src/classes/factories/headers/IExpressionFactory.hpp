@@ -6,15 +6,8 @@
 
 class IExpressionFactory {
 public:
-    virtual IExpression * build(IExpression *, IExpression * = 0) const = 0;
-
-    /*
-        Types of expressions:
-            0: both unary and binary
-            1: unary
-            2: binary
-    */
-    virtual int getType() const = 0;
+    virtual IExpression * build(IExpression * = 0, IExpression * = 0) const = 0;
+    virtual int getPriority() const = 0;
 };
 
 #endif

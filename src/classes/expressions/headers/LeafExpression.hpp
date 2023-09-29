@@ -11,7 +11,7 @@ private:
 public:
     LeafExpression(double value) : _value(value) {}
 
-    std::vector<double> calculate() { return std::vector<double>(_value); }
+    std::vector<double> exec() { return std::vector<double>(1, _value); }
 };
 
 #endif

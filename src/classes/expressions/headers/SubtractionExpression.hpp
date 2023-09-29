@@ -1,21 +1,21 @@
-#ifndef ADDITION_EXPRESSION_HPP
-#define ADDITION_EXPRESSION_HPP
+#ifndef SUBTRACTION_EXPRESSION_HPP
+#define SUBTRACTION_EXPRESSION_HPP
 
 #include <vector>
 #include "IExpression.hpp"
 
-class AdditionExpression : public IExpression {
+class SubtractionExpression : public IExpression {
 private:
     IExpression * _left;
     IExpression * _right;
 
 public:
-    AdditionExpression(IExpression * left, IExpression * right) : _left(left), _right(right) {}
+    SubtractionExpression(IExpression * left, IExpression * right) : _left(left), _right(right) {}
 
     std::vector<double> exec() {
         double left = _left ? _left->exec()[0] : 0;
         double right = _right ? _right->exec()[0] : 0;
-        return std::vector<double>(1, left + right);
+        return std::vector<double>(1, left - right);
     }
 };
 
