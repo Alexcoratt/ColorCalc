@@ -10,15 +10,14 @@ private:
     IExpression * _right;
 
 public:
-    DivisionExpression(IExpression * left, IExpression * right) : _left(left), _right(right) {}
-    ~DivisionExpression() {
-        delete _left;
-        delete _right;
-    }
+    DivisionExpression(IExpression *, IExpression *);
+    DivisionExpression(DivisionExpression const &);
+    DivisionExpression & operator=(DivisionExpression const &);
+    ~DivisionExpression();
 
-    std::vector<double> exec() {
-        return std::vector<double>(1, _left->exec()[0] / _right->exec()[0]);
-    }
+    std::vector<double> exec();
+
+    void swap(DivisionExpression &);
 };
 
 #endif

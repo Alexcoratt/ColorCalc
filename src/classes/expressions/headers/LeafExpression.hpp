@@ -9,9 +9,14 @@ private:
     double _value;
 
 public:
-    LeafExpression(double value) : _value(value) {}
+    LeafExpression(double value);
+    LeafExpression(LeafExpression const &);
+    LeafExpression & operator=(LeafExpression const &);
+    ~LeafExpression();
 
-    std::vector<double> exec() { return std::vector<double>(1, _value); }
+    std::vector<double> exec();
+
+    void swap(LeafExpression &);
 };
 
 #endif
