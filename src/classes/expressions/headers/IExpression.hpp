@@ -5,6 +5,8 @@
 
 class IExpression {
 public:
+    virtual ~IExpression() {};
+
     virtual std::vector<double> exec() = 0;
 };
 

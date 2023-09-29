@@ -18,24 +18,16 @@
 #include "DivisionExpressionFactory.hpp"
 
 template <typename T>
-void printVector(std::vector<T> const & lines) {
+std::string vectorToString(std::vector<T> const & lines) {
     std::size_t count = lines.size();
-    if (count == 0) {
-        std::cout << "[]" << std::endl;
-        return;
-    }
+    if (count == 0)
+        return "()";
 
-    std::cout << '[' << lines[0];
+    std::string res = "(";
     for (std::size_t i = 1; i < count; ++i) {
-        std::cout << ", " << lines[i];
+        res.append(", ").append(std::to_string(lines[i]));
     }
-    std::cout << ']' << std::endl;
-}
-
-template <typename T>
-void printStack(std::stack<T> const & st) {
-    for (auto elem : st)
-        std::cout << '\'' << elem << '\'' << std::endl;
+    return res.append(")");
 }
 
 template <typename VALUE_TYPE>
@@ -96,13 +88,19 @@ private:
     };
 
 public:
+
+    ~Parser() {
+        for (auto oper : _operatorMap)
+            delete oper.second;
+    }
     
-    void parseString(std::string line) {
+    std::string parseString(std::string line) {
         std::vector<std::string> lexems = extractLexems(line);
 
         std::size_t lexemCount = lexems.size();
         std::vector<IExpressionFactory *> factories;
         std::map<std::size_t, int> priorityBoostersPositions;
+        std::stack<LeafExpressionFactory *> leaves;
 
         for (std::size_t i = 0; i < lexemCount; ++i) {
             if (isKeyExist(lexems[i], _operatorMap))
@@ -111,8 +109,11 @@ public:
             else if (isKeyExist(lexems[i], _priorityBoostersMap))
                 priorityBoostersPositions[factories.size()] = getValue(priorityBoostersPositions, factories.size(), 0) + _priorityBoostersMap[lexems[i]];
 
-            else
-                factories.push_back(new LeafExpressionFactory(std::stod(lexems[i])));
+            else {
+                LeafExpressionFactory * leaf = new LeafExpressionFactory(std::stod(lexems[i]));
+                factories.push_back(leaf);
+                leaves.push(leaf);
+            }
         }
 
         std::size_t factoryCount = factories.size();
@@ -124,11 +125,20 @@ public:
             priorities[i] = factories[i]->getPriority() + priorityBoost;
         }
 
-        printVector(lexems);
-        printVector(priorities);
-
         IExpression * exp = evaluate(factories, priorities, 0, factoryCount);
-        printVector(exp->exec());
+        while (!leaves.empty()) {
+            delete leaves.top();
+            leaves.pop();
+        }
+
+        std::vector<double> result = exp->exec();
+        delete exp;
+        
+
+        if (result.size() == 1)
+            return std::to_string(result[0]);
+
+        return vectorToString(result);
     }
 
     IExpression * evaluate(std::vector<IExpressionFactory *> const & factories, std::vector<int> const & priorities, std::size_t begin, std::size_t end) {

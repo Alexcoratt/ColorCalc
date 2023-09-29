@@ -9,7 +9,7 @@ int main() {
     std::cout << line << std::endl;
 
     Parser prs;
-    prs.parseString(line);
+    std::cout << prs.parseString(line) << std::endl;
 
     return 0;
 }

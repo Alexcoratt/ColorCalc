@@ -11,6 +11,10 @@ private:
 
 public:
     AdditionExpression(IExpression * left, IExpression * right) : _left(left), _right(right) {}
+    ~AdditionExpression() {
+        delete _left;
+        delete _right;
+    }
 
     std::vector<double> exec() {
         double left = _left ? _left->exec()[0] : 0;
