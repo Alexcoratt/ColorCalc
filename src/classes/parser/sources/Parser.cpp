@@ -1,4 +1,7 @@
 #include <algorithm>
+#include <string>
+#include <iostream>
+#include <stack>
 
 #include "Parser.hpp"
 
@@ -8,11 +11,23 @@ std::string vectorToString(std::vector<T> const & lines) {
     if (count == 0)
         return "()";
 
-    std::string res = "(";
+    std::string res = "(" + std::to_string(lines[0]);
     for (std::size_t i = 1; i < count; ++i) {
         res.append(", ").append(std::to_string(lines[i]));
     }
     return res.append(")");
+}
+
+std::string vectorToString(std::vector<std::string> const & lines) {
+    std::size_t count = lines.size();
+    if (count == 0)
+        return "()";
+
+    std::string res = "(\"" + lines[0];
+    for (std::size_t i = 1; i < count; ++i) {
+        res.append("\", \"").append(lines[i]);
+    }
+    return res.append("\")");
 }
 
 template <typename KEY_TYPE, typename VALUE_TYPE>
@@ -96,7 +111,7 @@ std::vector<std::string> extractLexems(std::string const & prompt, std::vector<s
         }
 
         lexem = prompt.substr(left);
-        if (lexem != separator);
+        if (lexem != separator && lexem.size() > 0)
             lexems.push_back(lexem);
 
         return lexems;
@@ -158,48 +173,48 @@ void Parser::swap(Parser & other) {
 std::string Parser::parseString(std::string const & prompt) {
     std::vector<std::string> lexems = extractLexems(prompt, concatenateVectors(getKeys(_operatorMap), getKeys(_priorityBoostersMap)));
 
-        std::size_t lexemCount = lexems.size();
-        std::vector<IExpressionFactory *> factories;
-        std::map<std::size_t, int> priorityBoostersPositions;
-        std::stack<LeafExpressionFactory *> leaves;
+    std::size_t lexemCount = lexems.size();
+    std::vector<IExpressionFactory *> factories;
+    std::map<std::size_t, int> priorityBoostersPositions;
+    std::stack<LeafExpressionFactory *> leaves;
 
-        for (std::size_t i = 0; i < lexemCount; ++i) {
-            if (isKeyExist(lexems[i], _operatorMap))
-                factories.push_back(_operatorMap[lexems[i]]);
+    for (std::size_t i = 0; i < lexemCount; ++i) {
+        if (isKeyExist(lexems[i], _operatorMap))
+            factories.push_back(_operatorMap[lexems[i]]);
 
-            else if (isKeyExist(lexems[i], _priorityBoostersMap))
-                priorityBoostersPositions[factories.size()] = getValue(priorityBoostersPositions, factories.size(), 0) + _priorityBoostersMap[lexems[i]];
+        else if (isKeyExist(lexems[i], _priorityBoostersMap))
+            priorityBoostersPositions[factories.size()] = getValue(priorityBoostersPositions, factories.size(), 0) + _priorityBoostersMap[lexems[i]];
 
-            else {
-                LeafExpressionFactory * leaf = new LeafExpressionFactory(std::stod(lexems[i]));
-                factories.push_back(leaf);
-                leaves.push(leaf);
-            }
+        else {
+            LeafExpressionFactory * leaf = new LeafExpressionFactory(std::stod(lexems[i]));
+            factories.push_back(leaf);
+            leaves.push(leaf);
         }
+    }
 
-        std::size_t factoryCount = factories.size();
-        std::vector<int> priorities(factoryCount);
-        int priorityBoost = 0;
+    std::size_t factoryCount = factories.size();
+    std::vector<int> priorities(factoryCount);
+    int priorityBoost = 0;
 
-        for (std::size_t i = 0; i < factoryCount; ++i) {
-            priorityBoost += getValue(priorityBoostersPositions, i, 0);
-            priorities[i] = factories[i]->getPriority() + priorityBoost;
-        }
+    for (std::size_t i = 0; i < factoryCount; ++i) {
+        priorityBoost += getValue(priorityBoostersPositions, i, 0);
+        priorities[i] = factories[i]->getPriority() + priorityBoost;
+    }
 
-        IExpression * exp = evaluate(factories, priorities, 0, factoryCount);
-        while (!leaves.empty()) {
-            delete leaves.top();
-            leaves.pop();
-        }
+    IExpression * exp = evaluate(factories, priorities, 0, factoryCount);
+    while (!leaves.empty()) {
+        delete leaves.top();
+        leaves.pop();
+    }
 
-        std::vector<double> result = exp->exec();
-        delete exp;
-        
+    std::vector<double> result = exp->exec();
+    delete exp;
+    
 
-        if (result.size() == 1)
-            return std::to_string(result[0]);
+    if (result.size() == 1)
+        return std::to_string(result[0]);
 
-        return vectorToString(result);
+    return vectorToString(result);
 }
 
 IExpression * Parser::evaluate(std::vector<IExpressionFactory *> const & factories, std::vector<int> const & priorities, std::size_t begin, std::size_t end) const {
