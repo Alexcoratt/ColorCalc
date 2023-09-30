@@ -1,6 +1,5 @@
 #include <algorithm>
 #include <string>
-#include <iostream>
 #include <stack>
 
 #include "Parser.hpp"
