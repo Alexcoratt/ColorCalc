@@ -2,7 +2,7 @@
 #include <string>
 #include <stack>
 
-#include "Parser.hpp"
+#include "MathParser.hpp"
 
 template <typename T>
 std::string vectorToString(std::vector<T> const & lines) {
@@ -135,7 +135,7 @@ std::vector<T> concatenateVectors(std::vector<T> left, std::vector<T> right) {
 }
 
 
-Parser::Parser() {
+MathParser::MathParser() {
     _operatorMap = {
         {"+", new AdditionExpressionFactory},
         {"-", new SubtractionExpressionFactory},
@@ -149,27 +149,27 @@ Parser::Parser() {
     };
 }
 
-Parser::Parser(Parser const & other) : _operatorMap(other._operatorMap), _priorityBoostersMap(other._priorityBoostersMap) {}
+MathParser::MathParser(MathParser const & other) : _operatorMap(other._operatorMap), _priorityBoostersMap(other._priorityBoostersMap) {}
 
-Parser & Parser::operator=(Parser const & other) {
+MathParser & MathParser::operator=(MathParser const & other) {
     if (this != &other) {
-        Parser tmp(other);
+        MathParser tmp(other);
         swap(tmp);
     }
     return *this;
 }
 
-Parser::~Parser() {
+MathParser::~MathParser() {
     for (auto oper : _operatorMap)
             delete oper.second;
 }
 
-void Parser::swap(Parser & other) {
+void MathParser::swap(MathParser & other) {
     std::swap(_operatorMap, other._operatorMap);
     std::swap(_priorityBoostersMap, other._priorityBoostersMap);
 }
 
-std::string Parser::parseString(std::string const & prompt) {
+std::string MathParser::parseString(std::string const & prompt) {
     std::vector<std::string> lexems = extractLexems(prompt, concatenateVectors(getKeys(_operatorMap), getKeys(_priorityBoostersMap)));
 
     std::size_t lexemCount = lexems.size();
@@ -216,7 +216,7 @@ std::string Parser::parseString(std::string const & prompt) {
     return vectorToString(result);
 }
 
-IExpression * Parser::evaluate(std::vector<IExpressionFactory *> const & factories, std::vector<int> const & priorities, std::size_t begin, std::size_t end) const {
+IExpression * MathParser::evaluate(std::vector<IExpressionFactory *> const & factories, std::vector<int> const & priorities, std::size_t begin, std::size_t end) const {
     if (begin >= end)
         return 0;
 

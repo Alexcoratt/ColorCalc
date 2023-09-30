@@ -13,7 +13,7 @@
 #include "MultiplicationExpressionFactory.hpp"
 #include "DivisionExpressionFactory.hpp"
 
-class Parser {
+class MathParser {
 private:
 
     std::map<std::string, IExpressionFactory *> _operatorMap;
@@ -21,12 +21,12 @@ private:
     std::map<std::string, int const> _priorityBoostersMap;
 
 public:
-    Parser();
-    Parser(Parser const &);
-    Parser & operator=(Parser const &);
-    ~Parser();
+    MathParser();
+    MathParser(MathParser const &);
+    MathParser & operator=(MathParser const &);
+    ~MathParser();
 
-    void swap(Parser &);
+    void swap(MathParser &);
     
     std::string parseString(std::string const &);
 
