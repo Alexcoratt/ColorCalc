@@ -3,11 +3,7 @@
 
 #include <string>
 #include <vector>
-#include <stack>
-#include <iostream>
 #include <map>
-
-#include <cctype>
 
 #include "IExpressionFactory.hpp"
 #include "LeafExpressionFactory.hpp"
