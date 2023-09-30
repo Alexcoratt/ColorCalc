@@ -6,7 +6,8 @@
 
 class IExpressionFactory {
 public:
-    virtual IExpression * build(IExpression * = 0, IExpression * = 0) const = 0;
+    virtual ~IExpressionFactory() {}
+    virtual IExpression * build(IExpression *, IExpression *) const = 0;
     virtual int getPriority() const = 0;
 };
 

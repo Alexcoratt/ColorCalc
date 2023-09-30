@@ -9,13 +9,16 @@ private:
     double _value;
 
 public:
-    LeafExpressionFactory(double value) : _value(value) {}
+    LeafExpressionFactory(double);
+    LeafExpressionFactory(LeafExpressionFactory const &);
+    LeafExpressionFactory & operator=(LeafExpressionFactory const &);
+    ~LeafExpressionFactory();
 
-    IExpression * build(IExpression * first = 0, IExpression * second = 0) const {
-        return new LeafExpression(_value);
-    }
+    void swap(LeafExpressionFactory &);
 
-    int getPriority() const { return 5; }
+    LeafExpression * build(IExpression *, IExpression *) const;
+
+    int getPriority() const;
 };
 
 #endif

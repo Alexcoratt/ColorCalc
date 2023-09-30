@@ -7,11 +7,9 @@
 
 class AdditionExpressionFactory : public IExpressionFactory {
 public:
-    IExpression * build(IExpression * first = 0, IExpression * second = 0) const {
-        return new AdditionExpression(first, second);
-    }
+    AdditionExpression * build(IExpression *, IExpression *) const;
 
-    int getPriority() const { return 1; }
+    int getPriority() const;
 };
 
 #endif
