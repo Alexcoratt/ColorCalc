@@ -6,8 +6,14 @@
 
 class Environment {
 private:
-    std::map<std::string, double> _variables;
-    //std::map<std::string, ICommand> _commands;
+    std::map<std::string, std::string> * _variables;
+
+public:
+    std::string getVariable(std::string const &) const;
+    std::string & getVariableLink(std::string const &);
+
+    bool containsVariable(std::string const &) const;
+    void setVariable(std::string const &, std::string const &);
 };
 
 #endif
