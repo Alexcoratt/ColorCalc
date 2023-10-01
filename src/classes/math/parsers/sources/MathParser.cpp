@@ -43,12 +43,12 @@ VALUE_TYPE getValue(std::map<KEY_TYPE, VALUE_TYPE> map, KEY_TYPE key, VALUE_TYPE
 
 
 std::size_t findMinPos(std::vector<int> const & values, std::size_t begin, std::size_t end) {
-    std::size_t pos = end - 1;
-    int min = values[pos];
-    for (std::size_t i = end - 1; i > begin; --i) {
-        if (min >= values[i - 1]) {
-            pos = i - 1;
-            min = values[i - 1];
+    std::size_t pos = begin;
+    int min = values[begin];
+    for (std::size_t i = begin + 1; i < end; ++i) {
+        if (min >= values[i]) {
+            pos = i;
+            min = values[i];
         }
     }
     return pos;

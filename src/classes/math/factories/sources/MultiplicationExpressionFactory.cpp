@@ -4,4 +4,4 @@ MultiplicationExpression * MultiplicationExpressionFactory::build(IExpression * 
     return new MultiplicationExpression(left, right);
 }
 
-int MultiplicationExpressionFactory::getPriority() const { return 3; }
+int MultiplicationExpressionFactory::getPriority() const { return 2; }

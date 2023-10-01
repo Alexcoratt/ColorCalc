@@ -4,4 +4,4 @@ DivisionExpression * DivisionExpressionFactory::build(IExpression * left, IExpre
     return new DivisionExpression(left, right);
 }
 
-int DivisionExpressionFactory::getPriority() const { return 4; }
+int DivisionExpressionFactory::getPriority() const { return 2; }

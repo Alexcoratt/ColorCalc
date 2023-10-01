@@ -22,4 +22,4 @@ LeafExpression * LeafExpressionFactory::build(IExpression * left, IExpression * 
     return new LeafExpression(_value);
 }
 
-int LeafExpressionFactory::getPriority() const { return 5; }
+int LeafExpressionFactory::getPriority() const { return 4; }

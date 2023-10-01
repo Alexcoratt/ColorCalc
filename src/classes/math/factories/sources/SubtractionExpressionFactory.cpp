@@ -4,4 +4,4 @@ SubtractionExpression * SubtractionExpressionFactory::build(IExpression * left, 
     return new SubtractionExpression(left, right);
 }
 
-int SubtractionExpressionFactory::getPriority() const { return 2; }
+int SubtractionExpressionFactory::getPriority() const { return 1; }
