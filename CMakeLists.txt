@@ -11,6 +11,7 @@ add_executable(main src/main.cpp ${SOURCES})
 target_include_directories(
     main
 
+    PUBLIC src/classes/math/exceptions
     PUBLIC src/classes/math/expressions/headers
     PUBLIC src/classes/math/factories/headers
     PUBLIC src/classes/math/parsers/headers

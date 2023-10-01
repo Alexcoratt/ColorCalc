@@ -1,8 +1,16 @@
-#include "MultiplicationExpression.hpp"
 #include <algorithm>
 #include <vector>
+#include <string>
 
-MultiplicationExpression::MultiplicationExpression(IExpression * left, IExpression * right) : _left(left), _right(right) {}
+#include "MultiplicationExpression.hpp"
+#include "ExpressionException.hpp"
+
+MultiplicationExpression::MultiplicationExpression(IExpression * left, IExpression * right) : _left(left), _right(right) {
+    if (!_left || !_right) {
+        std::string errMsg = "Multiplication error: only two operands allowed, provided: " + std::to_string(_left == 0 + _right == 0);
+        throw ExpressionException(errMsg.c_str());
+    }
+}
 MultiplicationExpression::MultiplicationExpression(MultiplicationExpression const & other) : _left(other._left), _right(other._right) {}
 
 MultiplicationExpression & MultiplicationExpression::operator=(MultiplicationExpression const & other) {

@@ -2,6 +2,8 @@
 #include <string>
 #include <stack>
 
+#include <iostream>
+
 #include "MathParser.hpp"
 
 #include "IExpressionFactory.hpp"
@@ -183,33 +185,32 @@ std::string MathParser::parseString(std::string const & prompt) {
 
     std::size_t lexemCount = lexems.size();
     std::vector<IExpressionFactory *> factories;
-    std::map<std::size_t, int> priorityBoostersPositions;
     std::stack<LeafExpressionFactory *> leaves;
 
+    std::vector<int> priorities;
+    int priorityBoost = 0;
+
     for (std::size_t i = 0; i < lexemCount; ++i) {
-        if (isKeyExist(lexems[i], _operatorMap))
+        if (isKeyExist(lexems[i], _operatorMap)) {
             factories.push_back(_operatorMap[lexems[i]]);
+            priorities.push_back(_operatorMap[lexems[i]]->getPriority() + priorityBoost);
+        }
 
         else if (isKeyExist(lexems[i], _priorityBoostersMap))
-            priorityBoostersPositions[factories.size()] = getValue(priorityBoostersPositions, factories.size(), 0) + _priorityBoostersMap[lexems[i]];
+            priorityBoost += _priorityBoostersMap[lexems[i]];
 
         else {
             LeafExpressionFactory * leaf = new LeafExpressionFactory(std::stod(lexems[i]));
             factories.push_back(leaf);
             leaves.push(leaf);
+            priorities.push_back(leaf->getPriority() + priorityBoost);
         }
     }
 
-    std::size_t factoryCount = factories.size();
-    std::vector<int> priorities(factoryCount);
-    int priorityBoost = 0;
+    if (priorityBoost != 0)
+        std::cerr << "WARNING: The expression has an unclosed parentheses or another expression priority boosting operator" << std::endl;
 
-    for (std::size_t i = 0; i < factoryCount; ++i) {
-        priorityBoost += getValue(priorityBoostersPositions, i, 0);
-        priorities[i] = factories[i]->getPriority() + priorityBoost;
-    }
-
-    IExpression * exp = evaluate(factories, priorities, 0, factoryCount);
+    IExpression * exp = evaluate(factories, priorities, 0, factories.size());
     while (!leaves.empty()) {
         delete leaves.top();
         leaves.pop();
