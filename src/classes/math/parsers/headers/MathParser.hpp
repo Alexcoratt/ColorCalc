@@ -2,26 +2,19 @@
 #define PARSER_HPP
 
 #include <string>
-#include <vector>
 #include <map>
 
 #include "IExpressionFactory.hpp"
-#include "LeafExpressionFactory.hpp"
-
-#include "AdditionExpressionFactory.hpp"
-#include "SubtractionExpressionFactory.hpp"
-#include "MultiplicationExpressionFactory.hpp"
-#include "DivisionExpressionFactory.hpp"
+#include "Environment.hpp"
 
 class MathParser {
 private:
-
+    Environment * _env;
     std::map<std::string, IExpressionFactory *> _operatorMap;
-
     std::map<std::string, int const> _priorityBoostersMap;
 
 public:
-    MathParser();
+    MathParser(Environment *);
     MathParser(MathParser const &);
     MathParser & operator=(MathParser const &);
     ~MathParser();

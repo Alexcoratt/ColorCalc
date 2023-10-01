@@ -4,6 +4,15 @@
 
 #include "MathParser.hpp"
 
+#include "IExpressionFactory.hpp"
+#include "AdditionExpressionFactory.hpp"
+#include "SubtractionExpressionFactory.hpp"
+#include "MultiplicationExpressionFactory.hpp"
+#include "DivisionExpressionFactory.hpp"
+#include "LeafExpressionFactory.hpp"
+
+#include "Environment.hpp"
+
 template <typename T>
 std::string vectorToString(std::vector<T> const & lines) {
     std::size_t count = lines.size();
@@ -135,7 +144,7 @@ std::vector<T> concatenateVectors(std::vector<T> left, std::vector<T> right) {
 }
 
 
-MathParser::MathParser() {
+MathParser::MathParser(Environment * env) : _env(env) {
     _operatorMap = {
         {"+", new AdditionExpressionFactory},
         {"-", new SubtractionExpressionFactory},
@@ -149,7 +158,7 @@ MathParser::MathParser() {
     };
 }
 
-MathParser::MathParser(MathParser const & other) : _operatorMap(other._operatorMap), _priorityBoostersMap(other._priorityBoostersMap) {}
+MathParser::MathParser(MathParser const & other) : _env(other._env), _operatorMap(other._operatorMap), _priorityBoostersMap(other._priorityBoostersMap) {}
 
 MathParser & MathParser::operator=(MathParser const & other) {
     if (this != &other) {
