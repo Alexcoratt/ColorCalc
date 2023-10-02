@@ -180,7 +180,7 @@ void MathParser::swap(MathParser & other) {
     std::swap(_priorityBoostersMap, other._priorityBoostersMap);
 }
 
-std::string MathParser::parseString(std::string const & prompt) {
+IExpression * MathParser::parseString(std::string const & prompt) {
     std::vector<std::string> lexems = extractLexems(prompt, concatenateVectors(getKeys(_operatorMap), getKeys(_priorityBoostersMap)));
 
     std::size_t lexemCount = lexems.size();
@@ -216,6 +216,8 @@ std::string MathParser::parseString(std::string const & prompt) {
         leaves.pop();
     }
 
+    return exp;
+    /*
     std::vector<double> result = exp->exec();
     delete exp;
     
@@ -224,6 +226,7 @@ std::string MathParser::parseString(std::string const & prompt) {
         return std::to_string(result[0]);
 
     return vectorToString(result);
+    */
 }
 
 IExpression * MathParser::evaluate(std::vector<IExpressionFactory *> const & factories, std::vector<int> const & priorities, std::size_t begin, std::size_t end) const {

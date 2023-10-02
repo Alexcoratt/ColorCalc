@@ -19,7 +19,14 @@ int main() {
     IValue * a = new DoubleValue(10);
     env->setVariable("var", a);
 
-    std::cout << prs.parseString(line) << std::endl;
+    IExpression * exp = prs.parseString(line);
+
+    std::cout << exp->exec()[0] << std::endl;
+    a->setDoubleValue(25);
+    std::cout << exp->exec()[0] << std::endl;
+
+    delete env;
+    delete exp;
 
     return 0;
 }
