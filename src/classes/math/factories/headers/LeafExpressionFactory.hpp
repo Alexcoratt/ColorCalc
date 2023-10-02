@@ -9,7 +9,8 @@
 
 class LeafExpressionFactory : public IExpressionFactory {
 private:
-    double _value;
+    Environment * _env;
+    std::string _value;
 
 public:
     LeafExpressionFactory(Environment *, std::string const &);

@@ -3,13 +3,14 @@
 
 #include <vector>
 #include "IExpression.hpp"
+#include "DoubleValue.hpp"
 
 class LeafExpression : public IExpression {
 private:
-    double _value;
+    DoubleValue * _value;
 
 public:
-    LeafExpression(double value);
+    LeafExpression(DoubleValue * value);
     LeafExpression(LeafExpression const &);
     LeafExpression & operator=(LeafExpression const &);
     ~LeafExpression();

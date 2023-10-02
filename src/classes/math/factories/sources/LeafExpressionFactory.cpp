@@ -2,15 +2,10 @@
 #include <stdexcept>
 
 #include "LeafExpressionFactory.hpp"
+#include "ValueException.hpp"
 
-LeafExpressionFactory::LeafExpressionFactory(Environment * env, std::string const & value) {
-    try {
-        _value = std::stod(value);
-    } catch (std::invalid_argument const & e) {
-        _value = env->getValue(value)->getDoubleValue();
-    }
-}
-LeafExpressionFactory::LeafExpressionFactory(LeafExpressionFactory const & other) : _value(other._value) {}
+LeafExpressionFactory::LeafExpressionFactory(Environment * env, std::string const & value) : _env(env), _value(value) {}
+LeafExpressionFactory::LeafExpressionFactory(LeafExpressionFactory const & other) : _env(other._env), _value(other._value) {}
 
 LeafExpressionFactory & LeafExpressionFactory::operator=(LeafExpressionFactory const & other) {
     if (this != &other) {
@@ -27,7 +22,14 @@ void LeafExpressionFactory::swap(LeafExpressionFactory & other) {
 }
 
 LeafExpression * LeafExpressionFactory::build(IExpression * left, IExpression * right) const {
-    return new LeafExpression(_value);
+    DoubleValue * value;
+    try {
+        value = new DoubleValue(std::stod(_value));
+    } catch (std::invalid_argument const & e) {
+        if ( !(value = dynamic_cast<DoubleValue *>(_env->getValue(_value))) )
+            throw ValueException("Value exception: type of value for a leaf expression must be double");
+    }
+    return new LeafExpression(value);
 }
 
 int LeafExpressionFactory::getPriority() const { return 4; }
