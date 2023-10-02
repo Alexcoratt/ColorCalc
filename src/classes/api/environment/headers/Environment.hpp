@@ -4,16 +4,25 @@
 #include <map>
 #include <string>
 
+#include "IValue.hpp"
+
 class Environment {
 private:
-    std::map<std::string, std::string> * _variables;
+    std::map<std::string, IValue *> _variables;
 
 public:
-    std::string getVariable(std::string const &) const;
-    std::string & getVariableLink(std::string const &);
+    Environment();
+    Environment(Environment const &);
+    Environment & operator=(Environment const &);
+    ~Environment();
+
+    void swap(Environment &);
+
+    IValue * getValue(std::string const &);
 
     bool containsVariable(std::string const &) const;
-    void setVariable(std::string const &, std::string const &);
+    void setVariable(std::string const &, IValue *);
+    void removeVariable(std::string const &);
 };
 
 #endif
