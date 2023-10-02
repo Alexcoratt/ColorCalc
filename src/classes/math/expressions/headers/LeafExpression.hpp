@@ -8,9 +8,10 @@
 class LeafExpression : public IExpression {
 private:
     DoubleValue * _value;
+    bool _isVariable;
 
 public:
-    LeafExpression(DoubleValue * value);
+    LeafExpression(DoubleValue * value, bool isVariable);
     LeafExpression(LeafExpression const &);
     LeafExpression & operator=(LeafExpression const &);
     ~LeafExpression();
