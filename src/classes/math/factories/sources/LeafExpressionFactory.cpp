@@ -1,7 +1,15 @@
-#include "LeafExpressionFactory.hpp"
 #include <algorithm>
+#include <stdexcept>
 
-LeafExpressionFactory::LeafExpressionFactory(double value) : _value(value) {}
+#include "LeafExpressionFactory.hpp"
+
+LeafExpressionFactory::LeafExpressionFactory(Environment * env, std::string const & value) {
+    try {
+        _value = std::stod(value);
+    } catch (std::invalid_argument const & e) {
+        _value = env->getValue(value)->getDoubleValue();
+    }
+}
 LeafExpressionFactory::LeafExpressionFactory(LeafExpressionFactory const & other) : _value(other._value) {}
 
 LeafExpressionFactory & LeafExpressionFactory::operator=(LeafExpressionFactory const & other) {

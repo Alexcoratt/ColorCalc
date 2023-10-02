@@ -200,7 +200,7 @@ std::string MathParser::parseString(std::string const & prompt) {
             priorityBoost += _priorityBoostersMap[lexems[i]];
 
         else {
-            LeafExpressionFactory * leaf = new LeafExpressionFactory(std::stod(lexems[i]));
+            LeafExpressionFactory * leaf = new LeafExpressionFactory(_env, lexems[i]);
             factories.push_back(leaf);
             leaves.push(leaf);
             priorities.push_back(leaf->getPriority() + priorityBoost);
