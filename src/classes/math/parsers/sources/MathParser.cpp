@@ -12,6 +12,7 @@
 #include "MultiplicationExpressionFactory.hpp"
 #include "DivisionExpressionFactory.hpp"
 #include "LeafExpressionFactory.hpp"
+#include "AssignmentExpressionFactory.hpp"
 
 #include "Environment.hpp"
 
@@ -151,7 +152,8 @@ MathParser::MathParser(Environment * env) : _env(env) {
         {"+", new AdditionExpressionFactory},
         {"-", new SubtractionExpressionFactory},
         {"*", new MultiplicationExpressionFactory},
-        {"/", new DivisionExpressionFactory}
+        {"/", new DivisionExpressionFactory},
+        {"=", new AssignmentExpressionFactory(_env)}
     };
 
     _priorityBoostersMap = {

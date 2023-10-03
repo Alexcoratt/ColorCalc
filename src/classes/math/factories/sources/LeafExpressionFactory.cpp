@@ -31,8 +31,11 @@ LeafExpression * LeafExpressionFactory::build(IExpression * left, IExpression * 
         value = new DoubleValue(std::stod(_lexem));
         isVariable = false;
     } catch (std::invalid_argument const & e) {
-        value = dynamic_cast<DoubleValue *>(_env->getValue(_lexem));
-        if (!value) {
+        if (_env->containsVariable(_lexem)) {
+            value = dynamic_cast<DoubleValue *>(_env->getValue(_lexem));
+            if (!value)
+                value->setStringValue(_lexem);
+        } else {
             value = new StringValue(_lexem);
             isVariable = false;
         }
