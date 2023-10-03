@@ -6,10 +6,8 @@
 #include "ExpressionException.hpp"
 
 MultiplicationExpression::MultiplicationExpression(IExpression * left, IExpression * right) : _left(left), _right(right) {
-    if (!_left || !_right) {
-        std::string errMsg = "Multiplication error: only two operands allowed, provided: " + std::to_string(_left == 0 + _right == 0);
-        throw ExpressionException(errMsg.c_str());
-    }
+    if (!_left || !_right)
+        throw ExpressionException("Multiplication error: only two operands allowed, provided: " + std::to_string(_left == 0 + _right == 0));
 }
 MultiplicationExpression::MultiplicationExpression(MultiplicationExpression const & other) : _left(other._left), _right(other._right) {}
 

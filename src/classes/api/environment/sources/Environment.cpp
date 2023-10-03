@@ -22,10 +22,8 @@ Environment::~Environment() {
 void Environment::swap(Environment & other) { std::swap(_variables, other._variables); }
 
 IValue * Environment::getValue(std::string const & key) { 
-    if (!containsVariable(key)) {
-        std::string errMsg = "Variable named \"" + key + "\" does not exist";
-        throw VariableException(errMsg.c_str());
-    }
+    if (!containsVariable(key))
+        throw VariableException("Variable named \"" + key + "\" does not exist");
     return _variables[key];
 }
 

@@ -1,17 +1,20 @@
 #ifndef EXPRESSION_EXCEPTION_HPP
 #define EXPRESSION_EXCEPTION_HPP
 
+#include <string>
+
 #include "MathException.hpp"
 
 class ExpressionException : public MathException {
 private:
-    char const * _answer;
+    std::string const _msg;
 
 public:
-    inline ExpressionException(char const * answer) : _answer(answer) {}
+    inline ExpressionException(std::string const & msg) : _msg(msg) {
+    }
 
     char const * what() const noexcept {
-        return _answer;
+        return _msg.c_str();
     }
 };
 

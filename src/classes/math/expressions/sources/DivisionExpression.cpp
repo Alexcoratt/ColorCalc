@@ -6,10 +6,8 @@
 #include "ExpressionException.hpp"
 
 DivisionExpression::DivisionExpression(IExpression * left, IExpression * right) : _left(left), _right(right) {
-    if (!_left || !_right) {
-        std::string errMsg = "Division error: only two operands allowed, provided: " + std::to_string(_left == 0 + _right == 0);
-        throw ExpressionException(errMsg.c_str());
-    }
+    if (!_left || !_right)
+        throw ExpressionException("Division error: only two operands allowed, provided: " + std::to_string(_left == 0 + _right == 0));
 }
 
 DivisionExpression::DivisionExpression(DivisionExpression const & other) : _left(other._left), _right(other._right) {}
