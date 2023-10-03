@@ -1,15 +1,14 @@
 #include <algorithm>
-#include <vector>
 
 #include "AdditionExpression.hpp"
 #include "ExpressionException.hpp"
 
-AdditionExpression::AdditionExpression(IExpression * left, IExpression * right) : _left(left), _right(right) {
+AdditionExpression::AdditionExpression(IExpression * left, IExpression * right) : _left(left), _right(right), _result(new DoubleValue) {
     if (!_right)
         throw ExpressionException("Addition error: no right operand provided");
 }
 
-AdditionExpression::AdditionExpression(AdditionExpression const & other) : _left(other._left), _right(other._right) {}
+AdditionExpression::AdditionExpression(AdditionExpression const & other) : _left(other._left), _right(other._right), _result(other._result) {}
 
 AdditionExpression & AdditionExpression::operator=(AdditionExpression const & other) {
     if (&other != this) {
@@ -22,13 +21,16 @@ AdditionExpression & AdditionExpression::operator=(AdditionExpression const & ot
 AdditionExpression::~AdditionExpression() {
     delete _left;
     delete _right;
+    delete _result;
 }
 
-std::vector<double> AdditionExpression::exec() {
-    return std::vector<double>(1, (_left ? _left->exec()[0] : 0) + _right->exec()[0]);
+DoubleValue * AdditionExpression::exec() {
+    _result->setDoubleValue((_left ? _left->exec()->getDoubleValue() : 0) + _right->exec()->getDoubleValue());
+    return _result;
 }
 
 void AdditionExpression::swap(AdditionExpression & other) {
     std::swap(_left, other._left);
     std::swap(_right, other._right);
+    std::swap(_result, other._result);
 }

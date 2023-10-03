@@ -4,8 +4,10 @@
 #include "LeafExpressionFactory.hpp"
 #include "ValueException.hpp"
 
-LeafExpressionFactory::LeafExpressionFactory(Environment * env, std::string const & value) : _env(env), _value(value) {}
-LeafExpressionFactory::LeafExpressionFactory(LeafExpressionFactory const & other) : _env(other._env), _value(other._value) {}
+#include "StringValue.hpp"
+
+LeafExpressionFactory::LeafExpressionFactory(Environment * env, std::string const & value) : _env(env), _lexem(value) {}
+LeafExpressionFactory::LeafExpressionFactory(LeafExpressionFactory const & other) : _env(other._env), _lexem(other._lexem) {}
 
 LeafExpressionFactory & LeafExpressionFactory::operator=(LeafExpressionFactory const & other) {
     if (this != &other) {
@@ -19,18 +21,21 @@ LeafExpressionFactory::~LeafExpressionFactory() {}
 
 void LeafExpressionFactory::swap(LeafExpressionFactory & other) {
     std::swap(_env, other._env);
-    std::swap(_value, other._value);
+    std::swap(_lexem, other._lexem);
 }
 
 LeafExpression * LeafExpressionFactory::build(IExpression * left, IExpression * right) const {
-    DoubleValue * value;
+    IValue * value;
     bool isVariable = true;
     try {
-        value = new DoubleValue(std::stod(_value));
+        value = new DoubleValue(std::stod(_lexem));
         isVariable = false;
     } catch (std::invalid_argument const & e) {
-        if ( !(value = dynamic_cast<DoubleValue *>(_env->getValue(_value))) )
-            throw ValueException("Value exception: type of value for a leaf expression must be double");
+        value = dynamic_cast<DoubleValue *>(_env->getValue(_lexem));
+        if (!value) {
+            value = new StringValue(_lexem);
+            isVariable = false;
+        }
     }
     return new LeafExpression(value, isVariable);
 }

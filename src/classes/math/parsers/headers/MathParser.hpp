@@ -2,6 +2,7 @@
 #define PARSER_HPP
 
 #include <string>
+#include <vector>
 #include <map>
 
 #include "IExpressionFactory.hpp"

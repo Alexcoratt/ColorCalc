@@ -1,15 +1,14 @@
 #include <algorithm>
-#include <vector>
 
 #include "SubtractionExpression.hpp"
 #include "ExpressionException.hpp"
 
-SubtractionExpression::SubtractionExpression(IExpression * left, IExpression * right) : _left(left), _right(right) {
+SubtractionExpression::SubtractionExpression(IExpression * left, IExpression * right) : _left(left), _right(right), _result(new DoubleValue) {
     if (!_right)
         throw ExpressionException("Subtraction error: no right operand provided");
 }
 
-SubtractionExpression::SubtractionExpression(SubtractionExpression const & other) : _left(other._left), _right(other._right) {}
+SubtractionExpression::SubtractionExpression(SubtractionExpression const & other) : _left(other._left), _right(other._right), _result(other._result) {}
 
 SubtractionExpression & SubtractionExpression::operator=(SubtractionExpression const & other) {
     if (this != &other) {
@@ -24,8 +23,9 @@ SubtractionExpression::~SubtractionExpression() {
     delete _right;
 }
 
-std::vector<double> SubtractionExpression::exec() {
-    return std::vector<double>(1, (_left ? _left->exec()[0] : 0) - _right->exec()[0]);
+DoubleValue * SubtractionExpression::exec() {
+    _result->setDoubleValue((_left ? _left->exec()->getDoubleValue() : 0) - _right->exec()->getDoubleValue());
+    return _result;
 }
 
 void SubtractionExpression::swap(SubtractionExpression & other) {

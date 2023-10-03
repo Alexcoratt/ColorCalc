@@ -1,7 +1,6 @@
 #ifndef I_EXPRESSION_FACTORY_HPP
 #define I_EXPRESSION_FACTORY_HPP
 
-#include <vector>
 #include "IExpression.hpp"
 
 class IExpressionFactory {

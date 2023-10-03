@@ -10,7 +10,7 @@
 class LeafExpressionFactory : public IExpressionFactory {
 private:
     Environment * _env;
-    std::string _value;
+    std::string _lexem;
 
 public:
     LeafExpressionFactory(Environment *, std::string const &);

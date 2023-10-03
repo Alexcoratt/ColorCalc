@@ -1,13 +1,14 @@
 #ifndef DIVISION_EXPRESSION_HPP
 #define DIVISION_EXPRESSION_HPP
 
-#include <vector>
 #include "IExpression.hpp"
+#include "DoubleValue.hpp"
 
 class DivisionExpression : public IExpression {
 private:
     IExpression * _left;
     IExpression * _right;
+    DoubleValue * _result;
 
 public:
     DivisionExpression(IExpression *, IExpression *);
@@ -15,7 +16,7 @@ public:
     DivisionExpression & operator=(DivisionExpression const &);
     ~DivisionExpression();
 
-    std::vector<double> exec();
+    DoubleValue * exec();
 
     void swap(DivisionExpression &);
 };

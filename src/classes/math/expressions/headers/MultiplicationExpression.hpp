@@ -1,13 +1,14 @@
 #ifndef MULTIPLICATION_EXPRESSION_HPP
 #define MULTIPLICATION_EXPRESSION_HPP
 
-#include <vector>
 #include "IExpression.hpp"
+#include "DoubleValue.hpp"
 
 class MultiplicationExpression : public IExpression {
 private:
     IExpression * _left;
     IExpression * _right;
+    DoubleValue * _result;
 
 public:
     MultiplicationExpression(IExpression *, IExpression *);
@@ -15,7 +16,7 @@ public:
     MultiplicationExpression & operator=(MultiplicationExpression const &);
     ~MultiplicationExpression();
 
-    std::vector<double> exec();
+    DoubleValue * exec();
 
     void swap(MultiplicationExpression &);
 };
