@@ -10,7 +10,10 @@
 class ICommandFactory
 {
 public:
-    virtual ICommand * build(Environment *, std::map<std::string, std::string> const &) = 0;
+    virtual ICommand * build(std::map<std::string, std::string> const &) = 0;
+    
+    virtual std::string getHelp() = 0;
+    virtual std::string getFullHelp() = 0;
 };
 
 #endif
