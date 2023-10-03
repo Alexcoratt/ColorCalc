@@ -10,23 +10,24 @@
 #include "StringValue.hpp"
 
 int main() {
-    std::string line = "7 * (var - 25) + var";
-    std::cout << line << std::endl;
+    std::string line;
 
     Environment * env = new Environment;
     MathParser prs(env);
 
-    IValue * a = new DoubleValue(10);
-    env->setVariable("var", a);
-
-    IExpression * exp = prs.parseString(line);
-
-    std::cout << exp->exec()[0] << std::endl;
-    a->setDoubleValue(25);
-    std::cout << exp->exec()[0] << std::endl;
+    IExpression * exp;
+    
+    while (std::getline(std::cin, line)) {
+        try {
+            exp = prs.parseString(line);
+            std::cout << exp->exec()[0] << std::endl;
+            delete exp;
+        } catch (std::exception & err) {
+            std::cerr << err.what() << std::endl;
+        }
+    }
 
     delete env;
-    delete exp;
 
     return 0;
 }
