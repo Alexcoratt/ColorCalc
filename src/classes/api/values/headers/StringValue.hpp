@@ -21,6 +21,8 @@ public:
 
     std::string getStringValue() const;
     void setStringValue(std::string const &);
+
+    void print(std::ostream & = std::cout, std::string const & = "\n") const;
 };
 
 #endif

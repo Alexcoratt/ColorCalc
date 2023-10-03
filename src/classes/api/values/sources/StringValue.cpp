@@ -20,3 +20,7 @@ void StringValue::swap(StringValue & other) {
 
 std::string StringValue::getStringValue() const { return _value; }
 void StringValue::setStringValue(std::string const & str) { _value = str; }
+
+void StringValue::print(std::ostream & out, std::string const & endSeq) const {
+    out << getStringValue() << endSeq;
+}

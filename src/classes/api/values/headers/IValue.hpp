@@ -2,6 +2,8 @@
 #define I_VALUE_HPP
 
 #include <string>
+#include <iostream>
+
 #include "ValueException.hpp"
 
 class IValue {
@@ -16,6 +18,8 @@ public:
 
     virtual double getDoubleValue() const { throw ValueException(getErrorMessage().c_str()); }
     virtual void setDoubleValue(double) { throw ValueException(getErrorMessage().c_str()); }
+
+    virtual void print(std::ostream & = std::cout, std::string const & = "\n") const = 0;
 };
 
 #endif

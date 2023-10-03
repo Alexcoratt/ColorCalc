@@ -21,6 +21,8 @@ public:
 
     double getDoubleValue() const;
     void setDoubleValue(double);
+
+    void print(std::ostream & = std::cout, std::string const & = "\n") const;
 };
 
 #endif

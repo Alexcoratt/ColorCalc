@@ -20,3 +20,7 @@ void DoubleValue::swap(DoubleValue & other) {
 
 double DoubleValue::getDoubleValue() const { return _value; }
 void DoubleValue::setDoubleValue(double value) { _value = value; }
+
+void DoubleValue::print(std::ostream & out, std::string const & endSeq) const {
+    out << getDoubleValue() << endSeq;
+}

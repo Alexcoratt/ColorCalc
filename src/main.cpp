@@ -20,7 +20,7 @@ int main() {
     while (std::getline(std::cin, line)) {
         try {
             exp = prs.parseString(line);
-            std::cout << exp->exec()->getDoubleValue() << std::endl;
+            exp->exec()->print();
             delete exp;
         } catch (std::exception & err) {
             std::cerr << err.what() << std::endl;
