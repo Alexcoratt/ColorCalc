@@ -10,18 +10,18 @@
 
 class HelpCommand : public ICommand {
 private:
-    std::map<std::string, ICommandFactory *> _commands;
+    std::map<std::string, ICommandFactory *> const * _commands;
     std::map<std::string, std::string> _args;
 
 public:
-    HelpCommand(std::map<std::string, ICommandFactory *>, std::map<std::string, std::string>);
+    HelpCommand(std::map<std::string, ICommandFactory *> const *, std::map<std::string, std::string> const &);
     HelpCommand(HelpCommand const &);
     HelpCommand & operator=(HelpCommand const &);
     ~HelpCommand();
 
     void swap(HelpCommand &);
 
-    void exec();
+    void exec(std::ostream &);
 };
 
 #endif

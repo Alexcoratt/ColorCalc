@@ -20,7 +20,7 @@ public:
 
     void swap(CommandParser &);
 
-    std::string parseString(std::string);
+    void parseString(std::string);
 };
 
 #endif

@@ -1,11 +1,13 @@
 #ifndef I_COMMAND_HPP
 #define I_COMMAND_HPP
 
+#include <ostream>
+
 class ICommand {
 public:
     virtual ~ICommand() {}
 
-    virtual void exec() = 0;
+    virtual void exec(std::ostream &) = 0;
 };
 
 #endif

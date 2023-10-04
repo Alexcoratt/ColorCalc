@@ -12,8 +12,8 @@ class ICommandFactory
 public:
     virtual ICommand * build(std::map<std::string, std::string> const &) = 0;
     
-    virtual std::string getHelp() = 0;
-    virtual std::string getFullHelp() = 0;
+    virtual std::string getHelp() const = 0;
+    virtual std::string getFullHelp() const = 0;
 };
 
 #endif

@@ -9,19 +9,17 @@
 #include "DoubleValue.hpp"
 #include "StringValue.hpp"
 
+#include "CommandParser.hpp"
+
 int main() {
     std::string line;
 
     Environment * env = new Environment;
-    MathParser prs(env);
-
-    IExpression * exp;
+    CommandParser prs(env);
     
     while (std::getline(std::cin, line)) {
         try {
-            exp = prs.parseString(line);
-            exp->exec()->print();
-            delete exp;
+            prs.parseString(line);
         } catch (std::exception & err) {
             std::cerr << err.what() << std::endl;
         }
