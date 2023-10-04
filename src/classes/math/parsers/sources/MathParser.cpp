@@ -146,6 +146,13 @@ std::vector<T> concatenateVectors(std::vector<T> left, std::vector<T> right) {
     return res;
 }
 
+IExpression * evaluate(std::vector<IExpressionFactory *> const & factories, std::vector<int> const & priorities, std::size_t begin, std::size_t end) {
+    if (begin >= end)
+        return 0;
+
+    std::size_t pivot = findMinPos(priorities, begin, end);
+    return factories[pivot]->build(evaluate(factories, priorities, begin, pivot), evaluate(factories, priorities, pivot + 1, end));
+}
 
 MathParser::MathParser(Environment * env) : _env(env) {
     _operatorMap = {
@@ -219,22 +226,4 @@ IExpression * MathParser::parseString(std::string const & prompt) {
     }
 
     return exp;
-    /*
-    std::vector<double> result = exp->exec();
-    delete exp;
-    
-
-    if (result.size() == 1)
-        return std::to_string(result[0]);
-
-    return vectorToString(result);
-    */
-}
-
-IExpression * MathParser::evaluate(std::vector<IExpressionFactory *> const & factories, std::vector<int> const & priorities, std::size_t begin, std::size_t end) const {
-    if (begin >= end)
-        return 0;
-
-    std::size_t pivot = findMinPos(priorities, begin, end);
-    return factories[pivot]->build(evaluate(factories, priorities, begin, pivot), evaluate(factories, priorities, pivot + 1, end));
 }

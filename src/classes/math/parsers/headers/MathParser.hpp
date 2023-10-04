@@ -23,8 +23,6 @@ public:
     void swap(MathParser &);
     
     IExpression * parseString(std::string const &);
-
-    IExpression * evaluate(std::vector<IExpressionFactory *> const &, std::vector<int> const &, std::size_t, std::size_t) const;
 };
 
 #endif
