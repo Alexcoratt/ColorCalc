@@ -22,7 +22,7 @@ public:
 
     LeafExpression * build(IExpression *, IExpression *) const;
 
-    int getPriority() const;
+    inline int getPriority() const { return 5; }
 };
 
 #endif

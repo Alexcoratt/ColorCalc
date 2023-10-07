@@ -2,26 +2,25 @@
 #define ASSIGNMENT_EXPRESSION_HPP
 
 #include "IExpression.hpp"
-#include "LeafExpression.hpp"
-#include "DoubleValue.hpp"
 #include "Environment.hpp"
+#include "IValue.hpp"
 
 class AssignmentExpression : public IExpression {
 private:
-    LeafExpression * _left;
+    std::string _varName;
     IExpression * _right;
     Environment * _env;
-    DoubleValue * _result;
+    IValue * _result;
 
 public:
-    AssignmentExpression(LeafExpression *, IExpression *, Environment *);
+    AssignmentExpression(std::string const &, IExpression *, Environment *);
     AssignmentExpression(AssignmentExpression const &);
     AssignmentExpression & operator=(AssignmentExpression const &);
     ~AssignmentExpression();
 
     void swap(AssignmentExpression &);
 
-    DoubleValue * exec();
+    IValue * exec();
 };
 
 #endif

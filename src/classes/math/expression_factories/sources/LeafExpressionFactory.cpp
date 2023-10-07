@@ -2,8 +2,6 @@
 #include <stdexcept>
 
 #include "LeafExpressionFactory.hpp"
-#include "ValueException.hpp"
-
 #include "StringValue.hpp"
 
 LeafExpressionFactory::LeafExpressionFactory(Environment * env, std::string const & value) : _env(env), _lexem(value) {}
@@ -26,21 +24,17 @@ void LeafExpressionFactory::swap(LeafExpressionFactory & other) {
 
 LeafExpression * LeafExpressionFactory::build(IExpression * left, IExpression * right) const {
     IValue * value;
-    bool isVariable = true;
+    bool isVariable = false;
+
     try {
         value = new DoubleValue(std::stod(_lexem));
-        isVariable = false;
     } catch (std::invalid_argument const & e) {
         if (_env->containsVariable(_lexem)) {
-            value = dynamic_cast<DoubleValue *>(_env->getValue(_lexem));
-            if (!value)
-                value->setStringValue(_lexem);
-        } else {
+            value = _env->getValue(_lexem);
+            isVariable = true;
+        } else
             value = new StringValue(_lexem);
-            isVariable = false;
-        }
     }
+
     return new LeafExpression(value, isVariable);
 }
-
-int LeafExpressionFactory::getPriority() const { return 4; }

@@ -1,6 +1,7 @@
 #include <algorithm>
 
 #include "Environment.hpp"
+#include "IValue.hpp"
 #include "VariableException.hpp"
 
 Environment::Environment() {}
@@ -23,10 +24,21 @@ void Environment::swap(Environment & other) { std::swap(_variables, other._varia
 
 IValue * Environment::getValue(std::string const & key) { 
     if (!containsVariable(key))
-        throw VariableException("Variable named \"" + key + "\" does not exist");
+        throw VariableException("Variable exception: variable named \"" + key + "\" does not exist");
     return _variables[key];
 }
 
 bool Environment::containsVariable(std::string const & key) const { return _variables.find(key) != _variables.end(); }
 void Environment::setVariable(std::string const & key, IValue * value) { _variables[key] = value; }
-void Environment::removeVariable(std::string const & key) { _variables.erase(key); }
+
+void Environment::removeVariable(std::string const & key) {
+    if (containsVariable(key))
+        _variables.erase(key);
+}
+
+void Environment::removeVariable(IValue * value) {
+    auto item = _variables.begin();
+    while (item != _variables.end())
+        if (item->second == value)
+            _variables.erase(item++);
+}

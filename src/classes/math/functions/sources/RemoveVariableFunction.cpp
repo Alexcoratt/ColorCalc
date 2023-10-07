@@ -1,8 +1,10 @@
 #include <algorithm>
+
+#include "DoubleValue.hpp"
 #include "RemoveVariableFunction.hpp"
 
-RemoveVariableFunction::RemoveVariableFunction(Environment * env, std::string const & varName) : _env(env), _varName(varName) {}
-RemoveVariableFunction::RemoveVariableFunction(RemoveVariableFunction const & other) : _env(other._env), _varName(other._varName) {}
+RemoveVariableFunction::RemoveVariableFunction(Environment * env, IValue * var) : _env(env), _var(var) {}
+RemoveVariableFunction::RemoveVariableFunction(RemoveVariableFunction const & other) : _env(other._env), _var(other._var) {}
 
 RemoveVariableFunction & RemoveVariableFunction::operator=(RemoveVariableFunction const & other) {
     if (this != &other) {
@@ -16,10 +18,11 @@ RemoveVariableFunction::~RemoveVariableFunction() {}
 
 void RemoveVariableFunction::swap(RemoveVariableFunction & other) {
     std::swap(_env, other._env);
-    std::swap(_varName, other._varName);
+    std::swap(_var, other._var);
 }
 
 IValue * RemoveVariableFunction::exec() {
-    _env->removeVariable(_varName);
-    return nullptr;
+    _env->removeVariable(_var);
+    //std::cout << "hi from RemoveVariable" << std::endl;
+    return new DoubleValue;
 }

@@ -13,14 +13,12 @@ target_include_directories(
 
     PUBLIC src/classes/math/exceptions
     PUBLIC src/classes/math/expressions/headers
-    PUBLIC src/classes/math/factories/headers
+    PUBLIC src/classes/math/expression_factories/headers
+    PUBLIC src/classes/math/functions/headers
+    PUBLIC src/classes/math/function_factories/headers
     PUBLIC src/classes/math/parsers/headers
 
     PUBLIC src/classes/api/environment/headers
     PUBLIC src/classes/api/exceptions
     PUBLIC src/classes/api/values/headers
-
-    PUBLIC src/classes/tui/commands/headers
-    PUBLIC src/classes/tui/factories/headers
-    PUBLIC src/classes/tui/parsers/headers
 )

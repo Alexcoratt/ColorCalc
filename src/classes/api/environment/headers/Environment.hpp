@@ -22,7 +22,9 @@ public:
 
     bool containsVariable(std::string const &) const;
     void setVariable(std::string const &, IValue *);
+
     void removeVariable(std::string const &);
+    void removeVariable(IValue *);
 };
 
 #endif

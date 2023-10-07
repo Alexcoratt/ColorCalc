@@ -2,30 +2,37 @@
 #include <vector>
 #include <string>
 
+#include "IValue.hpp"
 #include "MathParser.hpp"
 #include "Environment.hpp"
 
-#include "IValue.hpp"
-#include "DoubleValue.hpp"
-#include "StringValue.hpp"
-
-#include "CommandParser.hpp"
-
 int main() {
-    std::string line;
-
     Environment * env = new Environment;
-    CommandParser prs(env);
-    
-    while (std::getline(std::cin, line)) {
+
+    MathParser prs(env);
+    IExpression * exp;
+
+    std::vector<std::string> const lines = {
+        "a = 10",
+        "a",
+        "rmvar(a)",
+        "1 = 2",
+        "b = 2 - a"
+    };
+
+    IValue * result;
+
+    for (std::string const & line : lines) {
         try {
-            prs.parseString(line);
-        } catch (std::exception & err) {
-            std::cerr << err.what() << std::endl;
+            std::cout << line << std::endl;
+            exp = prs.parseString(line);
+            result = exp->exec();
+            result->print();
+            //delete exp;
+        } catch(std::exception const & e) {
+            std::cerr << e.what() << '\n';
         }
     }
-
-    delete env;
 
     return 0;
 }

@@ -2,6 +2,7 @@
 
 #include "AssignmentExpressionFactory.hpp"
 #include "ExpressionException.hpp"
+#include "LeafExpression.hpp"
 
 AssignmentExpressionFactory::AssignmentExpressionFactory(Environment * env) : _env(env) {}
 AssignmentExpressionFactory::AssignmentExpressionFactory(AssignmentExpressionFactory const & other) : _env(other._env) {}
@@ -24,9 +25,9 @@ IExpression * AssignmentExpressionFactory::build(IExpression * left, IExpression
     LeafExpression * var = dynamic_cast<LeafExpression *>(left);
 
     if (!var)
-        throw ExpressionException("Expression exception: left operand must be a variable");
+        throw ExpressionException("Assignment exception: left operand must be a variable");
 
-    return new AssignmentExpression(var, right, _env);
+    return new AssignmentExpression(var->exec()->getStringValue(), right, _env);
 }
 
 int AssignmentExpressionFactory::getPriority() const { return 0; }

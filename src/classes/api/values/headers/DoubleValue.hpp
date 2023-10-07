@@ -23,6 +23,8 @@ public:
     void setDoubleValue(double);
 
     void print(std::ostream & = std::cout, std::string const & = "\n") const;
+
+    DoubleValue * getClone() const;
 };
 
 #endif

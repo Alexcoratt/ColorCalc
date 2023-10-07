@@ -14,6 +14,8 @@
 #include "LeafExpressionFactory.hpp"
 #include "AssignmentExpressionFactory.hpp"
 
+#include "RemoveVariableFunctionFactory.hpp"
+
 #include "Environment.hpp"
 
 template <typename T>
@@ -110,7 +112,7 @@ std::vector<std::string> extractLexems(std::string const & prompt, std::vector<s
                     else if (!hasElemStartsWith(prompt.substr(i, j - 1), knownLexems))
                         break;
                 }
-                
+
                 lexem = prompt.substr(left, lexemLen);
 
                 if (lexem != separator)
@@ -160,7 +162,8 @@ MathParser::MathParser(Environment * env) : _env(env) {
         {"-", new SubtractionExpressionFactory},
         {"*", new MultiplicationExpressionFactory},
         {"/", new DivisionExpressionFactory},
-        {"=", new AssignmentExpressionFactory(_env)}
+        {"=", new AssignmentExpressionFactory(_env)},
+        {"rmvar", new RemoveVariableFunctionFactory(_env)}
     };
 
     _priorityBoostersMap = {

@@ -2,6 +2,7 @@
 #define I_VALUE_HPP
 
 #include <string>
+#include <vector>
 #include <iostream>
 
 #include "ValueException.hpp"
@@ -19,7 +20,12 @@ public:
     virtual double getDoubleValue() const { throw ValueException(getErrorMessage().c_str()); }
     virtual void setDoubleValue(double) { throw ValueException(getErrorMessage().c_str()); }
 
+    virtual std::vector<IValue *> getVectorValue() const { throw ValueException(getErrorMessage().c_str()); }
+    virtual void setVectorValue(std::vector<IValue *> const &) { throw ValueException(getErrorMessage().c_str()); }
+
     virtual void print(std::ostream & = std::cout, std::string const & = "\n") const = 0;
+
+    virtual IValue * getClone() const = 0;
 };
 
 #endif
