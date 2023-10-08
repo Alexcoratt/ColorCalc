@@ -5,14 +5,16 @@
 
 #include "Environment.hpp"
 #include "IExpression.hpp"
+#include "IValue.hpp"
 
 class RemoveVariableFunction : public IExpression {
 private:
     Environment * _env;
-    IValue * _var;
+    std::string _varName;
+    IValue * _result;
 
 public:
-    RemoveVariableFunction(Environment *, IValue *);
+    RemoveVariableFunction(Environment *, std::string const &);
     RemoveVariableFunction(RemoveVariableFunction const &);
     RemoveVariableFunction & operator=(RemoveVariableFunction const &);
     ~RemoveVariableFunction();

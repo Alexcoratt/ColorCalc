@@ -4,7 +4,6 @@
 #include <string>
 
 #include "IExpressionFactory.hpp"
-#include "LeafExpression.hpp"
 #include "Environment.hpp"
 
 class LeafExpressionFactory : public IExpressionFactory {
@@ -20,7 +19,7 @@ public:
 
     void swap(LeafExpressionFactory &);
 
-    LeafExpression * build(IExpression *, IExpression *) const;
+    IExpression * build(IExpression *, IExpression *) const;
 
     inline int getPriority() const { return 5; }
 };

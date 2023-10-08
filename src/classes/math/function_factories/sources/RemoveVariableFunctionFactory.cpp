@@ -1,7 +1,7 @@
 #include <algorithm>
 
 #include "RemoveVariableFunctionFactory.hpp"
-#include "LeafExpression.hpp"
+#include "VariableExpression.hpp"
 #include "ExpressionException.hpp"
 
 RemoveVariableFunctionFactory::RemoveVariableFunctionFactory(Environment * env) : _env(env) {}
@@ -21,9 +21,9 @@ void RemoveVariableFunctionFactory::swap(RemoveVariableFunctionFactory & other) 
   std::swap(_env, other._env);
 }
 
-RemoveVariableFunction * RemoveVariableFunctionFactory::build(IExpression * left, IExpression * right) const {
-  LeafExpression * exp = dynamic_cast<LeafExpression *>(right);
-  if (!exp || !exp->getIsVariable())
+RemoveVariableFunction * RemoveVariableFunctionFactory::build(IExpression *, IExpression * right) const {
+  VariableExpression * var = dynamic_cast<VariableExpression *>(right);
+  if (!var)
     throw ExpressionException("Variable removal exception: operand must be a variable");
-  return new RemoveVariableFunction(_env, exp->exec());
+  return new RemoveVariableFunction(_env, var->getName());
 }

@@ -1,10 +1,10 @@
 #include <algorithm>
 
-#include "DoubleValue.hpp"
 #include "RemoveVariableFunction.hpp"
+#include "VoidValue.hpp"
 
-RemoveVariableFunction::RemoveVariableFunction(Environment * env, IValue * var) : _env(env), _var(var) {}
-RemoveVariableFunction::RemoveVariableFunction(RemoveVariableFunction const & other) : _env(other._env), _var(other._var) {}
+RemoveVariableFunction::RemoveVariableFunction(Environment * env, std::string const & varName) : _env(env), _varName(varName), _result(new VoidValue) {}
+RemoveVariableFunction::RemoveVariableFunction(RemoveVariableFunction const & other) : _env(other._env), _varName(other._varName), _result(other._result) {}
 
 RemoveVariableFunction & RemoveVariableFunction::operator=(RemoveVariableFunction const & other) {
     if (this != &other) {
@@ -14,15 +14,17 @@ RemoveVariableFunction & RemoveVariableFunction::operator=(RemoveVariableFunctio
     return *this;
 }
 
-RemoveVariableFunction::~RemoveVariableFunction() {}
+RemoveVariableFunction::~RemoveVariableFunction() {
+    delete _result;
+}
 
 void RemoveVariableFunction::swap(RemoveVariableFunction & other) {
     std::swap(_env, other._env);
-    std::swap(_var, other._var);
+    std::swap(_varName, other._varName);
+    std::swap(_result, other._result);
 }
 
 IValue * RemoveVariableFunction::exec() {
-    _env->removeVariable(_var);
-    //std::cout << "hi from RemoveVariable" << std::endl;
-    return new DoubleValue;
+    _env->removeVariable(_varName);
+    return _result;
 }

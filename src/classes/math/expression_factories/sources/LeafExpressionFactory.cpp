@@ -1,8 +1,12 @@
 #include <algorithm>
 #include <stdexcept>
 
+#include "IExpression.hpp"
+#include "ValueExpression.hpp"
 #include "LeafExpressionFactory.hpp"
 #include "StringValue.hpp"
+#include "DoubleValue.hpp"
+#include "VariableExpression.hpp"
 
 LeafExpressionFactory::LeafExpressionFactory(Environment * env, std::string const & value) : _env(env), _lexem(value) {}
 LeafExpressionFactory::LeafExpressionFactory(LeafExpressionFactory const & other) : _env(other._env), _lexem(other._lexem) {}
@@ -22,19 +26,14 @@ void LeafExpressionFactory::swap(LeafExpressionFactory & other) {
     std::swap(_lexem, other._lexem);
 }
 
-LeafExpression * LeafExpressionFactory::build(IExpression * left, IExpression * right) const {
+IExpression * LeafExpressionFactory::build(IExpression * left, IExpression * right) const {
     IValue * value;
-    bool isVariable = false;
 
     try {
-        value = new DoubleValue(std::stod(_lexem));
+        return new ValueExpression(new DoubleValue(std::stod(_lexem)));
     } catch (std::invalid_argument const & e) {
-        if (_env->containsVariable(_lexem)) {
-            value = _env->getValue(_lexem);
-            isVariable = true;
-        } else
-            value = new StringValue(_lexem);
+        if (_lexem[0] == '\"')
+            return new ValueExpression(new StringValue(_lexem));
+        return new VariableExpression(_lexem, _env);
     }
-
-    return new LeafExpression(value, isVariable);
 }

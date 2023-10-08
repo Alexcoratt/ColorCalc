@@ -2,18 +2,16 @@
 #define ASSIGNMENT_EXPRESSION_HPP
 
 #include "IExpression.hpp"
-#include "Environment.hpp"
 #include "IValue.hpp"
+#include "VariableExpression.hpp"
 
 class AssignmentExpression : public IExpression {
 private:
-    std::string _varName;
+    VariableExpression * _var;
     IExpression * _right;
-    Environment * _env;
-    IValue * _result;
 
 public:
-    AssignmentExpression(std::string const &, IExpression *, Environment *);
+    AssignmentExpression(VariableExpression *, IExpression *);
     AssignmentExpression(AssignmentExpression const &);
     AssignmentExpression & operator=(AssignmentExpression const &);
     ~AssignmentExpression();

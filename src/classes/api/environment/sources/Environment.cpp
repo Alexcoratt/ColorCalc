@@ -28,12 +28,21 @@ IValue * Environment::getValue(std::string const & key) {
     return _variables[key];
 }
 
-bool Environment::containsVariable(std::string const & key) const { return _variables.find(key) != _variables.end(); }
-void Environment::setVariable(std::string const & key, IValue * value) { _variables[key] = value; }
+bool Environment::containsVariable(std::string const & key) const {
+    return _variables.find(key) != _variables.end();
+}
+
+void Environment::setVariable(std::string const & key, IValue * value) {
+    if (containsVariable(key))
+        delete _variables[key];
+    _variables[key] = value;
+}
 
 void Environment::removeVariable(std::string const & key) {
-    if (containsVariable(key))
+    if (containsVariable(key)) {
+        delete _variables[key];
         _variables.erase(key);
+    }
 }
 
 void Environment::removeVariable(IValue * value) {
@@ -41,4 +50,5 @@ void Environment::removeVariable(IValue * value) {
     while (item != _variables.end())
         if (item->second == value)
             _variables.erase(item++);
+    delete value;
 }
