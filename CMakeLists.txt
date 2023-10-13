@@ -21,4 +21,7 @@ target_include_directories(
     PUBLIC src/classes/api/environment/headers
     PUBLIC src/classes/api/exceptions
     PUBLIC src/classes/api/values/headers
+
+    PUBLIC json/include/nlohmann
+    PUBLIC json/include
 )
