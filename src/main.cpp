@@ -1,43 +1,21 @@
 #include <iostream>
-#include <vector>
+#include <fstream>
 #include <string>
 
-#include "IValue.hpp"
-#include "MathParser.hpp"
-#include "Environment.hpp"
+#include "json.hpp"
+
+using json = nlohmann::json;
 
 int main() {
-    Environment * env = new Environment;
+    std::fstream file("../data/paint.json");
 
-    MathParser prs(env);
-    IExpression * exp;
+    json data = json::parse(file);
 
-    std::vector<std::string> const lines = {
-        "a = 10",
-        "a",
-        "rmvar(a)",
-        "a",
-        "a = 2",
-        "b = 2 - a",
-        "c = a + b - rmvar(a)",
-        "a - 3"
-    };
+    int paintType = 2;
+    int materialType = 3;
 
-    IValue * result;
+    json const & values = data["tables"]["paint_consumption"]["keys"][0]["values"];
 
-    for (std::string const & line : lines) {
-        try {
-            std::cout << ">>> " << line << std::endl;
-            exp = prs.parseString(line);
-            result = exp->exec();
-            result->print();
-            delete exp;
-        } catch(std::exception const & e) {
-            std::cerr << e.what() << '\n';
-        }
-    }
-
-    delete env;
-
-    return 0;
+    for (auto value : values)
+    std::cout << value << std::endl;
 }
