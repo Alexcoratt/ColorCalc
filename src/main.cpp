@@ -1,21 +1,40 @@
+#include <cstddef>
+#include <algorithm>
 #include <iostream>
 #include <fstream>
 #include <string>
 
-#include "json.hpp"
+#define PAINT_CALCULATION_TABLE_NAME "расчет печатной краски"
 
-using json = nlohmann::json;
+#include "JsonConnection.hpp"
 
 int main() {
-    std::fstream file("../data/paint.json");
+	std::fstream file("../data/paint.json");
 
-    json data = json::parse(file);
+	IConnection * conn = new JsonConnection(file);
 
-    int paintType = 2;
-    int materialType = 3;
+	auto paintType = "фолиевая";
+	auto materialType = "невпитывающие материалы";
 
-    json const & values = data["tables"]["paint_consumption"]["keys"][0]["values"];
+	auto paintTypes = conn->getPaintTypes();
+	for (auto type : paintTypes)
+		std::cout << type << std::endl;
 
-    for (auto value : values)
-    std::cout << value << std::endl;
+	std::cout << std::endl;
+
+	auto materialTypes = conn->getMaterialTypes(paintType);
+	for (auto type : materialTypes)
+		std::cout << type << std::endl;
+
+	std::cout << std::endl;
+
+	std::cout << conn->getPaintConsumption(paintType, materialType) << std::endl << std::endl;
+
+	auto presetsNames = conn->getPresetsNames(PAINT_CALCULATION_TABLE_NAME);
+	for (auto name : presetsNames)
+		std::cout << name << std::endl;
+
+	std::cout << conn->getPreset(PAINT_CALCULATION_TABLE_NAME, "Многокрасочная печать") << std::endl;
+
+	delete conn;
 }

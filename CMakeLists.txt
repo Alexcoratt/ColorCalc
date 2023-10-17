@@ -4,23 +4,14 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 project(PaintCalc)
 
-file(GLOB SOURCES "src/classes/*/*/sources/*.cpp")
+file(GLOB SOURCES "src/classes/sources/*.cpp")
 
 add_executable(main src/main.cpp ${SOURCES})
 
 target_include_directories(
     main
 
-    PUBLIC src/classes/math/exceptions
-    PUBLIC src/classes/math/expressions/headers
-    PUBLIC src/classes/math/expression_factories/headers
-    PUBLIC src/classes/math/functions/headers
-    PUBLIC src/classes/math/function_factories/headers
-    PUBLIC src/classes/math/parsers/headers
-
-    PUBLIC src/classes/api/environment/headers
-    PUBLIC src/classes/api/exceptions
-    PUBLIC src/classes/api/values/headers
+    PUBLIC src/classes/headers
 
     PUBLIC json/include/nlohmann
     PUBLIC json/include
