@@ -91,7 +91,14 @@ double JsonConnection::getPaintConsumption(std::string const & paintTypeName, st
 // Queires for preset tables
 
 std::vector<std::string> JsonConnection::getPresetsNames(std::string const & tableName) const {
-	return getTable(_data, tableName)["rows"];
+	std::vector<std::string> res;
+	nlohmann::json table = getTable(_data, tableName);
+	std::size_t const nameColumnIndex = getIndex<std::string>(getColumnsNames(tableName), table["preset_name_column"]);
+
+	for (nlohmann::json preset : table["rows"])
+		res.push_back(preset[nameColumnIndex]);
+
+	return res;
 }
 
 std::vector<std::string> JsonConnection::getColumnsNames(std::string const & tableName) const {
@@ -100,7 +107,7 @@ std::vector<std::string> JsonConnection::getColumnsNames(std::string const & tab
 
 nlohmann::json JsonConnection::getPreset(std::string const & tableName, std::size_t presetIndex) const {
 	nlohmann::json res;
-	nlohmann::json row = getTable(_data, tableName)["values"][presetIndex];
+	nlohmann::json row = getTable(_data, tableName)["rows"][presetIndex];
 
 	std::vector<std::string> columns = getColumnsNames(tableName);
 	std::size_t columnCount = columns.size();
