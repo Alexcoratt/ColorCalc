@@ -10,8 +10,7 @@ class BackOption : public AbstractLeafOption {
 	}
 
 	std::string getName() const { return "back"; }
-
-	std::string getHelp() const { return getName() + ": Allows user to go to previous option list"; }
+	std::string getHelp() const { return "Allows user to go to previous option list"; }
 };
 
 #endif

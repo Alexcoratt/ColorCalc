@@ -3,6 +3,8 @@
 #include <algorithm>
 #include <iostream>
 #include <fstream>
+#include <istream>
+#include <ostream>
 #include <string>
 
 #define PAINT_CALCULATION_TABLE_NAME "расчет печатной краски"
@@ -13,21 +15,54 @@
 
 #include "IOption.hpp"
 #include "BaseOptionContainer.hpp"
+#include "CustomLeafOption.hpp"
+
+void printParentName(IOption * parent, std::istream & input, std::ostream & output, std::string const & endline) {
+	output << parent->getName() << endline;
+}
+
+void printNumber(IOption *, std::istream &, std::ostream & output, std::string const & endline, int num) {
+	output << num << endline;
+}
+
+void printInput(IOption *, std::istream & input, std::ostream & output, std::string const & endline) {
+	std::string str;
+	input >> str;
+	output << str << endline;
+}
 
 int main() {
 
-BaseOptionContainer * rootContainer = new BaseOptionContainer("root container", BASE_HELP_TEXT, true);
+	BaseOptionContainer * rootContainer = new BaseOptionContainer("root container", BASE_HELP_TEXT, true);
 	BaseOptionContainer * container1 = new BaseOptionContainer("first container");
 	BaseOptionContainer * container2 = new BaseOptionContainer("second container");
 	BaseOptionContainer * container3 = new BaseOptionContainer("third container");
+
+	CustomLeafOption<void> * ppn = new CustomLeafOption<void>("get parent name", "prints parent's name", printParentName);
+	CustomLeafOption<int> * pn = new CustomLeafOption<int>("print a number", "prints some number", printNumber, 32);
+	CustomLeafOption<void> * pi = new CustomLeafOption<void>("print input", "prints the user\'s input", printInput);
 
 	rootContainer->addOption('c', container1);
 	container1->addOption('c', container2);
 	container2->addOption('c', container3);
 
+	container1->addOption('p', ppn);
+	rootContainer->addOption('n', pn);
+	container2->addOption('i', pi);
+	container3->addOption('n', pn);
+
+	pn->setData(-12);
+
 	rootContainer->exec(0, std::cin, std::cout, "\n");
 
 	delete rootContainer;
+	delete container1;
+	delete container2;
+	delete container3;
+
+	delete ppn;
+	delete pn;
+	delete pi;
 
 	/*
 	std::fstream file("../data/paint.json");

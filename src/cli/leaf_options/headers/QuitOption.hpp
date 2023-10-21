@@ -7,15 +7,13 @@
 
 class QuitOption : public AbstractLeafOption {
 public:
-	void exec(IOption * parent, std::istream &, std::ostream &, std::string const &) {
+	void exec(IOption * parent, std::istream &, std::ostream & output, std::string const & endline) {
 		throw new OptionQuitException;
 	}
 
 	std::string getName() const { return "quit"; }
 
-	std::string getHelp() const {
-		return getName() + ": Ends the program";
-	}
+	std::string getHelp() const { return "Ends the program"; }
 };
 
 #endif

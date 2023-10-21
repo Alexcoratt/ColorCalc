@@ -5,5 +5,5 @@ void HelpOption::exec(IOption * parent, std::istream &, std::ostream & output, s
 	auto parentCommands = parent->getCommands();
 	output << "Available commands:" << endline;
 	for (auto command : parentCommands)
-		std::cout << command.first << "\t" << command.second->getHelp() << endline;
+		output << command.first << "\t" << command.second->getName() << ": " << command.second->getHelp() << endline;
 }

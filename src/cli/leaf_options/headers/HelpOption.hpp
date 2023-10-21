@@ -10,7 +10,7 @@ public:
 
 	std::string getName() const { return "help"; }
 
-	std::string getHelp() const { return getName() + ": Returns list of available commands"; }
+	std::string getHelp() const { return "Returns list of available commands"; }
 };
 
 #endif

@@ -7,8 +7,6 @@
 #include "OptionDoesNotExistException.hpp"
 #include "OptionQuitException.hpp"
 #include "QuitOption.hpp"
-#include <cstdio>
-#include <limits>
 #include <stdexcept>
 
 BaseOptionContainer::BaseOptionContainer(std::map<char, IOption *> const & commands, std::string const & name, std::string const & help) : _options(commands), _name(name), _help(help) {}
@@ -18,44 +16,51 @@ BaseOptionContainer::BaseOptionContainer(std::string const & name, std::string c
 	_help = help;
 
 	_options['h'] = new HelpOption;
-	_options['q'] = new QuitOption;
+	_options['h']->setNoDelete(false);
 
-	if (!noBackOption)
+	_options['q'] = new QuitOption;
+	_options['q']->setNoDelete(false);
+
+	if (!noBackOption) {
 		_options['b'] = new BackOption;
+		_options['b']->setNoDelete(false);
+	}
 }
 
 BaseOptionContainer::~BaseOptionContainer() {
-	for (auto command : _options)
-		delete command.second;
+	for (auto option : _options)
+		if (!option.second->getNoDelete())
+			delete option.second;
 }
 
 void BaseOptionContainer::exec(IOption * parent, std::istream & input, std::ostream & output, std::string const & endline) {
-	output << getName() << endline;
+	output << "Switch to " << getName() << endline << endline;
 	char option;
 	while (input.get(option))
 		try {
 			if (option != '\n') {
-				if (_options.find(option) != _options.end())
-					_options[option]->exec(this, input, output, endline);
-				else
-					output << "Option \'" << option << "\' is not found" << endline;
+				getOption(option)->exec(this, input, output, endline);
 				output << endline;
 			}
 		} catch (OptionQuitException const * quit) {
 			if (parent)
 				throw quit;
 			delete quit;
-			output << "Goodbye)" << endline;
 			break;
 		} catch (OptionBackException const * back) {
 			delete back;
 			if (parent) {
-				output << parent->getName() << endline;
+				output << "Switch to " << parent->getName() << endline << endline;
 				break;
 			}
 		} catch (std::exception const * err) {
 			std::cerr << err->what() << std::endl;
 		}
+
+	if (!parent)
+		output << "Goodbye" << endline;
+	else if (input.eof())
+		throw new OptionQuitException;
 }
 
 IOption * BaseOptionContainer::getOption(char name) {
