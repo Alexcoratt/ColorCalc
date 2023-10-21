@@ -4,10 +4,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 project(PaintCalc)
 
-file(GLOB SOURCES "src/*/sources/*.cpp" "src/cli/*/sources/*.cpp")
+file(GLOB APP_SOURCES "src/classes/sources/*.cpp")
+file(GLOB CLI_SOURCES "src/cli/*/sources/*.cpp")
 
-add_executable(main src/main.cpp ${SOURCES})
-
+add_executable(main src/main.cpp ${APP_SOURCES} ${CLI_SOURCES})
 target_include_directories(
     main
 
@@ -19,4 +19,13 @@ target_include_directories(
 
     PUBLIC json/include/nlohmann
     PUBLIC json/include
+)
+
+add_executable(cli_demo src/cli/demo.cpp ${CLI_SOURCES})
+target_include_directories(
+    cli_demo
+
+    PUBLIC src/cli/option_containers/headers
+    PUBLIC src/cli/leaf_options/headers
+    PUBLIC src/cli/exceptions
 )
