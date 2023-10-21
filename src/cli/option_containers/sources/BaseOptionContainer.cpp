@@ -1,5 +1,6 @@
 #include "BaseOptionContainer.hpp"
 #include "BackOption.hpp"
+#include "CliException.hpp"
 #include "HelpOption.hpp"
 #include "IOption.hpp"
 #include "OptionAlreadyExistsException.hpp"
@@ -9,12 +10,7 @@
 #include "QuitOption.hpp"
 #include <stdexcept>
 
-BaseOptionContainer::BaseOptionContainer(std::map<char, IOption *> const & commands, std::string const & name, std::string const & help) : _options(commands), _name(name), _help(help) {}
-
-BaseOptionContainer::BaseOptionContainer(std::string const & name, std::string const & help, bool noBackOption) {
-	_name = name;
-	_help = help;
-
+BaseOptionContainer::BaseOptionContainer(std::string const & name, std::string const & help, std::map<char, IOption *> const & options, bool noBackOption) : _name(name), _help(help) {
 	_options['h'] = new HelpOption;
 	_options['h']->setNoDelete(false);
 
@@ -25,6 +21,9 @@ BaseOptionContainer::BaseOptionContainer(std::string const & name, std::string c
 		_options['b'] = new BackOption;
 		_options['b']->setNoDelete(false);
 	}
+
+	for (auto option : options)
+		addOption(option);
 }
 
 BaseOptionContainer::~BaseOptionContainer() {
@@ -53,8 +52,13 @@ void BaseOptionContainer::exec(IOption * parent, std::istream & input, std::ostr
 				output << "Switch to " << parent->getName() << endline << endline;
 				break;
 			}
+			output << getName() << endline << endline;
+		} catch (CliException * err) {
+			output << err->what() << endline << endline;
+			delete err;
 		} catch (std::exception const * err) {
 			std::cerr << err->what() << std::endl;
+			delete err;
 		}
 
 	if (!parent)
@@ -73,6 +77,12 @@ void BaseOptionContainer::addOption(char name, IOption * option) {
 	if (_options.find(name) != _options.end())
 		throw new OptionAlreadyExistsException(name);
 	_options[name] = option;
+}
+
+void BaseOptionContainer::addOption(std::pair<char, IOption *> const & option) {
+	if (_options.find(option.first) != _options.end())
+		throw new OptionAlreadyExistsException(option.first);
+	_options.insert(option);
 }
 
 void BaseOptionContainer::removeOption(char name) {

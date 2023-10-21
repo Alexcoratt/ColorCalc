@@ -5,44 +5,31 @@
 #include <functional>
 
 template <typename T>
+std::function<void(IOption *, std::istream &, std::ostream &, std::string const &, T)> getProxyFunc(std::function<void(T)> const & func) {
+	return [&](IOption *, std::istream &, std::ostream &, std::string const &, T data) { func(data); };
+}
+
+template <typename T>
 class CustomLeafOption : public AbstractLeafOption {
 private:
 	std::string _name;
 	std::string _help;
-	std::function<void(IOption *, std::istream &, std::ostream &, std::string const &, int)> const & _func;
+	std::function<void(IOption *, std::istream &, std::ostream &, std::string const &, T)> _func;
 	T _data;
 
 public:
-	CustomLeafOption(std::string const &, std::string const &, std::function<void(IOption *, std::istream &, std::ostream &, std::string const &, T)> const &, T);
+	CustomLeafOption(std::string const & name, std::string const & help, std::function<void(IOption *, std::istream &, std::ostream &, std::string const &, T)> const & func, T data) : _name(name), _help(help), _func(func), _data(data) {}
 
-	void setData(T);
-	T getData() const;
+	CustomLeafOption(std::string const & name, std::string const & help, std::function<void(T)> const & func, T data) : _name(name), _help(help), _func(getProxyFunc(func)), _data(data) {}
 
-	void exec(IOption *, std::istream &, std::ostream &, std::string const &);
-	std::string getName() const;
-	std::string getHelp() const;
+	void setData(T data) { _data = data; }
+	T getData() const { return _data; }
+
+	void exec(IOption * parent, std::istream & input, std::ostream & output, std::string const & endline) { _func(parent, input, output, endline, _data); }
+
+	std::string getName() const { return _name; }
+	std::string getHelp() const { return _help; }
 };
-
-
-template <typename T>
-CustomLeafOption<T>::CustomLeafOption(std::string const & name, std::string const & help, std::function<void(IOption *, std::istream &, std::ostream &, std::string const &, T)> const & func, T data) : _name(name), _help(help), _func(func), _data(data) {}
-
-template <typename T>
-void CustomLeafOption<T>::setData(T data) { _data = data; }
-
-template <typename T>
-T CustomLeafOption<T>::getData() const { return _data; }
-
-template <typename T>
-void CustomLeafOption<T>::exec(IOption * parent, std::istream & input, std::ostream & output, std::string const & endline) {
-	_func(parent, input, output, endline, _data);
-}
-
-template <typename T>
-std::string CustomLeafOption<T>::getName() const { return _name; }
-
-template <typename T>
-std::string CustomLeafOption<T>::getHelp() const { return _help; }
 
 
 template <>

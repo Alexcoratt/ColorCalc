@@ -6,7 +6,7 @@
 #include <string>
 
 class IOption {
-protected:
+private:
 	bool _noDelete = true;
 
 public:

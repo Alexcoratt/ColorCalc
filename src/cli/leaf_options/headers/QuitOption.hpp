@@ -7,7 +7,7 @@
 
 class QuitOption : public AbstractLeafOption {
 public:
-	void exec(IOption * parent, std::istream &, std::ostream & output, std::string const & endline) {
+	void exec(IOption *, std::istream &, std::ostream &, std::string const &) {
 		throw new OptionQuitException;
 	}
 

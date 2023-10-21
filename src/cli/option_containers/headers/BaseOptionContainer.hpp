@@ -4,17 +4,16 @@
 #include "IOption.hpp"
 
 #define BASE_NAME "base option container"
-#define BASE_HELP_TEXT "base option container"
+#define BASE_HELP_TEXT "contains other options and containers"
 
 class BaseOptionContainer : public IOption {
 protected:
-	std::map<char, IOption *> _options;
 	std::string _name;
 	std::string _help;
+	std::map<char, IOption *> _options;
 
 public:
-	BaseOptionContainer(std::map<char, IOption *> const &, std::string const & = BASE_NAME, std::string const & = BASE_HELP_TEXT);
-	BaseOptionContainer(std::string const & = BASE_NAME, std::string const & = BASE_HELP_TEXT, bool = false);
+	BaseOptionContainer(std::string const & = BASE_NAME, std::string const & = BASE_HELP_TEXT, std::map<char, IOption *> const & = {}, bool = false);
 
 	~BaseOptionContainer();
 
@@ -22,10 +21,11 @@ public:
 	std::map<char, IOption *> getCommands() const { return _options; }
 
 	std::string getName() const { return _name; }
-	std::string getHelp() const { return _name + ": " + _help; }
+	std::string getHelp() const { return _help; }
 
 	IOption * getOption(char);
 	void addOption(char, IOption *);
+	void addOption(std::pair<char, IOption *> const &);
 	void removeOption(char);
 };
 
