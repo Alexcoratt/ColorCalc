@@ -8,6 +8,7 @@
 class IOption {
 private:
 	bool _noDelete = true;
+	bool _isBaseOption = false;
 
 public:
 
@@ -19,6 +20,9 @@ public:
 
 	virtual void setNoDelete(bool noDelete) { _noDelete = noDelete; }
 	virtual bool getNoDelete() const { return _noDelete; }
+
+	virtual void setIsBaseOption(bool isBaseOption) { _isBaseOption = isBaseOption; }
+	virtual bool getIsBaseOption() const { return _isBaseOption; }
 };
 
 #endif

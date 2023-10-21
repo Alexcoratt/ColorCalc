@@ -11,15 +11,21 @@
 #include <stdexcept>
 
 BaseOptionContainer::BaseOptionContainer(std::string const & name, std::string const & help, std::map<char, IOption *> const & options, bool noBackOption) : _name(name), _help(help) {
-	_options['h'] = new HelpOption;
-	_options['h']->setNoDelete(false);
+	IOption * helpOption = new HelpOption;
+	addOption('h', helpOption);
+	helpOption->setNoDelete(false);
+	helpOption->setIsBaseOption(true);
 
-	_options['q'] = new QuitOption;
-	_options['q']->setNoDelete(false);
+	IOption * quitOption = new QuitOption;
+	_options['q'] = quitOption;
+	quitOption->setNoDelete(false);
+	quitOption->setIsBaseOption(true);
 
 	if (!noBackOption) {
-		_options['b'] = new BackOption;
-		_options['b']->setNoDelete(false);
+		IOption * backOption = new BackOption;
+		_options['b'] = backOption;
+		backOption->setNoDelete(false);
+		backOption->setIsBaseOption(true);
 	}
 
 	for (auto option : options)
@@ -49,7 +55,7 @@ void BaseOptionContainer::exec(IOption * parent, std::istream & input, std::ostr
 		} catch (OptionBackException const * back) {
 			delete back;
 			if (parent) {
-				output << "Switch to " << parent->getName() << endline << endline;
+				output << "Switch to " << parent->getName() << endline;
 				break;
 			}
 			output << "\"" << getName() << "\" is the root container" << endline << endline;
