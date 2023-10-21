@@ -1,10 +1,10 @@
 #ifndef BACK_OPTION_HPP
 #define BACK_OPTION_HPP
 
-#include "AbstractLeafOption.hpp"
+#include "IOption.hpp"
 #include "OptionBackException.hpp"
 
-class BackOption : public AbstractLeafOption {
+class BackOption : public IOption {
 	void exec(IOption *, std::istream &, std::ostream &, std::string const &) {
 		throw new OptionBackException;
 	}

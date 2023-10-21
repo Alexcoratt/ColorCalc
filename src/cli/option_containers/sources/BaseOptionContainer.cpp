@@ -52,7 +52,7 @@ void BaseOptionContainer::exec(IOption * parent, std::istream & input, std::ostr
 				output << "Switch to " << parent->getName() << endline << endline;
 				break;
 			}
-			output << getName() << endline << endline;
+			output << "\"" << getName() << "\" is the root container" << endline << endline;
 		} catch (CliException * err) {
 			output << err->what() << endline << endline;
 			delete err;
@@ -67,9 +67,10 @@ void BaseOptionContainer::exec(IOption * parent, std::istream & input, std::ostr
 		throw new OptionQuitException;
 }
 
-IOption * BaseOptionContainer::getOption(char name) {
-	if (_options.find(name) != _options.end())
-		return _options[name];
+IOption * BaseOptionContainer::getOption(char name) const {
+	auto option = _options.find(name);
+	if (option != _options.end())
+		return option->second;
 	throw new OptionDoesNotExistException(name);
 }
 

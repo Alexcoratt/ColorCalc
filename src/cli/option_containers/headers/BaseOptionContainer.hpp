@@ -18,12 +18,12 @@ public:
 	~BaseOptionContainer();
 
 	void exec(IOption *, std::istream &, std::ostream &, std::string const &);
-	std::map<char, IOption *> getCommands() const { return _options; }
+	std::map<char, IOption *> getOptions() const { return _options; }
 
 	std::string getName() const { return _name; }
 	std::string getHelp() const { return _help; }
 
-	IOption * getOption(char);
+	IOption * getOption(char) const;
 	void addOption(char, IOption *);
 	void addOption(std::pair<char, IOption *> const &);
 	void removeOption(char);

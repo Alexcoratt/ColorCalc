@@ -1,7 +1,7 @@
 #ifndef CUSTOM_LEAF_OPTION_HPP
 #define CUSTOM_LEAF_OPTION_HPP
 
-#include "AbstractLeafOption.hpp"
+#include "IOption.hpp"
 #include <functional>
 
 template <typename T>
@@ -10,7 +10,7 @@ std::function<void(IOption *, std::istream &, std::ostream &, std::string const 
 }
 
 template <typename T>
-class CustomLeafOption : public AbstractLeafOption {
+class CustomLeafOption : public IOption {
 private:
 	std::string _name;
 	std::string _help;
@@ -33,7 +33,7 @@ public:
 
 
 template <>
-class CustomLeafOption<void> : public AbstractLeafOption {
+class CustomLeafOption<void> : public IOption {
 private:
 	std::string _name;
 	std::string _help;
