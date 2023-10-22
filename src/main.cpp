@@ -1,5 +1,7 @@
-//#include "IConnection.hpp"
 #include "IConnection.hpp"
+#include "classes/headers/IConnection.hpp"
+#include "cli/leaf_options/headers/CustomLeafOption.hpp"
+#include "cli/leaf_options/headers/IOption.hpp"
 #include <cstddef>
 #include <algorithm>
 #include <iostream>
@@ -18,31 +20,106 @@
 #include "BaseOptionContainer.hpp"
 #include "CustomLeafOption.hpp"
 
-void printPaintTypes(IConnection * conn) {
-	auto paintTypes = conn->getPaintTypes();
-	for (auto type : paintTypes)
-		std::cout << type << std::endl;
+struct PaintMaterialBus {
+	IConnection * conn;			// input value
+	std::size_t paintTypeNum = 0;	// output value
+	std::size_t materialTypeNum = 0;	// output value
+};
+
+void setPaintType(IOption *, std::istream & in, std::ostream & out, std::string const & endline, PaintMaterialBus * bus) {
+	auto paintTypes = bus->conn->getPaintTypes();
+	std::size_t len = paintTypes.size();
+
+	out << "Choose required type of paint" << endline << "Available types:" << endline;
+	for (std::size_t i = 1; i <= len; ++i)
+		out << i << '\t' << paintTypes[i - 1] << endline;
+	out << endline;
+
+	out << "Enter type index: ";
+	in >> bus->paintTypeNum;
+	while (bus->paintTypeNum > len && !in.eof()) {
+		out << "There is no such option" << endline;
+		out << "Enter type index: ";
+		in >> bus->paintTypeNum;
+	}
+
+	if (!in.eof()) {
+		bus->paintTypeNum--;
+		out << "Type \"" << paintTypes[bus->paintTypeNum] << "\" is set" << endline;
+	}
 }
 
-void printMaterialTypes(IConnection * conn) {
-	auto materialTypes = conn->getMaterialTypes();
-	for (auto type : materialTypes)
-		std::cout << type << std::endl;
+void setMaterialType(IOption *, std::istream & in, std::ostream & out, std::string const & endline, PaintMaterialBus * bus) {
+	auto materialTypes = bus->conn->getMaterialTypes();
+	std::size_t len = materialTypes.size();
+
+	out << "Choose required type of material" << endline << "Available types:" << endline;
+	for (std::size_t i = 1; i <= len; ++i)
+		out << i << '\t' << materialTypes[i - 1] << endline;
+	out << endline;
+
+	out << "Enter type index: ";
+	in >> bus->materialTypeNum;
+	while (bus->materialTypeNum > len && !in.eof()) {
+		out << "There is no such option" << endline;
+		out << "Enter type index: ";
+		in >> bus->materialTypeNum;
+	}
+
+	if (!in.eof()) {
+		bus->materialTypeNum--;
+		out << "Type \"" << materialTypes[bus->materialTypeNum] << "\" is set" << endline;
+	}
+}
+
+void printPaintConsumption(IOption *, std::istream & in, std::ostream & out, std::string const & endline, PaintMaterialBus const * bus) {
+	out << "Paint type is \"" << bus->conn->getPaintTypes()[bus->paintTypeNum] << "\"" << endline;
+	out << "Material type is \"" << bus->conn->getMaterialTypes()[bus->materialTypeNum] << "\"" << endline;
+
+	try {
+		auto paintConsumption =  bus->conn->getPaintConsumption(bus->paintTypeNum, bus->materialTypeNum);
+		out << "Paint consumption is " << paintConsumption << endline;
+	} catch (std::invalid_argument const & err) {
+		out << "Impossible to print using that type of paint and this type of material" << endline;
+	}
 }
 
 int main() {
 
 	std::fstream file("../data/paint.json");
-
 	IConnection * conn = new JsonConnection(file);
 
-	BaseOptionContainer root("root", BASE_HELP_TEXT, {
-		{'p', new CustomLeafOption<IConnection *>("print paint types", "prints available paint types", printPaintTypes, conn)},
-		{'m', new CustomLeafOption<IConnection *>("print material types", "prints available material types", printMaterialTypes, conn)}
-	});
-	root.getOption('p')->setNoDelete(false);
-	root.getOption('m')->setNoDelete(false);
+	PaintMaterialBus paintMaterialBus;
+	paintMaterialBus.conn = conn;
 
+	CustomLeafOption<PaintMaterialBus *> setPaintTypeOption(
+		"set paint type",
+		"Set type of paint you are going to use",
+		setPaintType,
+		&paintMaterialBus);
+
+	CustomLeafOption<PaintMaterialBus *> setMaterialTypeOption(
+		"set material type",
+		"Set type of material you are going to use",
+		setMaterialType,
+		&paintMaterialBus);
+
+	CustomLeafOption<PaintMaterialBus *> printPaintConsumptionOption(
+		"get paint consumption",
+		"Prints paint consumption on the screen using entered paint type and material type",
+		printPaintConsumption,
+		&paintMaterialBus
+	);
+
+	BaseOptionContainer paintCalculation("paint calculation", "contains options to work with paint calculation data", {
+		{'p', &setPaintTypeOption},
+		{'m', &setMaterialTypeOption},
+		{'c', &printPaintConsumptionOption}
+	});
+
+	BaseOptionContainer root("root", BASE_HELP_TEXT, {
+		{'p', &paintCalculation}
+	}, true);
 	root.exec(0, std::cin, std::cout, "\n");
 
 	/*
