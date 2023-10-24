@@ -1,5 +1,7 @@
 #include "detail/exceptions.hpp"
 #include "JsonConnection.hpp"
+#include "json.hpp"
+#include "json_fwd.hpp"
 
 #define PAINT_CONSUMPTION "расход краски"
 #define TABLES_SECTION_NAME "tables"
@@ -93,7 +95,7 @@ double JsonConnection::getPaintConsumption(std::string const & paintTypeName, st
 std::vector<std::string> JsonConnection::getPresetsNames(std::string const & tableName) const {
 	std::vector<std::string> res;
 	nlohmann::json table = getTable(_data, tableName);
-	std::size_t const nameColumnIndex = getIndex<std::string>(getColumnsNames(tableName), table["preset_name_column"]);
+	std::size_t const nameColumnIndex = getPresetNameColumnIndex(tableName);
 
 	for (nlohmann::json preset : table["rows"])
 		res.push_back(preset[nameColumnIndex]);
@@ -119,4 +121,15 @@ nlohmann::json JsonConnection::getPreset(std::string const & tableName, std::siz
 
 nlohmann::json JsonConnection::getPreset(std::string const & tableName, std::string const & presetName) const {
 	return getPreset(tableName, getIndex(getPresetsNames(tableName), presetName));
+}
+
+nlohmann::json JsonConnection::getPresetTemplate(std::string const & tableName) const {
+	nlohmann::json res;
+	for (std::string const & column : getColumnsNames(tableName))
+		res[column] = nlohmann::json::value_t::null;
+	return res;
+}
+
+std::size_t JsonConnection::getPresetNameColumnIndex(std::string const & tableName) const {
+	return getTable(_data, tableName)["preset_name_column"];
 }

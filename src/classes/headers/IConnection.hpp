@@ -29,6 +29,8 @@ public:
     virtual std::vector<std::string> getColumnsNames(std::string const &) const = 0;
 	virtual nlohmann::json getPreset(std::string const &, std::size_t) const = 0;
     virtual nlohmann::json getPreset(std::string const &, std::string const &) const = 0;
+    virtual nlohmann::json getPresetTemplate(std::string const &) const = 0;
+    virtual std::size_t getPresetNameColumnIndex(std::string const &) const = 0;
 };
 
 #endif

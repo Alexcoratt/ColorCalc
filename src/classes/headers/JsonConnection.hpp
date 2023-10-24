@@ -25,8 +25,8 @@ public:
 	std::vector<std::string> getMaterialTypes(std::size_t) const;
 	std::vector<std::string> getMaterialTypes(std::string const &) const;
 
-	double getPaintConsumption(std::size_t, std::size_t) const;
-	double getPaintConsumption(std::string const &, std::string const &) const;
+	double getPaintConsumption(std::size_t paint, std::size_t material) const;
+	double getPaintConsumption(std::string const & paint, std::string const & material) const;
 
 
 	// Queires for preset tables
@@ -34,6 +34,8 @@ public:
     std::vector<std::string> getColumnsNames(std::string const &) const;
 	nlohmann::json getPreset(std::string const &, std::size_t) const;
     nlohmann::json getPreset(std::string const &, std::string const &) const;
+	nlohmann::json getPresetTemplate(std::string const &) const;
+    std::size_t getPresetNameColumnIndex(std::string const &) const;
 };
 
 #endif

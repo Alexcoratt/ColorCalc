@@ -6,15 +6,14 @@
 
 // all data must be provided in the same system's units (meters and kilograms)
 // printRatio is a percent value divided by 100
-inline double calculatePaintAmount(double paintConsumption, double divider, double multiplier, double printRatio, double sheetSquare, unsigned long circulation, double reserve) {
-	return paintConsumption / divider * printRatio * sheetSquare * circulation * multiplier + reserve;
+inline double calculatePaintAmount(double paintConsumption, double divider, double printRatio, double sheetSquare, unsigned long circulation, double reserve) {
+	return paintConsumption / divider * printRatio * sheetSquare * circulation + reserve;
 }
 // use json data to execute calculatePaintAmount with preprocessed data
 inline double calculatePaintAmount(IConnection const * conn, nlohmann::json const & preset) {
 	return calculatePaintAmount(
-		conn->getPaintConsumption(std::size_t(preset["тип краски"]), std::size_t(preset["материал"])) / 1000,
+		conn->getPaintConsumption(std::size_t(preset["тип краски"]), std::size_t(preset["тип материала"])) / 1000,
 		preset["делитель"],
-		preset["множитель"],
 		double(preset["процент запечатки"]) / 100,
 		double(preset["ширина печатного листа"]) * double(preset["длина печатного листа"]) / 1000000,
 		preset["тираж"],
