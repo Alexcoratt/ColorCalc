@@ -41,11 +41,11 @@ BaseOptionContainer::~BaseOptionContainer() {
 void BaseOptionContainer::exec(IOption * parent, std::istream & input, std::ostream & output, std::string const & endline) {
 	output << "Switch to " << getName() << endline << endline;
 	char option;
-	while (input.get(option))
+	output << ">>> ";
+	while (input.get(option)) {
 		try {
 			if (option != '\n') {
 				getOption(option)->exec(this, input, output, endline);
-				output << endline;
 			}
 		} catch (OptionQuitException const * quit) {
 			if (parent)
@@ -55,17 +55,21 @@ void BaseOptionContainer::exec(IOption * parent, std::istream & input, std::ostr
 		} catch (OptionBackException const * back) {
 			delete back;
 			if (parent) {
-				output << "Switch to " << parent->getName() << endline;
+				output << endline << "Switch to " << parent->getName() << endline;
 				break;
 			}
 			output << "\"" << getName() << "\" is the root container" << endline << endline;
 		} catch (CliException * err) {
-			output << err->what() << endline << endline;
+			output << endline << err->what() << endline;
 			delete err;
 		} catch (std::exception const * err) {
 			std::cerr << err->what() << std::endl;
 			delete err;
 		}
+
+		if (option != '\n')
+			output << endline << ">>> ";
+	}
 
 	if (!parent)
 		output << "Goodbye" << endline;
