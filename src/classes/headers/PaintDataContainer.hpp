@@ -28,18 +28,23 @@ public:
 	nlohmann::json getData(std::string const &) const;
 	void setData(std::string const &, nlohmann::json const &);
 
+	void clearData();
+
 	std::string getPresetName() const;
-	void setPresetName(std::string const &);
+	void setPreset(std::size_t);
+	void setPreset(std::string const &);
 
 	std::size_t getPaintTypeIndex() const;
 	std::string getPaintTypeName() const;
 	void setPaintType(std::size_t);
 	void setPaintType(std::string);
+	void clearPaintType();
 
 	std::size_t getMaterialTypeIndex() const;
 	std::string getMaterialTypeName() const;
 	void setMaterialType(std::size_t);
 	void setMaterialType(std::string);
+	void clearMaterialType();
 
 	double getPaintConsumption() const;
 	void setPaintConsumption(double);

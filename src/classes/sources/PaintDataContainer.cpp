@@ -59,12 +59,29 @@ nlohmann::json PaintDataContainer::getData(std::string const & key) const { retu
 
 void PaintDataContainer::setData(std::string const & key, nlohmann::json const & value) { _data[key] = value; }
 
+void PaintDataContainer::clearData() {
+	clear(_presetNameColumnName);
+	clear(PAINT_TYPE_COLUMN_NAME);
+	clear(MATERIAL_TYPE_COLUMN_NAME);
+	clear(PAINT_CONSUMPTION_COLUMN_NAME);
+	clear(DIVIDER_COLUMN_NAME);
+	clear(PERCENT_COLUMN_NAME);
+	clear(SHEET_WIDTH_COLUMN_NAME);
+	clear(SHEET_LENGTH_COLUMN_NAME);
+	clear(CIRCULATION_COLUMN_NAME);
+	clear(PAINT_RESERVE_COLUMN_NAME);
+}
+
 std::string PaintDataContainer::getPresetName() const {
 	return getValue<std::string>(_presetNameColumnName);
 }
 
-void PaintDataContainer::setPresetName(std::string const & name) {
-	_data[_presetNameColumnName] = name;
+void PaintDataContainer::setPreset(std::size_t index) {
+	_data = _conn->getPreset(PAINT_CALCULATION_TABLE_NAME, index);
+}
+
+void PaintDataContainer::setPreset(std::string const & name) {
+	_data = _conn->getPreset(PAINT_CALCULATION_TABLE_NAME, name);
 }
 
 std::size_t PaintDataContainer::getPaintTypeIndex() const {
@@ -79,16 +96,21 @@ void PaintDataContainer::setPaintType(std::size_t index) {
 	try {
 		if (index == getPaintTypeIndex())
 			return;
-		_data[PAINT_CONSUMPTION_COLUMN_NAME] = _conn->getPaintConsumption(index, getMaterialTypeIndex());
-	} catch (JsonValueIsNullException const &) {
-	} catch (std::invalid_argument const &) {}
-
+	} catch (JsonValueIsNullException const &) {}
 	_data[PAINT_TYPE_COLUMN_NAME] = index;
+	clear(PAINT_CONSUMPTION_COLUMN_NAME);
 	clear(_presetNameColumnName);
 }
 
 void PaintDataContainer::setPaintType(std::string name) {
 	setPaintType(_conn->getPaintTypeIndex(name));
+}
+
+void PaintDataContainer::clearPaintType() {
+	if (isNull(_data[PAINT_TYPE_COLUMN_NAME]))
+		return;
+	clear(PAINT_TYPE_COLUMN_NAME);
+	clear(_presetNameColumnName);
 }
 
 std::size_t PaintDataContainer::getMaterialTypeIndex() const {
@@ -103,16 +125,21 @@ void PaintDataContainer::setMaterialType(std::size_t index) {
 	try {
 		if (index == getMaterialTypeIndex())
 			return;
-		_data[PAINT_CONSUMPTION_COLUMN_NAME] = _conn->getPaintConsumption(getPaintTypeIndex(), index);
-	} catch (JsonValueIsNullException const &) {
-	} catch (std::invalid_argument const &) {}
-
+	} catch (JsonValueIsNullException const &) {}
 	_data[MATERIAL_TYPE_COLUMN_NAME] = index;
+	clear(PAINT_CONSUMPTION_COLUMN_NAME);
 	clear(_presetNameColumnName);
 }
 
 void PaintDataContainer::setMaterialType(std::string name) {
 	setMaterialType(_conn->getMaterialTypeIndex(name));
+}
+
+void PaintDataContainer::clearMaterialType() {
+	if (isNull(_data[MATERIAL_TYPE_COLUMN_NAME]))
+		return;
+	clear(MATERIAL_TYPE_COLUMN_NAME);
+	clear(_presetNameColumnName);
 }
 
 double PaintDataContainer::getPaintConsumption() const {

@@ -1,5 +1,6 @@
 #include "detail/exceptions.hpp"
 #include "json_fwd.hpp"
+#include <asm-generic/errno.h>
 #include <cstddef>
 #include <algorithm>
 #include <exception>
@@ -34,8 +35,6 @@
 
 #define PAINT_CALCULATION_TABLE_NAME "расчет печатной краски"
 #define LACQUER_CALCULATION_TABLE_NAME "расчет лака"
-
-using json_type_error = nlohmann::json_abi_v3_11_2::detail::type_error;
 
 std::string dump(nlohmann::json const & value, bool useQuotations = false) {
 	if (value == nlohmann::json::value_t::null)
@@ -85,85 +84,108 @@ void writePrintParameters(IOption *, std::istream &, std::ostream & out, std::st
 	}
 }
 
-std::size_t readIndexItem(std::istream & in, std::ostream & out, std::string const & endline, std::vector<std::string> const & items) {
+template <typename T>
+T readValue(std::istream & in, std::function<T(std::string const &)> converter) {
 	std::string line;
-	std::size_t len = items.size();
 	std::getline(in, line);
 
 	if (line == "")
 		throw DefaultOptionIsChosenException();
 
-	try {
-		std::size_t res = std::stoul(line) - 1;
-		if (res < len)
-			return res;
-	} catch (std::invalid_argument const &) {}
-
-	throw std::invalid_argument("No such option \"" + line + "\"");
+	return converter(line);
 }
 
-void setType(std::istream & in, std::ostream & out, std::string const & endline, std::vector<std::string> const & types, std::string const & category, std::function<std::size_t()> getIndex, std::function<std::string()> getName, std::function<void(std::size_t)> setIndex) {
-	std::size_t count = 0;
-	out << "Available " << category << "s are:" << endline;
-	for (std::string const & type : types)
-		out << ++count << '\t' << type << endline;
-	out << endline;
+std::size_t readIndexItem(std::istream & in, std::size_t itemCount) {
+	return readValue<std::size_t>(
+		in,
+		[&](std::string const & line) {
+			try {
+				std::size_t value = std::stoul(line) - 1;
+				if (value < itemCount)
+					return value;
+			} catch (std::invalid_argument const &) {}
+			throw std::invalid_argument("No such option \"" + line + "\"");
+		}
+	);
+}
 
-	std::string defaultValue = getValue<std::string>([&](){ return std::to_string(getIndex() + 1); }, "undefined", true);
-	out << "Current " << category << " is " << defaultValue << endline << endline;
-
-	std::string prompt = "Enter option number (default=" + defaultValue + "): ";
-	in.ignore();
+void setValue(std::function<void()> intro, std::function<void()> prompt, std::function<void()> setItem, std::function<void(char const *)> printErrWhat, std::function<void()> outro) {
+	intro();
 	bool loop = true;
 	while (loop) {
 		try {
-			out << prompt;
-			setIndex(readIndexItem(in, out, endline, types));
+			prompt();
+			setItem();
 			loop = false;
 		} catch (DefaultOptionIsChosenException const & err) {
-			out << err.what() << endline;
+			printErrWhat(err.what());
 			loop = false;
 		} catch (std::invalid_argument const & err) {
-			out << err.what() << endline;
+			printErrWhat(err.what());
 		}
 	}
-
-	out << category << ' ' << getValue<std::string>([&](){ return getName(); }, "undefined", true) << " is set" << endline;
+	outro();
 }
 
 void setPaintType(IOption *, std::istream & in, std::ostream & out, std::string const & endline, PaintDataContainer * container) {
-	setType(
-		in, out, endline, container->getConnection()->getPaintTypes(),
-		"paint type",
-		[&](){ return container->getPaintTypeIndex(); },
-		[&](){ return container->getPaintTypeName(); },
-		[&](std::size_t index){ container->setPaintType(index); }
+	std::vector<std::string> types = container->getConnection()->getPaintTypes();
+
+	std::string const defaultValue = getValue<std::string>([&](){ return std::to_string(container->getPaintTypeIndex() + 1); }, "undefined", true);
+
+	setValue(
+		[&]() {
+			out << "Available paint types are" << endline;
+			std::size_t count = 0;
+			for (auto type : types)
+				out << ++count << '\t' << type << endline;
+			out << endline;
+
+			out << "Current paint type value is " << defaultValue << endline << endline;
+			in.ignore();
+		},
+		[&]() {
+			out << "Enter option (default=" << defaultValue << "): ";
+		},
+		[&]() {
+			container->setPaintType(readIndexItem(in, types.size()));
+		},
+		[&](char const * line) {
+			out << line << endline;
+		},
+		[&]() {
+			out << "Paint type " << getValue<std::string>([&](){ return container->getPaintTypeName(); }, "undefined", true) << " is set";
+		}
 	);
 }
 
 void setMaterialType(IOption *, std::istream & in, std::ostream & out, std::string const & endline, PaintDataContainer * container) {
-	setType(
-		in, out, endline, container->getConnection()->getMaterialTypes(),
-		"material type",
-		[&](){ return container->getMaterialTypeIndex(); },
-		[&](){ return container->getMaterialTypeName(); },
-		[&](std::size_t index){ container->setMaterialType(index); }
+	std::vector<std::string> types = container->getConnection()->getMaterialTypes();
+	std::string const defaultValue = getValue<std::string>([&](){ return std::to_string(container->getMaterialTypeIndex() + 1); }, "undefined", true);
+
+	setValue(
+		[&]() {
+			out << "Available material types are" << endline;
+			std::size_t count = 0;
+			for (auto type : types)
+				out << ++count << '\t' << type << endline;
+			out << endline;
+
+			out << "Current material type value is " << defaultValue << endline << endline;
+			in.ignore();
+		},
+		[&]() {
+			out << "Enter option (default=" << defaultValue << "): ";
+		},
+		[&]() {
+			container->setMaterialType(readIndexItem(in, types.size()));
+		},
+		[&](char const * line) {
+			out << line << endline;
+		},
+		[&]() {
+			out << "Material type " << getValue<std::string>([&](){ return container->getMaterialTypeName(); }, "undefined", true) << " is set";
+		}
 	);
-}
-
-template <typename T>
-T readValue(std::istream & in, std::ostream & out, std::string const & endline, std::function<T(std::string const &)> converter) {
-	std::string line;
-	std::getline(in, line);
-
-	if (line == "")
-		throw DefaultOptionIsChosenException();
-
-	try {
-		return converter(line);
-	} catch (std::invalid_argument const &) {}
-
-	throw std::invalid_argument("Invalid value \"" + line + "\"");
 }
 
 template <typename T>
@@ -172,7 +194,7 @@ void setValue(std::istream & in, std::ostream & out, std::string const & endline
 	out << "Current " << category << " value is ";
 	try {
 		defaultValue = std::to_string(getValue());
-		out << defaultValue << " g/m^2";
+		out << defaultValue;
 	} catch (JsonValueIsNullException const &) {
 		defaultValue = "undefined";
 		out << defaultValue;
@@ -185,7 +207,7 @@ void setValue(std::istream & in, std::ostream & out, std::string const & endline
 	while (loop) {
 		try {
 			out << prompt;
-			T res = readValue<T>(in, out, endline, converter);
+			T res = readValue<T>(in, converter);
 			checker(res);
 			setValue(res);
 			loop = false;
@@ -293,13 +315,69 @@ void setPaintReserve(IOption *, std::istream & in, std::ostream & out, std::stri
 void loadPreset(IOption *, std::istream & in, std::ostream & out, std::string const & endline, PaintDataContainer * container) {
 	IConnection * conn = container->getConnection();
 	std::vector<std::string> presets = conn->getPresetsNames( PAINT_CALCULATION_TABLE_NAME);
-	setType(
-		in, out, endline, presets,
-		"paint calculation preset",
-		[&](){ return conn->getPresetIndex(PAINT_CALCULATION_TABLE_NAME, container->getPresetName()); },
-		[&](){ return container->getPresetName(); },
-		[&](std::size_t index){ container->setPresetName(presets[index]); }
+
+	std::string const defaultValue = getValue<std::string>([&](){ return std::to_string(conn->getPresetIndex(PAINT_CALCULATION_TABLE_NAME, container->getPresetName()) + 1); }, "undefined", true);
+
+	setValue(
+		[&]() {
+			out << "Available presets are" << endline;
+			std::size_t count = 0;
+			for (auto preset : presets)
+				out << ++count << '\t' << preset << endline;
+			out << endline;
+
+			out << "Current value is " << defaultValue << endline << endline;
+			in.ignore();
+		},
+		[&]() {
+			out << "Enter option (default=" << defaultValue << "): ";
+		},
+		[&]() {
+			container->setPreset(presets[readIndexItem(in, presets.size())]);
+		},
+		[&](char const * line) {
+			out << line << endline;
+		},
+		[&]() {
+			out << "Preset " << getValue<std::string>([&](){ return container->getPresetName(); }, "undefined", true) << " is set";
+		}
 	);
+}
+
+bool readSubmit(std::istream & in, std::ostream & out, std::string const & endline, std::string const & message) {
+	std::vector<std::string> const answers = {"yes", "no"};
+	std::string const defaultValue = "2";
+	bool res = false;
+
+	setValue(
+		[&]() {
+			out << message << endline << 1 << '\t' << "yes" << endline << 2 << '\t' << "no" << endline << endline;
+			in.ignore();
+		},
+		[&]() {
+			out << "Enter option (default=" << defaultValue << "): ";
+		},
+		[&]() {
+			if (readIndexItem(in, 2) == 0)
+				res = true;
+		},
+		[&](char const * line) {
+			out << line << endline;
+		},
+		[&]() {
+			if (res)
+				out << "Submitted" << endline;
+			else
+				out << "Cancelled" << endline;
+		}
+	);
+
+	return res;
+}
+
+void clearValues(IOption *, std::istream & in, std::ostream & out, std::string const & endline, PaintDataContainer * container) {
+	if (readSubmit(in, out, endline, "Are you surely want to clear all values?"))
+		container->clearData();
 }
 
 int main() {
@@ -384,6 +462,13 @@ int main() {
 		&paintCalculationContainer
 	);
 
+	CustomLeafOption<PaintDataContainer *> clearValuesOption(
+		"remove values",
+		"Clears data from every paint calculation value",
+		clearValues,
+		&paintCalculationContainer
+	);
+
 	BaseOptionContainer paintCalculation("paint calculation", "contains options to work with paint calculation data", {
 		{'w', &writePrintParametersOption},
 		{'p', &setPaintTypeOption},
@@ -395,7 +480,8 @@ int main() {
 		{'L', &setLengthOption},
 		{'C', &setCirculationOption},
 		{'r', &setPaintReserveOption},
-		{'l', &loadPresetOption}
+		{'l', &loadPresetOption},
+		{'R', &clearValuesOption}
 	});
 
 	BaseOptionContainer root("root", BASE_HELP_TEXT, {
