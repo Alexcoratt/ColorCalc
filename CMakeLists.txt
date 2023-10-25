@@ -12,6 +12,7 @@ target_include_directories(
     main
 
     PUBLIC src/classes/headers
+    PUBLIC src/classes/exceptions
 
     PUBLIC src/cli/option_containers/headers
     PUBLIC src/cli/leaf_options/headers

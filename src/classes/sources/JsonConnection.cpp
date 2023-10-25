@@ -50,6 +50,9 @@ std::vector<std::string> JsonConnection::getPaintTypes(std::string const & mater
 	return getPaintTypes(getIndex(getMaterialTypes(), materialTypeName));
 }
 
+std::string JsonConnection::getPaintTypeName(std::size_t index) const { return getPaintTypes()[index]; }
+std::size_t JsonConnection::getPaintTypeIndex(std::string const & name) const { return getIndex(getPaintTypes(), name); }
+
 
 std::vector<std::string> JsonConnection::getMaterialTypes() const {
 	return getTable(_data, PAINT_CONSUMPTION)["columns"];
@@ -74,6 +77,10 @@ std::vector<std::string> JsonConnection::getMaterialTypes(std::size_t paintTypeN
 std::vector<std::string> JsonConnection::getMaterialTypes(std::string const & paintTypeName) const {
 	return getMaterialTypes(getIndex(getPaintTypes(), paintTypeName));
 }
+
+std::string JsonConnection::getMaterialTypeName(std::size_t index) const { return getMaterialTypes()[index]; }
+std::size_t JsonConnection::getMaterialTypeIndex(std::string const & name) const { return getIndex(getMaterialTypes(), name); }
+
 
 double JsonConnection::getPaintConsumption(std::size_t paintTypeNum, std::size_t materialTypeNum) const {
 	try {
@@ -120,7 +127,11 @@ nlohmann::json JsonConnection::getPreset(std::string const & tableName, std::siz
 }
 
 nlohmann::json JsonConnection::getPreset(std::string const & tableName, std::string const & presetName) const {
-	return getPreset(tableName, getIndex(getPresetsNames(tableName), presetName));
+	return getPreset(tableName, getPresetIndex(tableName, presetName));
+}
+
+std::size_t JsonConnection::getPresetIndex(std::string const & tableName, std::string const & presetName) const {
+	return getIndex(getPresetsNames(tableName), presetName);
 }
 
 nlohmann::json JsonConnection::getPresetTemplate(std::string const & tableName) const {
