@@ -6,6 +6,9 @@
 #include <fstream>
 #include <stdexcept>
 
+template <typename T>
+std::size_t getIndex(std::vector<T> const & vect, T const & value);
+
 class JsonConnection : public IConnection {
 private:
 	nlohmann::json _data;

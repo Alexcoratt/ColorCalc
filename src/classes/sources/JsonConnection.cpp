@@ -2,9 +2,12 @@
 #include "JsonConnection.hpp"
 #include "json.hpp"
 #include "json_fwd.hpp"
+#include <string>
 
 #define PAINT_CONSUMPTION "расход краски"
 #define TABLES_SECTION_NAME "tables"
+
+using json_type_error = nlohmann::json_abi_v3_11_2::detail::type_error;
 
 template <typename T>
 std::size_t getIndex(std::vector<T> const & vect, T const & value) {
@@ -12,7 +15,7 @@ std::size_t getIndex(std::vector<T> const & vect, T const & value) {
 	for (std::size_t i = 0; i < size; ++i)
 		if (vect[i] == value)
 			return i;
-	return size;
+	throw std::invalid_argument("value is not found");
 }
 
 nlohmann::json & getTable(nlohmann::json data, std::string tableName) {
@@ -115,15 +118,19 @@ std::vector<std::string> JsonConnection::getColumnsNames(std::string const & tab
 }
 
 nlohmann::json JsonConnection::getPreset(std::string const & tableName, std::size_t presetIndex) const {
-	nlohmann::json res;
-	nlohmann::json row = getTable(_data, tableName)["rows"][presetIndex];
+	try {
+		nlohmann::json res;
+		nlohmann::json row = getTable(_data, tableName)["rows"][presetIndex];
 
-	std::vector<std::string> columns = getColumnsNames(tableName);
-	std::size_t columnCount = columns.size();
+		std::vector<std::string> columns = getColumnsNames(tableName);
+		std::size_t columnCount = columns.size();
 
-	for (std::size_t i = 0; i < columnCount; ++i)
-		res[columns[i]] = row[i];
-	return res;
+		for (std::size_t i = 0; i < columnCount; ++i)
+			res[columns[i]] = row[i];
+		return res;
+	} catch (json_type_error const &) {
+		throw std::invalid_argument("preset with index " + std::to_string(presetIndex) + " does not exist");
+	}
 }
 
 nlohmann::json JsonConnection::getPreset(std::string const & tableName, std::string const & presetName) const {
