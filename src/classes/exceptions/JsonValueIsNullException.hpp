@@ -6,7 +6,7 @@
 
 class JsonValueIsNullException : public std::invalid_argument {
 public:
-	JsonValueIsNullException(std::string const & key) : std::invalid_argument("Json map contains null under \"" + key + "\" key") {}
+	JsonValueIsNullException(std::string const & key) : std::invalid_argument("Value \"" + key + "\" is undefined") {}
 };
 
 #endif
