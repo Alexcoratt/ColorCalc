@@ -388,4 +388,10 @@ namespace paint_calculation_option_methods {
 	}
 }
 
+namespace lacquer_calculation_option_methods {
+
+
+
+}
+
 #endif
