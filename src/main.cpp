@@ -11,7 +11,7 @@
 #include "JsonConnection.hpp"
 #include "PaintDataContainer.hpp"
 
-#include "paint_calculation_option_methods.hpp"
+#include "option_methods.hpp"
 
 #include "IOption.hpp"
 #include "BaseOptionContainer.hpp"
@@ -24,7 +24,7 @@ namespace pcom = paint_calculation_option_methods;
 
 int main() {
 
-	std::fstream file("../data/paint.json");
+	std::ifstream file("../data/paint.json");
 	IConnection * conn = new JsonConnection(file);
 
 	PaintDataContainer paintCalculationContainer(conn);
@@ -134,8 +134,11 @@ int main() {
 		{'a', &calculatePaintAmountOption}
 	});
 
+	BaseOptionContainer lacquerCalculation("lacquer calculation", "contains options to work with lacquer calculation data", {});
+
 	BaseOptionContainer root("root", BASE_HELP_TEXT, {
-		{'p', &paintCalculation}
+		{'p', &paintCalculation},
+		{'l', &lacquerCalculation}
 	}, true);
 	root.exec(0, std::cin, std::cout, "\n");
 

@@ -4,14 +4,16 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 project(PaintCalc)
 
-file(GLOB APP_SOURCES "src/classes/sources/*.cpp")
+file(GLOB APP_SOURCES "src/classes/*/sources/*.cpp")
 file(GLOB CLI_SOURCES "src/cli/*/sources/*.cpp")
 
 add_executable(main src/main.cpp ${APP_SOURCES} ${CLI_SOURCES})
 target_include_directories(
     main
 
-    PUBLIC src/classes/headers
+    PUBLIC src/classes/auxillary_methods/headers
+    PUBLIC src/classes/connections/headers
+    PUBLIC src/classes/containers/headers
     PUBLIC src/classes/exceptions
 
     PUBLIC src/cli/option_containers/headers
