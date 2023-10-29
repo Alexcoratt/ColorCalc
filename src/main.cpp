@@ -97,7 +97,6 @@ int main() {
 		&paintCalculationContainer
 	);
 
-	/*
 	CustomLeafOption<PaintDataContainer *> loadPresetOption(
 		"load preset",
 		"load values of existing preset",
@@ -118,7 +117,6 @@ int main() {
 		pcom::calculatePaintAmount,
 		&paintCalculationContainer
 	);
-	*/
 
 	BaseOptionContainer paintCalculation("paint calculation", "contains options to work with paint calculation data", {
 		{'w', &writePrintParametersOption},
@@ -130,10 +128,10 @@ int main() {
 		{'W', &setWidthOption},
 		{'L', &setLengthOption},
 		{'C', &setCirculationOption},
-		{'r', &setPaintReserveOption}/*,
+		{'r', &setPaintReserveOption},
 		{'l', &loadPresetOption},
 		{'R', &clearValuesOption},
-		{'a', &calculatePaintAmountOption}*/
+		{'a', &calculatePaintAmountOption}
 	});
 
 	BaseOptionContainer lacquerCalculation("lacquer calculation", "contains options to work with lacquer calculation data", {});

@@ -56,6 +56,8 @@ public:
 
 	double getPaintReserve() const;
 	void setPaintReserve(double);
+
+	double calculatePaintAmount() const;
 };
 
 #endif

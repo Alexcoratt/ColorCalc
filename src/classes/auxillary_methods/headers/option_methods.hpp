@@ -15,11 +15,9 @@ namespace paint_calculation_option_methods {
 	void setSheetLength(PaintDataContainer *);
 	void setCirculation(PaintDataContainer *);
 	void setPaintReserve(PaintDataContainer *);
-	/*
 	void loadPreset(PaintDataContainer *);
 	void clearValues(PaintDataContainer *);
-	void calculatePaintAmount(PaintDataContainer *);
-	*/
+	void calculatePaintAmount(PaintDataContainer const *);
 
 }
 

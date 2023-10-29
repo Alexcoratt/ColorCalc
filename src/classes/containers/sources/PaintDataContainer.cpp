@@ -115,3 +115,7 @@ void PaintDataContainer::setCirculation(std::size_t value) { setValue(CIRCULATIO
 
 double PaintDataContainer::getPaintReserve() const { return getValue<double>(PAINT_RESERVE); }
 void PaintDataContainer::setPaintReserve(double value) { setValue(PAINT_RESERVE, value); }
+
+double PaintDataContainer::calculatePaintAmount() const {
+	return getSheetWidth() * getSheetLength() / 1000000 * getPaintConsumption() / 1000 / getDivider() * getCirculation() * getPercentage() / 100 + getPaintReserve();
+}

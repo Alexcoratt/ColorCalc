@@ -13,7 +13,6 @@
 #include "common_methods.hpp"
 
 namespace pcom = paint_calculation_option_methods;
-//using json_type_error = nlohmann::json_abi_v3_11_2::detail::type_error;
 
 template <typename T>
 T readValue(std::string const & prompt, std::function<T(std::string)> converter, std::function<bool(T)> checker = [](T) { return true; }) {
@@ -28,7 +27,7 @@ T readValue(std::string const & prompt, std::function<T(std::string)> converter,
 				return res;
 		} catch (std::exception const & err) {
 			std::cerr << "Invalid value \'" << line << "\'" << std::endl;
-			std::cerr << "Error:" << err.what() << std::endl;
+			std::cerr << "Error: " << err.what() << std::endl;
 		}
 	}
 	std::cout << "Default value is set" << std::endl;
@@ -59,89 +58,61 @@ void pcom::writePaintParameters(PaintDataContainer const * container) {
 		std::cout << column << ":\t" << data[column].dump() << std::endl;
 }
 
-void setType(std::vector<std::string> const & types, std::function<std::string()> get, std::function<void(std::string)> set, std::string const & category) {
+void setType(std::vector<std::string> const & types, std::function<std::string()> get, std::function<void(std::string)> set) {
 	std::size_t defaultVariant;
 	bool defaultVariantIsDefined = false;
 	std::string prompt;
 	try {
 		defaultVariant = common_methods::getIndex(types, get());
-		prompt = "Enter index of the variant (default=" + std::to_string(defaultVariant) + "): ";
+		prompt = "Enter index of the variant (default=" + std::to_string(defaultVariant + 1) + "): ";
 		defaultVariantIsDefined = true;
 	} catch (UndefinedValueException const & err) {
 		prompt = "Enter index of the variant (default=undefined): ";
 	}
 
-	std::cout << "Select " << category << std::endl;
 	try {
 		std::size_t variant = readVariant(prompt, types);
 		if (!defaultVariantIsDefined || variant != defaultVariant)
 			set(types[variant]);
 	} catch (DefaultOptionIsChosenException const & err) {}
-
-	try {
-		std::string type = get();
-		std::cout << category << " \"" << type << "\" is set";
-	} catch (UndefinedValueException const &) {
-		std::cout << category << " is undefined";
-	}
 }
 
 void pcom::setPaintType(PaintDataContainer * container) {
+	std::cout << "Select paint type" << std::endl;
 	setType(
 		container->getConnection()->getPaintTypes(),
 		[&]() { return container->getPaintType(); },
-		[&](std::string type) { container->setPaintType(type); },
-		"paint type"
+		[&](std::string type) { container->setPaintType(type); }
 	);
+
+	std::cout << "Paint type ";
+	try {
+		std::string type = container->getPaintType();
+		std::cout << "\"" << type << "\" is set" << std::endl;
+	} catch (UndefinedValueException const &) {
+		std::cout << "is undefined" << std::endl;
+	}
 }
 
 void pcom::setMaterialType(PaintDataContainer * container) {
+	std::cout << "Select material type" << std::endl;
 	setType(
 		container->getConnection()->getMaterialTypes(),
 		[&]() { return container->getMaterialType(); },
-		[&](std::string type) { container->setMaterialType(type); },
-		"material type"
+		[&](std::string type) { container->setMaterialType(type); }
 	);
-}
 
-/*
-void pcom::setPaintConsumption(PaintDataContainer * container) {
-	double defaultValue;
-	bool defaultValueIsDefined = false;
-
-	std::string prompt;
+	std::cout << "Material type ";
 	try {
-		defaultValue = container->getPaintConsumption();
-		prompt = "Enter value (default=" + std::to_string(defaultValue) + "): ";
-		defaultValueIsDefined = true;
+		std::string type = container->getMaterialType();
+		std::cout << "\"" << type << "\" is set" << std::endl;
 	} catch (UndefinedValueException const &) {
-		prompt = "Enter value (default=undefined): ";
-	}
-
-	try {
-		double value = readValue<double>(
-			prompt,
-			[](std::string line) { return std::stod(line); },
-			[](double value) {
-				if (value > 0)
-					return true;
-				throw std::invalid_argument("value must be greater than 0");
-			}
-		);
-		if (!defaultValueIsDefined || value != defaultValue)
-			container->setPaintConsumption(value);
-	} catch (DefaultOptionIsChosenException const &) {}
-
-	try {
-		std::cout << "Paint consumption value " << container->getPaintConsumption() << " is set";
-	} catch (UndefinedValueException const &) {
-		std::cout << "Paint consumption is undefined";
+		std::cout << "is undefined" << std::endl;
 	}
 }
-*/
 
 template <typename T>
-void setValue(std::function<T()> getter, std::function<void(T)> setter, std::function<T(std::string)> converter, std::function<bool(T)> checker, std::string const & category) {
+void setValue(std::function<T()> getter, std::function<void(T)> setter, std::function<T(std::string)> converter, std::function<bool(T)> checker) {
 	T defaultValue;
 	bool defaultValueIsDefined = false;
 
@@ -159,15 +130,11 @@ void setValue(std::function<T()> getter, std::function<void(T)> setter, std::fun
 		if (!defaultValueIsDefined || value != defaultValue)
 			setter(value);
 	} catch (DefaultOptionIsChosenException const &) {}
-
-	try {
-		std::cout << category << " value " << getter() << " is set" << std::endl;
-	} catch (UndefinedValueException const &) {
-		std::cout << category << " is undefined" << std::endl;
-	}
 }
 
 void pcom::setPaintConsumption(PaintDataContainer * container) {
+	std::cout << "Set paint consumption value" << std::endl;
+
 	setValue<double> (
 		[&container]() { return container->getPaintConsumption(); },
 		[&container](double value) { container->setPaintConsumption(value); },
@@ -176,12 +143,21 @@ void pcom::setPaintConsumption(PaintDataContainer * container) {
 			if (value > 0)
 				return true;
 			throw std::invalid_argument("value must be greater than 0");
-		},
-		"paint consumption"
+		}
 	);
+
+	std::cout << "Paint consumption ";
+	try {
+		auto paintConsumption = container->getPaintConsumption();
+		std::cout << "value " << paintConsumption << " is set" << std::endl;
+	} catch (UndefinedValueException const &) {
+		std::cout << "is undefined" << std::endl;
+	}
 }
 
 void pcom::setDivider(PaintDataContainer * container) {
+	std::cout << "Set divider value" << std::endl;
+
 	setValue<double> (
 		[&container]() { return container->getDivider(); },
 		[&container](double value) { container->setDivider(value); },
@@ -190,12 +166,21 @@ void pcom::setDivider(PaintDataContainer * container) {
 			if (value > 0)
 				return true;
 			throw std::invalid_argument("value must be greater than 0");
-		},
-		"divider"
+		}
 	);
+
+	std::cout << "Divider ";
+	try {
+		auto divider = container->getDivider();
+		std::cout << "value " << divider << " is set" << std::endl;
+	} catch (UndefinedValueException const &) {
+		std::cout << "is undefined" << std::endl;
+	}
 }
 
 void pcom::setPercentage(PaintDataContainer * container) {
+	std::cout << "Set percentage value" << std::endl;
+
 	setValue<double> (
 		[&container]() { return container->getPercentage(); },
 		[&container](double value) { container->setPercentage(value); },
@@ -204,12 +189,21 @@ void pcom::setPercentage(PaintDataContainer * container) {
 			if (value > 0 && value <= 100)
 				return true;
 			throw std::invalid_argument("value must be greater than 0 and not greater than 100");
-		},
-		"percentage"
+		}
 	);
+
+	std::cout << "Percentage ";
+	try {
+		auto percentage = container->getPercentage();
+		std::cout << "value " << percentage << " is set" << std::endl;
+	} catch (UndefinedValueException const &) {
+		std::cout << "is undefined" << std::endl;
+	}
 }
 
 void pcom::setSheetWidth(PaintDataContainer * container) {
+	std::cout << "Set sheet width value" << std::endl;
+
 	setValue<double> (
 		[&container]() { return container->getSheetWidth(); },
 		[&container](double value) { container->setSheetWidth(value); },
@@ -218,12 +212,21 @@ void pcom::setSheetWidth(PaintDataContainer * container) {
 			if (value > 0)
 				return true;
 			throw std::invalid_argument("value must be greater than 0");
-		},
-		"sheet width"
+		}
 	);
+
+	std::cout << "Sheet width ";
+	try {
+		auto sheetWidth = container->getSheetWidth();
+		std::cout << "value " << sheetWidth << " is set" << std::endl;
+	} catch (UndefinedValueException const &) {
+		std::cout << "is undefined" << std::endl;
+	}
 }
 
 void pcom::setSheetLength(PaintDataContainer * container) {
+	std::cout << "Set sheet length value" << std::endl;
+
 	setValue<double> (
 		[&container]() { return container->getSheetLength(); },
 		[&container](double value) { container->setSheetLength(value); },
@@ -232,12 +235,21 @@ void pcom::setSheetLength(PaintDataContainer * container) {
 			if (value > 0)
 				return true;
 			throw std::invalid_argument("value must be greater than 0");
-		},
-		"sheet length"
+		}
 	);
+
+	std::cout << "Sheet length ";
+	try {
+		auto sheetLength = container->getSheetLength();
+		std::cout << "value " << sheetLength << " is set" << std::endl;
+	} catch (UndefinedValueException const &) {
+		std::cout << "is undefined" << std::endl;
+	}
 }
 
 void pcom::setCirculation(PaintDataContainer * container) {
+	std::cout << "Set circulation value" << std::endl;
+
 	setValue<unsigned long> (
 		[&container]() { return container->getCirculation(); },
 		[&container](unsigned long value) { container->setCirculation(value); },
@@ -246,12 +258,21 @@ void pcom::setCirculation(PaintDataContainer * container) {
 			if (value > 0)
 				return true;
 			throw std::invalid_argument("value must be greater than 0");
-		},
-		"circulation"
+		}
 	);
+
+	std::cout << "Circulation ";
+	try {
+		auto circulation = container->getCirculation();
+		std::cout << "value " << circulation << " is set" << std::endl;
+	} catch (UndefinedValueException const &) {
+		std::cout << "is undefined" << std::endl;
+	}
 }
 
 void pcom::setPaintReserve(PaintDataContainer * container) {
+	std::cout << "Set paint reserve value" << std::endl;
+
 	setValue<double> (
 		[&container]() { return container->getPaintReserve(); },
 		[&container](double value) { container->setPaintReserve(value); },
@@ -260,7 +281,61 @@ void pcom::setPaintReserve(PaintDataContainer * container) {
 			if (value > 0)
 				return true;
 			throw std::invalid_argument("value must be greater than 0");
-		},
-		"reserve of paint"
+		}
 	);
+
+	std::cout << "Paint reserve ";
+	try {
+		auto paintReserve = container->getPaintReserve();
+		std::cout << "value " << paintReserve << " is set" << std::endl;
+	} catch (UndefinedValueException const &) {
+		std::cout << "is undefined" << std::endl;
+	}
+}
+
+void pcom::loadPreset(PaintDataContainer * container) {
+	std::vector<std::string> presets = container->getConnection()->getPaintPresetsNames();
+
+	std::cout << "Select the preset to load" << std::endl;
+	setType(
+		presets,
+		[&]() { return container->getPresetName(); },
+		[&](std::string name) { container->setPreset(name); }
+	);
+
+	std::cout << "Preset ";
+	try {
+		std::string presetName = container->getPresetName();
+		std::cout << "named \"" << presetName << "\" is loaded" << std::endl;
+	} catch (UndefinedValueException const &) {
+		std::cout << "is undefined" << std::endl;
+	}
+}
+
+void pcom::clearValues(PaintDataContainer * container) {
+	std::vector<std::string> const variants = {"no", "yes"};
+	int answer = 0;
+
+	std::cout << "Clear all paint calculation fields" << std::endl;
+	std::cout << "Are you sure you want to clear fields?" << std::endl;
+	setType(
+		variants,
+		[&]() { return variants[answer]; },
+		[&](std::string variant) { answer = common_methods::getIndex(variants, variant); }
+	);
+
+	if (answer == 1) {
+		container->clearData();
+		std::cout << "Submitted" << std::endl << "Fields are cleared" << std::endl;
+	} else
+		std::cout << "Aborted" << std::endl;
+}
+
+void pcom::calculatePaintAmount(PaintDataContainer const * container) {
+	try {
+		double paintAmount = container->calculatePaintAmount();
+		std::cout << "Required paint amount equals " << paintAmount << "kg" << std::endl;
+	} catch (UndefinedValueException const & err) {
+		std::cerr << "Error: " << err.what() << std::endl;
+	}
 }
