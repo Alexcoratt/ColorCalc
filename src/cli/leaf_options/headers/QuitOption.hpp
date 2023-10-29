@@ -55,20 +55,20 @@ private:
 	}
 
 	bool readSubmit(std::istream & in, std::ostream & out, std::string const & endline, std::string const & message) {
-		std::vector<std::string> const answers = {"yes", "no"};
-		std::string const defaultValue = "2";
+		std::vector<std::string> const answers = {"no", "yes"};
+		std::string const defaultValue = "1";
 		bool res = false;
 
 		setValue(
 			[&]() {
-				out << message << endline << 1 << '\t' << "yes" << endline << 2 << '\t' << "no" << endline << endline;
+				out << message << endline << 1 << '\t' << "no" << endline << 2 << '\t' << "yes" << endline << endline;
 				in.ignore();
 			},
 			[&]() {
 				out << "Enter option (default=" << defaultValue << "): ";
 			},
 			[&]() {
-				if (readIndexItem(in, 2) == 0)
+				if (readIndexItem(in, 2) == 1)
 					res = true;
 			},
 			[&](char const * line) {
