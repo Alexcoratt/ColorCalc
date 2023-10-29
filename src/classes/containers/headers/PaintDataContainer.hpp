@@ -23,6 +23,7 @@ public:
 
 	IConnection * getConnection() const;
 	std::vector<std::string> getColumns() const;
+	nlohmann::json exportData() const;
 
 	void clearData();
 
@@ -41,14 +42,14 @@ public:
 	double getDivider() const;
 	void setDivider(double);
 
-	double getPercent() const;
-	void setPercent(double);
+	double getPercentage() const;
+	void setPercentage(double);
 
-	double getWidth() const;
-	void setWidth(double);
+	double getSheetWidth() const;
+	void setSheetWidth(double);
 
-	double getLength() const;
-	void setLength(double);
+	double getSheetLength() const;
+	void setSheetLength(double);
 
 	std::size_t getCirculation() const;
 	void setCirculation(std::size_t);

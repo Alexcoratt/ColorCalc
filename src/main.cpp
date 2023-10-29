@@ -32,7 +32,7 @@ int main() {
 	CustomLeafOption<PaintDataContainer *> writePrintParametersOption(
 		"write values of parameters",
 		"Print current values of all paint calculation mode parameters",
-		pcom::writePrintParameters,
+		pcom::writePaintParameters,
 		&paintCalculationContainer
 	);
 
@@ -65,21 +65,21 @@ int main() {
 	CustomLeafOption<PaintDataContainer *> setPercentOption(
 		"set printing percent",
 		"Set percentage of sheet sealing",
-		pcom::setPercent,
+		pcom::setPercentage,
 		&paintCalculationContainer
 	);
 
 	CustomLeafOption<PaintDataContainer *> setWidthOption(
 		"set sheet width",
 		"Set width value of the sheet",
-		pcom::setWidth,
+		pcom::setSheetWidth,
 		&paintCalculationContainer
 	);
 
 	CustomLeafOption<PaintDataContainer *> setLengthOption(
 		"set sheet width",
 		"Set width value of the sheet",
-		pcom::setLength,
+		pcom::setSheetLength,
 		&paintCalculationContainer
 	);
 
@@ -97,6 +97,7 @@ int main() {
 		&paintCalculationContainer
 	);
 
+	/*
 	CustomLeafOption<PaintDataContainer *> loadPresetOption(
 		"load preset",
 		"load values of existing preset",
@@ -117,6 +118,7 @@ int main() {
 		pcom::calculatePaintAmount,
 		&paintCalculationContainer
 	);
+	*/
 
 	BaseOptionContainer paintCalculation("paint calculation", "contains options to work with paint calculation data", {
 		{'w', &writePrintParametersOption},
@@ -128,10 +130,10 @@ int main() {
 		{'W', &setWidthOption},
 		{'L', &setLengthOption},
 		{'C', &setCirculationOption},
-		{'r', &setPaintReserveOption},
+		{'r', &setPaintReserveOption}/*,
 		{'l', &loadPresetOption},
 		{'R', &clearValuesOption},
-		{'a', &calculatePaintAmountOption}
+		{'a', &calculatePaintAmountOption}*/
 	});
 
 	BaseOptionContainer lacquerCalculation("lacquer calculation", "contains options to work with lacquer calculation data", {});

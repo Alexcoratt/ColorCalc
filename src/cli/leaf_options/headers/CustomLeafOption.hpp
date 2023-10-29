@@ -5,8 +5,8 @@
 #include <functional>
 
 template <typename T>
-std::function<void(IOption *, std::istream &, std::ostream &, std::string const &, T)> getProxyFunc(std::function<void(T)> const & func) {
-	return [&](IOption *, std::istream &, std::ostream &, std::string const &, T data) { func(data); };
+inline std::function<void(IOption *, std::istream &, std::ostream &, std::string const &, T)> getProxyFunc(std::function<void(T)> const & func) {
+	return [=](IOption *, std::istream &, std::ostream &, std::string const &, T data) { func(data); };
 }
 
 template <typename T>

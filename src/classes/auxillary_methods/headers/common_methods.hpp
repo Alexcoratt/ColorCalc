@@ -8,9 +8,17 @@
 namespace common_methods {
 
 	template <typename T>
-	std::size_t getIndex(std::vector<T> const &, T const &);
+	inline std::size_t getIndex(std::vector<T> const & vect, T search) {
+		std::size_t count = 0;
+		for (T value : vect) {
+			if (value == search)
+				return count;
+			++count;
+		}
+		throw std::invalid_argument("getIndex: required value is not found");
+	}
 
-	bool isNull(nlohmann::json const &);
+	bool jsonIsNull(nlohmann::json const & value);
 
 }
 

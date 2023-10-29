@@ -1,4 +1,5 @@
 #include "JsonConnection.hpp"
+#include "UndefinedValueException.hpp"
 #include "json.hpp"
 #include "common_methods.hpp"
 #include <cstddef>
@@ -17,7 +18,7 @@
 #define PAINT_TYPE_COLUMN "тип краски"
 #define MATERIAL_TYPE_COLUMN "тип материала"
 
-//using json_type_error = nlohmann::json_abi_v3_11_2::detail::type_error;
+using json_type_error = nlohmann::json_abi_v3_11_2::detail::type_error;
 namespace cm = common_methods;
 
 nlohmann::json JsonConnection::getTable(std::string const & name) const {
@@ -31,9 +32,13 @@ std::vector<std::string> JsonConnection::getPaintTypes() const { return getTable
 std::vector<std::string> JsonConnection::getMaterialTypes() const { return getTable(PAINT_CONSUMPTION_TABLE)[MATERIAL_TYPES]; }
 
 double JsonConnection::getPaintConsumption(std::string const & paintType, std::string const & materialType) const {
-	std::size_t paintIndex = cm::getIndex(getPaintTypes(), paintType);
-	std::size_t materialIndex = cm::getIndex(getPaintTypes(), materialType);
-	return getTable(PAINT_CONSUMPTION_TABLE)[TYPES_VALUES][paintIndex][materialIndex];
+	try {
+		std::size_t paintIndex = cm::getIndex(getPaintTypes(), paintType);
+		std::size_t materialIndex = cm::getIndex(getMaterialTypes(), materialType);
+		return getTable(PAINT_CONSUMPTION_TABLE)[TYPES_VALUES][paintIndex][materialIndex];
+	} catch (json_type_error const &) {
+		throw UndefinedValueException("paint consumption of " + paintType + " with " + materialType);
+	}
 }
 
 std::vector<std::string> JsonConnection::getPaintPresetsNames() const {
