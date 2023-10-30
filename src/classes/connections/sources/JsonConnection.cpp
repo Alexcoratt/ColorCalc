@@ -18,6 +18,10 @@
 #define PAINT_TYPE_COLUMN "тип краски"
 #define MATERIAL_TYPE_COLUMN "тип материала"
 
+#define LACQUER_CALCULATION_TABLE "расчет лака"
+#define LACQUER_COLUMNS "columns"
+#define LACQUER_PRESETS "rows"
+
 using json_type_error = nlohmann::json_abi_v3_11_2::detail::type_error;
 namespace cm = common_methods;
 
@@ -52,13 +56,13 @@ std::vector<std::string> JsonConnection::getPaintPresetsNames() const {
 std::vector<std::string> JsonConnection::getPaintColumns() const { return getTable(PAINT_CALCULATION_TABLE)[PAINT_COLUMNS]; }
 
 nlohmann::json JsonConnection::getPaintPreset(std::string const & name) const {
-	nlohmann::json valueArrays = getTable(PAINT_CALCULATION_TABLE)[PAINT_PRESETS][name];
+	nlohmann::json values = getTable(PAINT_CALCULATION_TABLE)[PAINT_PRESETS][name];
 	std::vector<std::string> columns = getPaintColumns();
 	nlohmann::json res;
 
 	std::size_t count = 0;
-	for (nlohmann::json valueArray : valueArrays)
-		res[columns[count++]] = valueArray;
+	for (nlohmann::json value : values)
+		res[columns[count++]] = value;
 
 	res[PAINT_TYPE_COLUMN] = getPaintTypes()[res[PAINT_TYPE_COLUMN]];
 	res[MATERIAL_TYPE_COLUMN] = getMaterialTypes()[res[MATERIAL_TYPE_COLUMN]];
@@ -69,6 +73,38 @@ nlohmann::json JsonConnection::getPaintPreset(std::string const & name) const {
 nlohmann::json JsonConnection::getPaintPresetTemplate() const {
 	nlohmann::json res;
 	for (std::string const & column : getPaintColumns())
+		res[column] = nlohmann::json::value_t::null;
+	return res;
+}
+
+
+// Queries for lacquer presets
+
+std::vector<std::string> JsonConnection::getLacquerPresetsNames() const {
+	std::vector<std::string> res;
+	nlohmann::json data = getTable(LACQUER_CALCULATION_TABLE)[LACQUER_PRESETS];
+	for (auto iter = data.begin(); iter != data.end(); ++iter)
+		res.push_back(iter.key());
+	return res;
+}
+
+std::vector<std::string> JsonConnection::getLacquerColumns() const { return getTable(LACQUER_CALCULATION_TABLE)[LACQUER_COLUMNS]; }
+
+nlohmann::json JsonConnection::getLacquerPreset(std::string const & name) const {
+	nlohmann::json values = getTable(LACQUER_CALCULATION_TABLE)[LACQUER_PRESETS][name];
+	std::vector<std::string> columns = getLacquerColumns();
+	nlohmann::json res;
+
+	std::size_t count = 0;
+	for (nlohmann::json value : values)
+		res[columns[count++]] = value;
+
+	return res;
+}
+
+nlohmann::json JsonConnection::getLacquerPresetTemplate() const {
+	nlohmann::json res;
+	for (std::string const & column : getLacquerColumns())
 		res[column] = nlohmann::json::value_t::null;
 	return res;
 }

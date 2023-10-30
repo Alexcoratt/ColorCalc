@@ -10,6 +10,7 @@
 #include "IConnection.hpp"
 #include "JsonConnection.hpp"
 #include "PaintDataContainer.hpp"
+#include "LacquerDataContainer.hpp"
 
 #include "option_methods.hpp"
 
@@ -21,6 +22,7 @@
 #define LACQUER_CALCULATION_TABLE_NAME "расчет лака"
 
 namespace pcom = paint_calculation_option_methods;
+namespace com = common_option_methods;
 
 int main() {
 
@@ -29,10 +31,10 @@ int main() {
 
 	PaintDataContainer paintCalculationContainer(conn);
 
-	CustomLeafOption<PaintDataContainer *> writePrintParametersOption(
+	CustomLeafOption<PaintDataContainer *> writePaintParametersOption(
 		"write values of parameters",
 		"Print current values of all paint calculation mode parameters",
-		pcom::writePaintParameters,
+		com::writePaintParameters,
 		&paintCalculationContainer
 	);
 
@@ -97,29 +99,29 @@ int main() {
 		&paintCalculationContainer
 	);
 
-	CustomLeafOption<PaintDataContainer *> loadPresetOption(
+	CustomLeafOption<PaintDataContainer *> loadPaintCalculationPresetOption(
 		"load preset",
 		"load values of existing preset",
-		pcom::loadPreset,
+		com::loadPreset,
 		&paintCalculationContainer
 	);
 
-	CustomLeafOption<PaintDataContainer *> clearValuesOption(
+	CustomLeafOption<PaintDataContainer *> clearPaintCalculationValuesOption(
 		"remove values",
 		"Clears data from every paint calculation value",
-		pcom::clearValues,
+		com::clearValues,
 		&paintCalculationContainer
 	);
 
 	CustomLeafOption<PaintDataContainer *> calculatePaintAmountOption(
 		"calculate amount of paint",
 		"calculates required amount of paint based on other parameters",
-		pcom::calculatePaintAmount,
+		com::calculateResourceAmount,
 		&paintCalculationContainer
 	);
 
 	BaseOptionContainer paintCalculation("paint calculation", "contains options to work with paint calculation data", {
-		{'w', &writePrintParametersOption},
+		{'w', &writePaintParametersOption},
 		{'p', &setPaintTypeOption},
 		{'m', &setMaterialTypeOption},
 		{'c', &setPaintConsumptionOption},
@@ -129,12 +131,47 @@ int main() {
 		{'L', &setLengthOption},
 		{'C', &setCirculationOption},
 		{'r', &setPaintReserveOption},
-		{'l', &loadPresetOption},
-		{'R', &clearValuesOption},
+		{'l', &loadPaintCalculationPresetOption},
+		{'R', &clearPaintCalculationValuesOption},
 		{'a', &calculatePaintAmountOption}
 	});
 
-	BaseOptionContainer lacquerCalculation("lacquer calculation", "contains options to work with lacquer calculation data", {});
+	LacquerDataContainer lacquerCalculationContainer(conn);
+
+	CustomLeafOption<LacquerDataContainer *> writeLacquerParametersOption(
+		"write values of parameters",
+		"Print current values of all lacquer calculation mode parameters",
+		com::writePaintParameters,
+		&lacquerCalculationContainer
+	);
+
+	CustomLeafOption<LacquerDataContainer *> calculateLacquerAmountOption(
+		"calculate amount of lacquer",
+		"Calculates required amount of lacquer based on entered parameters",
+		com::calculateResourceAmount,
+		&lacquerCalculationContainer
+	);
+
+	CustomLeafOption<LacquerDataContainer *> loadLacquerCalculationPresetOption(
+		"load lacquer calculation preset",
+		"Loads values of selected preset into internal storage",
+		com::loadPreset,
+		&lacquerCalculationContainer
+	);
+
+	CustomLeafOption<LacquerDataContainer *> clearLacquerCalculationValuesOption(
+		"remove lacquer calculation data",
+		"Clears all entered lacquer calculation parameters",
+		com::clearValues,
+		&lacquerCalculationContainer
+	);
+
+	BaseOptionContainer lacquerCalculation("lacquer calculation", "contains options to work with lacquer calculation data", {
+		{'w', &writeLacquerParametersOption},
+		{'a', &calculateLacquerAmountOption},
+		{'l', &loadLacquerCalculationPresetOption},
+		{'R', &clearLacquerCalculationValuesOption}
+	});
 
 	BaseOptionContainer root("root", BASE_HELP_TEXT, {
 		{'p', &paintCalculation},

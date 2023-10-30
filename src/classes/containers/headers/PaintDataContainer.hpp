@@ -3,31 +3,19 @@
 
 #include <string>
 #include "IConnection.hpp"
+#include "AbstractDataContainer.hpp"
 
-class PaintDataContainer {
-private:
-	IConnection * _conn;
-	std::string _presetName;
-	nlohmann::json _data;
-
-	template <typename T>
-	T getValue(std::string const &) const;
-
-	template <typename T>
-	void setValue(std::string const &, T value);
-
-	void clear(std::string const &);
-
+class PaintDataContainer : public AbstractDataContainer {
 public:
 	PaintDataContainer(IConnection *);
 
-	IConnection * getConnection() const;
 	std::vector<std::string> getColumns() const;
 	nlohmann::json exportData() const;
 
 	void clearData();
 
-	std::string getPresetName() const;
+	std::vector<std::string> getAvailablePresetsNames() const;
+
 	void setPreset(std::string const &);
 
 	std::string getPaintType() const;
@@ -57,7 +45,7 @@ public:
 	double getPaintReserve() const;
 	void setPaintReserve(double);
 
-	double calculatePaintAmount() const;
+	double calculate() const;
 };
 
 #endif

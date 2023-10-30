@@ -3,7 +3,6 @@
 
 #include "PaintDataContainer.hpp"
 #include "UndefinedValueException.hpp"
-#include "common_methods.hpp"
 
 #define PAINT_TYPE "тип краски"
 #define MATERIAL_TYPE "тип материала"
@@ -15,35 +14,12 @@
 #define CIRCULATION "тираж"
 #define PAINT_RESERVE "запас краски"
 
-using json_type_error = nlohmann::json_abi_v3_11_2::detail::type_error;
-
-void PaintDataContainer::clear(std::string const & key) {
-	_data[key] = nlohmann::json::value_t::null;
+PaintDataContainer::PaintDataContainer(IConnection * conn) {
+	_conn = conn;
+	_data = conn->getPaintPresetTemplate();
 }
-
-template <typename T>
-T PaintDataContainer::getValue(std::string const & key) const {
-	if (common_methods::jsonIsNull(_data[key]))
-		throw UndefinedValueException(key);
-	return _data[key];
-}
-
-template <typename T>
-void PaintDataContainer::setValue(std::string const & key, T value) {
-	_presetName.clear();
-	_data[key] = value;
-}
-
-PaintDataContainer::PaintDataContainer(IConnection * conn) : _conn(conn), _data(conn->getPaintPresetTemplate()) {}
-
-IConnection * PaintDataContainer::getConnection() const { return _conn; }
 
 std::vector<std::string> PaintDataContainer::getColumns() const { return _conn->getPaintColumns(); }
-
-void PaintDataContainer::clearData() {
-	_presetName.clear();
-	_data = _conn->getPaintPresetTemplate();
-}
 
 nlohmann::json PaintDataContainer::exportData() const {
 	nlohmann::json res = _data;
@@ -57,11 +33,12 @@ nlohmann::json PaintDataContainer::exportData() const {
 	return res;
 }
 
-std::string PaintDataContainer::getPresetName() const {
-	if (_presetName.size() > 0)
-		return _presetName;
-	throw UndefinedValueException("preset name");
+void PaintDataContainer::clearData() {
+	_presetName.clear();
+	_data = _conn->getPaintPresetTemplate();
 }
+
+std::vector<std::string> PaintDataContainer::getAvailablePresetsNames() const { return _conn->getPaintPresetsNames(); }
 
 void PaintDataContainer::setPreset(std::string const & name) {
 	_presetName = name;
@@ -116,6 +93,6 @@ void PaintDataContainer::setCirculation(std::size_t value) { setValue(CIRCULATIO
 double PaintDataContainer::getPaintReserve() const { return getValue<double>(PAINT_RESERVE); }
 void PaintDataContainer::setPaintReserve(double value) { setValue(PAINT_RESERVE, value); }
 
-double PaintDataContainer::calculatePaintAmount() const {
+double PaintDataContainer::calculate() const {
 	return getSheetWidth() * getSheetLength() / 1000000 * getPaintConsumption() / 1000 / getDivider() * getCirculation() * getPercentage() / 100 + getPaintReserve();
 }

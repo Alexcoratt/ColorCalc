@@ -24,6 +24,12 @@ public:
     std::vector<std::string> getPaintColumns() const;
 	nlohmann::json getPaintPreset(std::string const &) const;
 	nlohmann::json getPaintPresetTemplate() const;
+
+	// Queries for lacquer presets
+    std::vector<std::string> getLacquerPresetsNames() const;
+    std::vector<std::string> getLacquerColumns() const;
+    nlohmann::json getLacquerPreset(std::string const &) const;
+	nlohmann::json getLacquerPresetTemplate() const;
 };
 
 #endif

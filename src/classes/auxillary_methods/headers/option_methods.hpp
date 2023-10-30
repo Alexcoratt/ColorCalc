@@ -2,10 +2,19 @@
 #define PAINT_CALCULATION_OPTION_METHODS
 
 #include "PaintDataContainer.hpp"
+#include "AbstractDataContainer.hpp"
+
+namespace common_option_methods {
+
+	void clearValues(AbstractDataContainer *);
+	void calculateResourceAmount(AbstractDataContainer const *);
+	void loadPreset(AbstractDataContainer *);
+	void writePaintParameters(AbstractDataContainer const *);
+
+}
 
 namespace paint_calculation_option_methods {
 
-	void writePaintParameters(PaintDataContainer const *);
 	void setPaintType(PaintDataContainer *);
 	void setMaterialType(PaintDataContainer *);
 	void setPaintConsumption(PaintDataContainer *);
@@ -15,9 +24,12 @@ namespace paint_calculation_option_methods {
 	void setSheetLength(PaintDataContainer *);
 	void setCirculation(PaintDataContainer *);
 	void setPaintReserve(PaintDataContainer *);
-	void loadPreset(PaintDataContainer *);
-	void clearValues(PaintDataContainer *);
-	void calculatePaintAmount(PaintDataContainer const *);
+
+}
+
+namespace lacquer_calculation_option_methods {
+
+
 
 }
 

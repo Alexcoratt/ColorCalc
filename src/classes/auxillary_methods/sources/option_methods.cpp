@@ -8,11 +8,13 @@
 
 #include "DefaultOptionIsChosenExcepion.hpp"
 #include "PaintDataContainer.hpp"
+#include "AbstractDataContainer.hpp"
 #include "UndefinedValueException.hpp"
 #include "option_methods.hpp"
 #include "common_methods.hpp"
 
 namespace pcom = paint_calculation_option_methods;
+namespace com = common_option_methods;
 
 template <typename T>
 T readValue(std::string const & prompt, std::function<T(std::string)> converter, std::function<bool(T)> checker = [](T) { return true; }) {
@@ -51,13 +53,6 @@ std::size_t readVariant(std::string const & prompt, std::vector<std::string> var
 	);
 }
 
-void pcom::writePaintParameters(PaintDataContainer const * container) {
-	std::vector<std::string> const columns = container->getColumns();
-	nlohmann::json data = container->exportData();
-	for (std::string const & column : columns)
-		std::cout << column << ":\t" << data[column].dump() << std::endl;
-}
-
 void setType(std::vector<std::string> const & types, std::function<std::string()> get, std::function<void(std::string)> set) {
 	std::size_t defaultVariant;
 	bool defaultVariantIsDefined = false;
@@ -75,6 +70,67 @@ void setType(std::vector<std::string> const & types, std::function<std::string()
 		if (!defaultVariantIsDefined || variant != defaultVariant)
 			set(types[variant]);
 	} catch (DefaultOptionIsChosenException const & err) {}
+}
+
+void com::loadPreset(AbstractDataContainer * container) {
+	std::vector<std::string> presets = container->getAvailablePresetsNames();
+
+	std::cout << "Select the preset to load" << std::endl;
+	setType(
+		presets,
+		[&]() { return container->getPresetName(); },
+		[&](std::string name) { container->setPreset(name); }
+	);
+
+	std::cout << "Preset ";
+	try {
+		std::string presetName = container->getPresetName();
+		std::cout << "named \"" << presetName << "\" is loaded" << std::endl;
+	} catch (UndefinedValueException const &) {
+		std::cout << "is undefined" << std::endl;
+	}
+}
+
+void com::clearValues(AbstractDataContainer * container) {
+	std::vector<std::string> const variants = {"no", "yes"};
+	int answer = 0;
+
+	std::cout << "Clear all paint calculation fields" << std::endl;
+	std::cout << "Are you sure you want to clear fields?" << std::endl;
+	setType(
+		variants,
+		[&]() { return variants[answer]; },
+		[&](std::string variant) { answer = common_methods::getIndex(variants, variant); }
+	);
+
+	if (answer == 1) {
+		container->clearData();
+		std::cout << "Submitted" << std::endl << "Fields are cleared" << std::endl;
+	} else
+		std::cout << "Aborted" << std::endl;
+}
+
+void com::calculateResourceAmount(AbstractDataContainer const * container) {
+	try {
+		double paintAmount = container->calculate();
+		std::cout << "Required amount equals " << paintAmount << "kg" << std::endl;
+	} catch (UndefinedValueException const & err) {
+		std::cerr << "Error: " << err.what() << std::endl;
+	}
+}
+
+void com::writePaintParameters(AbstractDataContainer const * container) {
+	std::cout << "Preset name:\t";
+	try {
+		std::cout << container->getPresetName() << std::endl;
+	} catch (UndefinedValueException const &) {
+		std::cout << "null" << std::endl;
+	}
+
+	std::vector<std::string> const columns = container->getColumns();
+	nlohmann::json data = container->exportData();
+	for (std::string const & column : columns)
+		std::cout << column << ":\t" << data[column].dump() << std::endl;
 }
 
 void pcom::setPaintType(PaintDataContainer * container) {
@@ -290,52 +346,5 @@ void pcom::setPaintReserve(PaintDataContainer * container) {
 		std::cout << "value " << paintReserve << " is set" << std::endl;
 	} catch (UndefinedValueException const &) {
 		std::cout << "is undefined" << std::endl;
-	}
-}
-
-void pcom::loadPreset(PaintDataContainer * container) {
-	std::vector<std::string> presets = container->getConnection()->getPaintPresetsNames();
-
-	std::cout << "Select the preset to load" << std::endl;
-	setType(
-		presets,
-		[&]() { return container->getPresetName(); },
-		[&](std::string name) { container->setPreset(name); }
-	);
-
-	std::cout << "Preset ";
-	try {
-		std::string presetName = container->getPresetName();
-		std::cout << "named \"" << presetName << "\" is loaded" << std::endl;
-	} catch (UndefinedValueException const &) {
-		std::cout << "is undefined" << std::endl;
-	}
-}
-
-void pcom::clearValues(PaintDataContainer * container) {
-	std::vector<std::string> const variants = {"no", "yes"};
-	int answer = 0;
-
-	std::cout << "Clear all paint calculation fields" << std::endl;
-	std::cout << "Are you sure you want to clear fields?" << std::endl;
-	setType(
-		variants,
-		[&]() { return variants[answer]; },
-		[&](std::string variant) { answer = common_methods::getIndex(variants, variant); }
-	);
-
-	if (answer == 1) {
-		container->clearData();
-		std::cout << "Submitted" << std::endl << "Fields are cleared" << std::endl;
-	} else
-		std::cout << "Aborted" << std::endl;
-}
-
-void pcom::calculatePaintAmount(PaintDataContainer const * container) {
-	try {
-		double paintAmount = container->calculatePaintAmount();
-		std::cout << "Required paint amount equals " << paintAmount << "kg" << std::endl;
-	} catch (UndefinedValueException const & err) {
-		std::cerr << "Error: " << err.what() << std::endl;
 	}
 }
