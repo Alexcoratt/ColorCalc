@@ -1,3 +1,14 @@
+# files of Visual Studio Code
 .vscode
-build
+
+# clangd's files
 .cache
+
+# build folder
+build
+
+# macos jokes
+.DS_Store
+._.DS_Store
+*/.DS_Store
+*/._.DS_Store
