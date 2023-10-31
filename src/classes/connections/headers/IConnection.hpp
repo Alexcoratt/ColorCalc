@@ -4,11 +4,14 @@
 #include <cstddef>
 #include <vector>
 #include <string>
-#include "json.hpp"
+#include "nlohmann/json.hpp"
+#include "ConnectionStatus.hpp"
 
 class IConnection {
 public:
     virtual ~IConnection() {}
+
+    virtual ConnectionStatus getStatus() const = 0;
 
     // Queries for paint/material types table
     virtual std::vector<std::string> getPaintTypes() const = 0;

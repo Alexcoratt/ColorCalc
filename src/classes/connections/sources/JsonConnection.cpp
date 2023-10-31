@@ -30,7 +30,16 @@ nlohmann::json JsonConnection::getTable(std::string const & name) const {
 }
 
 JsonConnection::JsonConnection(nlohmann::json const & data) : _data(data) {}
-JsonConnection::JsonConnection(std::ifstream & stream) : _data(nlohmann::json::parse(stream)) {}
+JsonConnection::JsonConnection(std::ifstream & stream) {
+	try {
+		_data = nlohmann::json::parse(stream);
+		_status = new ConnectionStatus(CONNECTION_SUCCESSFUL_STATUS, "successfully connected");
+	} catch (nlohmann::json_abi_v3_11_2::detail::parse_error const & err) {
+		_status = new ConnectionStatus(UNABLE_TO_CONNECT_STATUS, "data in file cannot be read");
+	}
+}
+
+ConnectionStatus JsonConnection::getStatus() const { return *_status; }
 
 std::vector<std::string> JsonConnection::getPaintTypes() const { return getTable(PAINT_CONSUMPTION_TABLE)[PAINT_TYPES]; }
 std::vector<std::string> JsonConnection::getMaterialTypes() const { return getTable(PAINT_CONSUMPTION_TABLE)[MATERIAL_TYPES]; }

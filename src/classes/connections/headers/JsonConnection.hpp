@@ -7,12 +7,15 @@
 class JsonConnection : public IConnection {
 private:
 	nlohmann::json _data;
+	ConnectionStatus * _status;
 
 	nlohmann::json getTable(std::string const &) const;
 
 public:
 	JsonConnection(nlohmann::json const &);
 	JsonConnection(std::ifstream &);
+
+	ConnectionStatus getStatus() const;
 
 	// Queries for paint/material types table
 	std::vector<std::string> getPaintTypes() const;

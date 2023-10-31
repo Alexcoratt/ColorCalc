@@ -18,8 +18,8 @@
 #include "BaseOptionContainer.hpp"
 #include "CustomLeafOption.hpp"
 
-#define PAINT_CALCULATION_TABLE_NAME "расчет печатной краски"
-#define LACQUER_CALCULATION_TABLE_NAME "расчет лака"
+#define DATA_FILE "../data/paint.json"
+#define TEMPLATES_FILE "../data/container_templates.json"
 
 namespace com = common_option_methods;
 namespace pcom = paint_calculation_option_methods;
@@ -27,8 +27,16 @@ namespace lcom = lacquer_calculation_option_methods;
 
 int main() {
 
-	std::ifstream file("../data/paint.json");
+	std::ifstream file(DATA_FILE);
 	IConnection * conn = new JsonConnection(file);
+	ConnectionStatus status = conn->getStatus();
+	std::cout << status.toString() << std::endl;
+
+	if (status.getNum() != CONNECTION_SUCCESSFUL_STATUS) {
+		delete conn;
+		std::ifstream dataTemplates(TEMPLATES_FILE);
+		conn = new JsonConnection(dataTemplates);
+	}
 
 	PaintDataContainer paintCalculationContainer(conn);
 
