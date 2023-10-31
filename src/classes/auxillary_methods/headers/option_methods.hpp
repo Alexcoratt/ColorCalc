@@ -2,7 +2,7 @@
 #define PAINT_CALCULATION_OPTION_METHODS
 
 #include "PaintDataContainer.hpp"
-#include "AbstractDataContainer.hpp"
+#include "LacquerDataContainer.hpp"
 
 namespace common_option_methods {
 
@@ -17,19 +17,23 @@ namespace paint_calculation_option_methods {
 
 	void setPaintType(PaintDataContainer *);
 	void setMaterialType(PaintDataContainer *);
-	void setPaintConsumption(PaintDataContainer *);
+	void setConsumption(PaintDataContainer *);
 	void setDivider(PaintDataContainer *);
 	void setPercentage(PaintDataContainer *);
 	void setSheetWidth(PaintDataContainer *);
 	void setSheetLength(PaintDataContainer *);
 	void setCirculation(PaintDataContainer *);
-	void setPaintReserve(PaintDataContainer *);
+	void setReserve(PaintDataContainer *);
 
 }
 
 namespace lacquer_calculation_option_methods {
 
-
+	void setPercentage(LacquerDataContainer *);
+	void setConsumption(LacquerDataContainer *);
+	void setSheetLength(LacquerDataContainer *);
+	void setSheetWidth(LacquerDataContainer *);
+	void setCircualtion(LacquerDataContainer *);
 
 }
 

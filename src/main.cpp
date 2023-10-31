@@ -21,8 +21,9 @@
 #define PAINT_CALCULATION_TABLE_NAME "расчет печатной краски"
 #define LACQUER_CALCULATION_TABLE_NAME "расчет лака"
 
-namespace pcom = paint_calculation_option_methods;
 namespace com = common_option_methods;
+namespace pcom = paint_calculation_option_methods;
+namespace lcom = lacquer_calculation_option_methods;
 
 int main() {
 
@@ -53,39 +54,39 @@ int main() {
 	CustomLeafOption<PaintDataContainer *> setPaintConsumptionOption(
 		"set paint consumption",
 		"Set paint consumption value manually (paint and material type settings clears if a user enters a new value)",
-		pcom::setPaintConsumption,
+		pcom::setConsumption,
 		&paintCalculationContainer
 	);
 
-	CustomLeafOption<PaintDataContainer *> setDividerOption(
+	CustomLeafOption<PaintDataContainer *> setPaintDividerOption(
 		"set divider",
 		"Set divider of formula",
 		pcom::setDivider,
 		&paintCalculationContainer
 	);
 
-	CustomLeafOption<PaintDataContainer *> setPercentOption(
+	CustomLeafOption<PaintDataContainer *> setPaintPercentageOption(
 		"set printing percent",
 		"Set percentage of sheet sealing",
 		pcom::setPercentage,
 		&paintCalculationContainer
 	);
 
-	CustomLeafOption<PaintDataContainer *> setWidthOption(
+	CustomLeafOption<PaintDataContainer *> setPaintWidthOption(
 		"set sheet width",
 		"Set width value of the sheet",
 		pcom::setSheetWidth,
 		&paintCalculationContainer
 	);
 
-	CustomLeafOption<PaintDataContainer *> setLengthOption(
+	CustomLeafOption<PaintDataContainer *> setPaintLengthOption(
 		"set sheet width",
 		"Set width value of the sheet",
 		pcom::setSheetLength,
 		&paintCalculationContainer
 	);
 
-	CustomLeafOption<PaintDataContainer *> setCirculationOption(
+	CustomLeafOption<PaintDataContainer *> setPaintCirculationOption(
 		"set circulation",
 		"set amount of edition",
 		pcom::setCirculation,
@@ -95,7 +96,7 @@ int main() {
 	CustomLeafOption<PaintDataContainer *> setPaintReserveOption(
 		"set paint reserve",
 		"set minimal amount of paint for an edition",
-		pcom::setPaintReserve,
+		pcom::setReserve,
 		&paintCalculationContainer
 	);
 
@@ -125,11 +126,11 @@ int main() {
 		{'p', &setPaintTypeOption},
 		{'m', &setMaterialTypeOption},
 		{'c', &setPaintConsumptionOption},
-		{'d', &setDividerOption},
-		{'%', &setPercentOption},
-		{'W', &setWidthOption},
-		{'L', &setLengthOption},
-		{'C', &setCirculationOption},
+		{'d', &setPaintDividerOption},
+		{'%', &setPaintPercentageOption},
+		{'W', &setPaintWidthOption},
+		{'L', &setPaintLengthOption},
+		{'C', &setPaintCirculationOption},
 		{'r', &setPaintReserveOption},
 		{'l', &loadPaintCalculationPresetOption},
 		{'R', &clearPaintCalculationValuesOption},
@@ -166,11 +167,51 @@ int main() {
 		&lacquerCalculationContainer
 	);
 
+	CustomLeafOption<LacquerDataContainer *> setLacquerPercentageOption(
+		"set lacquer percentage",
+		"Sets a percentage value of the lacquer coverage",
+		lcom::setPercentage,
+		&lacquerCalculationContainer
+	);
+
+	CustomLeafOption<LacquerDataContainer *> setLacquerConsumptionOption(
+		"set lacquer consumption",
+		"Sets a consumption value of the lacquer",
+		lcom::setConsumption,
+		&lacquerCalculationContainer
+	);
+
+	CustomLeafOption<LacquerDataContainer *> setLacquerSheetLengthOption(
+		"set sheet length",
+		"Sets a length value of the sheet",
+		lcom::setSheetLength,
+		&lacquerCalculationContainer
+	);
+
+	CustomLeafOption<LacquerDataContainer *> setLacquerSheetWidthOption(
+		"set sheet width",
+		"Sets a width value of the sheet",
+		lcom::setSheetWidth,
+		&lacquerCalculationContainer
+	);
+
+	CustomLeafOption<LacquerDataContainer *> setLacquerCirculationOption(
+		"set circulation",
+		"Sets a number of sheets",
+		lcom::setCircualtion,
+		&lacquerCalculationContainer
+	);
+
 	BaseOptionContainer lacquerCalculation("lacquer calculation", "contains options to work with lacquer calculation data", {
 		{'w', &writeLacquerParametersOption},
 		{'a', &calculateLacquerAmountOption},
 		{'l', &loadLacquerCalculationPresetOption},
-		{'R', &clearLacquerCalculationValuesOption}
+		{'R', &clearLacquerCalculationValuesOption},
+		{'%', &setLacquerPercentageOption},
+		{'c', &setLacquerConsumptionOption},
+		{'L', &setLacquerSheetLengthOption},
+		{'W', &setLacquerSheetWidthOption},
+		{'C', &setLacquerCirculationOption}
 	});
 
 	BaseOptionContainer root("root", BASE_HELP_TEXT, {

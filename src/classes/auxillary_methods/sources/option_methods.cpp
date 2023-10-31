@@ -13,8 +13,9 @@
 #include "option_methods.hpp"
 #include "common_methods.hpp"
 
-namespace pcom = paint_calculation_option_methods;
 namespace com = common_option_methods;
+namespace pcom = paint_calculation_option_methods;
+namespace lcom = lacquer_calculation_option_methods;
 
 template <typename T>
 T readValue(std::string const & prompt, std::function<T(std::string)> converter, std::function<bool(T)> checker = [](T) { return true; }) {
@@ -188,7 +189,7 @@ void setValue(std::function<T()> getter, std::function<void(T)> setter, std::fun
 	} catch (DefaultOptionIsChosenException const &) {}
 }
 
-void pcom::setPaintConsumption(PaintDataContainer * container) {
+void pcom::setConsumption(PaintDataContainer * container) {
 	std::cout << "Set paint consumption value" << std::endl;
 
 	setValue<double> (
@@ -326,10 +327,10 @@ void pcom::setCirculation(PaintDataContainer * container) {
 	}
 }
 
-void pcom::setPaintReserve(PaintDataContainer * container) {
+void pcom::setReserve(PaintDataContainer * container) {
 	std::cout << "Set paint reserve value" << std::endl;
 
-	setValue<double> (
+	setValue<double>(
 		[&container]() { return container->getPaintReserve(); },
 		[&container](double value) { container->setPaintReserve(value); },
 		[](std::string line) { return std::stod(line); },
@@ -344,6 +345,121 @@ void pcom::setPaintReserve(PaintDataContainer * container) {
 	try {
 		auto paintReserve = container->getPaintReserve();
 		std::cout << "value " << paintReserve << " is set" << std::endl;
+	} catch (UndefinedValueException const &) {
+		std::cout << "is undefined" << std::endl;
+	}
+}
+
+void lcom::setPercentage(LacquerDataContainer * container) {
+	std::cout << "Set percentage of lacquer coverage" << std::endl;
+
+	setValue<double>(
+		[&container]() { return container->getPercentage(); },
+		[&container](double value) { container->setPercentage(value); },
+		[](std::string line) { return std::stod(line); },
+		[](double value) {
+			if (value > 0 && value <= 100)
+				return true;
+			throw std::invalid_argument("value must be greater than 0 and not greater than 100");
+		}
+	);
+
+	std::cout << "Lacquer coverage percentage ";
+	try {
+		auto value = container->getPercentage();
+		std::cout << "value " << value << " is set" << std::endl;
+	} catch (UndefinedValueException const &) {
+		std::cout << "is undefined" << std::endl;
+	}
+}
+
+void lcom::setConsumption(LacquerDataContainer * container) {
+	std::cout << "Set consumption of lacquer" << std::endl;
+
+	setValue<double>(
+		[&container]() { return container->getLacquerConsumption(); },
+		[&container](double value) { container->setLacquerConsumption(value); },
+		[](std::string line) { return std::stod(line); },
+		[](double value) {
+			if (value > 0 && value <= 100)
+				return true;
+			throw std::invalid_argument("value must be greater than 0 and not greater than 100");
+		}
+	);
+
+	std::cout << "Lacquer consumption ";
+	try {
+		auto value = container->getLacquerConsumption();
+		std::cout << "value " << value << " is set" << std::endl;
+	} catch (UndefinedValueException const &) {
+		std::cout << "is undefined" << std::endl;
+	}
+}
+
+void lcom::setSheetLength(LacquerDataContainer * container) {
+	std::cout << "Set length of the sheet" << std::endl;
+
+	setValue<double>(
+		[&container]() { return container->getSheetLength(); },
+		[&container](double value) { container->setSheetLength(value); },
+		[](std::string line) { return std::stod(line); },
+		[](double value) {
+			if (value > 0)
+				return true;
+			throw std::invalid_argument("value must be greater than 0");
+		}
+	);
+
+	std::cout << "Length of the sheet ";
+	try {
+		auto value = container->getSheetLength();
+		std::cout << "value " << value << " is set" << std::endl;
+	} catch (UndefinedValueException const &) {
+		std::cout << "is undefined" << std::endl;
+	}
+}
+
+void lcom::setSheetWidth(LacquerDataContainer * container) {
+	std::cout << "Set width of the sheet" << std::endl;
+
+	setValue<double>(
+		[&container]() { return container->getSheetWidth(); },
+		[&container](double value) { container->setSheetWidth(value); },
+		[](std::string line) { return std::stod(line); },
+		[](double value) {
+			if (value > 0)
+				return true;
+			throw std::invalid_argument("value must be greater than 0");
+		}
+	);
+
+	std::cout << "Width of the sheet ";
+	try {
+		auto value = container->getSheetWidth();
+		std::cout << "value " << value << " is set" << std::endl;
+	} catch (UndefinedValueException const &) {
+		std::cout << "is undefined" << std::endl;
+	}
+}
+
+void lcom::setCircualtion(LacquerDataContainer * container) {
+	std::cout << "Set circulation" << std::endl;
+
+	setValue<std::size_t>(
+		[&container]() { return container->getCirculation(); },
+		[&container](std::size_t value) { container->setCirculation(value); },
+		[](std::string line) { return std::stoul(line); },
+		[](std::size_t value) {
+			if (value > 0)
+				return true;
+			throw std::invalid_argument("value must be greater than 0");
+		}
+	);
+
+	std::cout << "Circulation ";
+	try {
+		auto value = container->getCirculation();
+		std::cout << "value " << value << " is set" << std::endl;
 	} catch (UndefinedValueException const &) {
 		std::cout << "is undefined" << std::endl;
 	}
