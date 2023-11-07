@@ -17,6 +17,7 @@ public:
 	DoubleValue * operator=(IValue const *);
 	void setValue(IValue const *);
 	void const * getValue() const;
+	DoubleValue * getClone() const;
 
 	bool less(IValue const *) const;
 

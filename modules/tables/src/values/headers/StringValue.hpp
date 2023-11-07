@@ -17,6 +17,7 @@ public:
 	StringValue * operator=(IValue const *);
 	void setValue(IValue const *);
 	void const * getValue() const;
+	StringValue * getClone() const;
 
 	bool less(IValue const *) const;
 

@@ -24,6 +24,8 @@ DoubleValue * DoubleValue::operator=(IValue const * other) {
 void DoubleValue::setValue(IValue const * other) { _value = other->toDouble(); }
 void const * DoubleValue::getValue() const { return &_value; }
 
+DoubleValue * DoubleValue::getClone() const { return new DoubleValue(_value); }
+
 bool DoubleValue::less(IValue const * other) const { return _value < other->toDouble(); }
 
 std::string DoubleValue::toString() const { return std::to_string(_value); }

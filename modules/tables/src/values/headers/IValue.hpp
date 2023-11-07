@@ -12,6 +12,7 @@ public:
 	virtual IValue * operator=(IValue const *) = 0;
 	virtual void setValue(IValue const *) = 0;
 	virtual void const * getValue() const = 0;
+	virtual IValue * getClone() const = 0;
 
 	virtual bool less(IValue const *) const = 0;
 

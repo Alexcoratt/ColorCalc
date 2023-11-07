@@ -12,5 +12,6 @@ target_include_directories(
 
 	PUBLIC src/tables/headers
 	PUBLIC src/values/headers
+	PUBLIC src/auxillary_classes/headers
 	PUBLIC src/exceptions
 )

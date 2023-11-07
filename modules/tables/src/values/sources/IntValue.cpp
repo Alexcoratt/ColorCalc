@@ -24,6 +24,8 @@ IntValue * IntValue::operator=(IValue const * other) {
 void IntValue::setValue(IValue const * other) { _value = other->toInt(); }
 void const * IntValue::getValue() const { return &_value; }
 
+IntValue * IntValue::getClone() const { return new IntValue(_value); }
+
 bool IntValue::less(IValue const * other) const { return _value < other->toInt(); }
 
 std::string IntValue::toString() const { return std::to_string(_value); }

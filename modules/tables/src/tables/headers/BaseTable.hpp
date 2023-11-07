@@ -8,7 +8,7 @@ struct IValueLess {
 		try {
 			return l->less(r);
 		} catch (std::exception const &) {
-			return false;
+			return true;
 		}
 	}
 };

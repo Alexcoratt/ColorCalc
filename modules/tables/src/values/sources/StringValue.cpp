@@ -24,6 +24,8 @@ StringValue * StringValue::operator=(IValue const * other) {
 void StringValue::setValue(IValue const * other) { _value = other->toString(); }
 void const * StringValue::getValue() const { return &_value; }
 
+StringValue * StringValue::getClone() const { return new StringValue(_value); }
+
 bool StringValue::less(IValue const * other) const { return _value < other->toString(); }
 
 std::string StringValue::toString() const { return _value; }
