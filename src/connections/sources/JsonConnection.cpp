@@ -1,9 +1,12 @@
-#include "JsonConnection.hpp"
-#include "UndefinedValueException.hpp"
-#include "json.hpp"
-#include "common_methods.hpp"
 #include <cstddef>
 #include <string>
+
+#include "JsonConnection.hpp"
+#include "common_methods.hpp"
+
+#include "UndefinedValueException.hpp"
+#include "PresetAlreadyExistsException.hpp"
+#include "PresetDoesNotExistException.hpp"
 
 #define TABLES "tables"
 
@@ -26,6 +29,14 @@ using json_type_error = nlohmann::json_abi_v3_11_2::detail::type_error;
 namespace cm = common_methods;
 
 nlohmann::json JsonConnection::getTable(std::string const & name) const {
+	if (common_methods::jsonIsNull(_data[TABLES][name]))
+		throw UndefinedValueException(name);
+	return _data[TABLES][name];
+}
+
+nlohmann::json & JsonConnection::getTableLink(std::string const & name) {
+	if (common_methods::jsonIsNull(_data[TABLES][name]))
+		throw UndefinedValueException(name);
 	return _data[TABLES][name];
 }
 
@@ -86,6 +97,49 @@ nlohmann::json JsonConnection::getPaintPresetTemplate() const {
 	return res;
 }
 
+void JsonConnection::createPaintPreset(std::string const & name, nlohmann::json const & data) {
+	if (!common_methods::jsonIsNull(getTable(PAINT_CALCULATION_TABLE)[PAINT_PRESETS][name]))
+		throw PresetAlreadyExistsException(name);
+
+	nlohmann::json values;
+	std::size_t count = 0;
+	for (std::string column : getPaintColumns()) {
+		if (column == PAINT_TYPES)
+			values[count] = common_methods::getIndex<std::string>(getPaintTypes(), data[column]);
+		else if (column == MATERIAL_TYPES)
+			values[count] = common_methods::getIndex<std::string>(getMaterialTypes(), data[column]);
+		else
+			values[count] = data[column];
+		++count;
+	}
+
+	getTableLink(PAINT_CALCULATION_TABLE)[PAINT_PRESETS][name] = values;
+}
+
+void JsonConnection::updatePaintPreset(std::string const & name, nlohmann::json const & data) {
+	if (common_methods::jsonIsNull(getTable(PAINT_CALCULATION_TABLE)[PAINT_PRESETS][name]))
+		throw PresetDoesNotExistException(name);
+
+	nlohmann::json & values = getTableLink(PAINT_CALCULATION_TABLE)[PAINT_PRESETS][name];
+	std::size_t count = 0;
+	for (std::string column : getPaintColumns()) {
+		if (column == PAINT_TYPES)
+			values[count] = common_methods::getIndex<std::string>(getPaintTypes(), data[column]);
+		else if (column == MATERIAL_TYPES)
+			values[count] = common_methods::getIndex<std::string>(getMaterialTypes(), data[column]);
+		else
+			values[count] = data[column];
+		++count;
+	}
+}
+
+void JsonConnection::removePaintPreset(std::string const & name) {
+	if (common_methods::jsonIsNull(getTable(PAINT_CALCULATION_TABLE)[PAINT_PRESETS][name]))
+		throw PresetDoesNotExistException(name);
+
+	getTableLink(PAINT_CALCULATION_TABLE)[PAINT_PRESETS].erase(name);
+}
+
 
 // Queries for lacquer presets
 
@@ -116,4 +170,33 @@ nlohmann::json JsonConnection::getLacquerPresetTemplate() const {
 	for (std::string const & column : getLacquerColumns())
 		res[column] = nlohmann::json::value_t::null;
 	return res;
+}
+
+void JsonConnection::createLacquerPreset(std::string const & name, nlohmann::json const & data) {
+	if (!common_methods::jsonIsNull(getTable(LACQUER_CALCULATION_TABLE)[LACQUER_PRESETS][name]))
+		throw PresetAlreadyExistsException(name);
+
+	nlohmann::json values;
+	std::size_t count = 0;
+	for (std::string column : getLacquerColumns())
+		values[count++] = data[column];
+
+	getTableLink(LACQUER_CALCULATION_TABLE)[LACQUER_PRESETS][name] = values;
+}
+
+void JsonConnection::updateLacquerPreset(std::string const & name, nlohmann::json const & data) {
+	if (common_methods::jsonIsNull(getTable(LACQUER_CALCULATION_TABLE)[LACQUER_PRESETS][name]))
+		throw PresetDoesNotExistException(name);
+
+	nlohmann::json & values = getTableLink(LACQUER_CALCULATION_TABLE)[LACQUER_PRESETS][name];
+	std::size_t count = 0;
+	for (std::string column : getLacquerColumns())
+		values[count++] = data[column];
+}
+
+void JsonConnection::removeLacquerPreset(std::string const & name) {
+	if (common_methods::jsonIsNull(getTable(LACQUER_CALCULATION_TABLE)[LACQUER_PRESETS][name]))
+		throw PresetDoesNotExistException(name);
+
+	getTableLink(LACQUER_CALCULATION_TABLE)[LACQUER_PRESETS].erase(name);
 }

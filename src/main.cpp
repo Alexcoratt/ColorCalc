@@ -142,7 +142,7 @@ int main() {
 		{'r', &setPaintReserveOption},
 		{'l', &loadPaintCalculationPresetOption},
 		{'R', &clearPaintCalculationValuesOption},
-		{'a', &calculatePaintAmountOption}
+		{'a', &calculatePaintAmountOption},
 	});
 
 	LacquerDataContainer lacquerCalculationContainer(conn);

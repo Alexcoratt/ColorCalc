@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.27)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-project(PaintCalc)
+project(SimpleCLI)
 
 file(GLOB SOURCES "src/*/sources/*.cpp")
 
@@ -10,12 +10,7 @@ add_executable(${PROJECT_NAME} src/main.cpp ${SOURCES})
 target_include_directories(
     ${PROJECT_NAME}
 
-    PUBLIC src/auxillary_methods/headers
-    PUBLIC src/connections/headers
-    PUBLIC src/containers/headers
+    PUBLIC src/option_containers/headers
+    PUBLIC src/leaf_options/headers
     PUBLIC src/exceptions
 )
-
-add_subdirectory(modules/cli)
-add_subdirectory(modules/tables)
-add_subdirectory(modules/json)
