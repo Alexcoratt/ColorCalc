@@ -1,10 +1,10 @@
 #include "LacquerDataContainer.hpp"
 
-#define PERCENTAGE "процент заливки"
-#define LACQUER_CONSUMPTION "расход лака"
-#define SHEET_LENGTH "длина"
-#define SHEET_WIDTH "ширина"
-#define CIRCULATION "тираж"
+#define PERCENTAGE "percentage"
+#define LACQUER_CONSUMPTION "lacquer_consumption"
+#define SHEET_LENGTH "sheet_length"
+#define SHEET_WIDTH "sheet_width"
+#define CIRCULATION "circulation"
 
 LacquerDataContainer::LacquerDataContainer(IConnection * conn) {
 	_conn = conn;

@@ -381,9 +381,9 @@ void lcom::setConsumption(LacquerDataContainer * container) {
 		[&container](double value) { container->setLacquerConsumption(value); },
 		[](std::string line) { return std::stod(line); },
 		[](double value) {
-			if (value > 0 && value <= 100)
+			if (value > 0)
 				return true;
-			throw std::invalid_argument("value must be greater than 0 and not greater than 100");
+			throw std::invalid_argument("value must be greater than 0");
 		}
 	);
 

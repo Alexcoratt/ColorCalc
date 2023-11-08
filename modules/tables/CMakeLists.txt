@@ -6,12 +6,16 @@ project(Tables)
 
 file(GLOB SOURCES "src/*/sources/*.cpp")
 
-add_executable(${PROJECT_NAME} src/main.cpp ${SOURCES})
+add_library(${PROJECT_NAME}_lib STATIC ${SOURCES})
 target_include_directories(
-	${PROJECT_NAME}
+	${PROJECT_NAME}_lib
 
 	PUBLIC src/tables/headers
 	PUBLIC src/values/headers
 	PUBLIC src/auxillary_classes/headers
 	PUBLIC src/exceptions
 )
+
+
+add_executable(${PROJECT_NAME} src/main.cpp ${SOURCES})
+target_link_libraries(${PROJECT_NAME} PUBLIC ${PROJECT_NAME}_lib)

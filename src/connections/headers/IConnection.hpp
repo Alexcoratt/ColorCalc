@@ -4,7 +4,7 @@
 #include <cstddef>
 #include <vector>
 #include <string>
-#include "nlohmann/json.hpp"
+#include <nlohmann/json.hpp>
 
 class IConnection {
 public:

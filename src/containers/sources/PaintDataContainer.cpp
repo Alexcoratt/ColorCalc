@@ -4,15 +4,15 @@
 #include "PaintDataContainer.hpp"
 #include "UndefinedValueException.hpp"
 
-#define PAINT_TYPE "тип краски"
-#define MATERIAL_TYPE "тип материала"
-#define PAINT_CONSUMPTION "расход краски"
-#define DIVIDER "делитель"
-#define PERCENTAGE "процент запечатки"
-#define SHEET_WIDTH "ширина печатного листа"
-#define SHEET_LENGTH "длина печатного листа"
-#define CIRCULATION "тираж"
-#define PAINT_RESERVE "запас краски"
+#define PAINT_TYPE "paint_type"
+#define MATERIAL_TYPE "material_type"
+#define PAINT_CONSUMPTION "paint_consumption"
+#define DIVIDER "divider"
+#define PERCENTAGE "percentage"
+#define SHEET_WIDTH "sheet_width"
+#define SHEET_LENGTH "sheet_length"
+#define CIRCULATION "circulation"
+#define PAINT_RESERVE "paint_reserve"
 
 PaintDataContainer::PaintDataContainer(IConnection * conn) {
 	_conn = conn;

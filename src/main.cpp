@@ -1,7 +1,7 @@
+#include <iostream>
 #include <algorithm>
 #include <exception>
 #include <functional>
-#include <iostream>
 #include <fstream>
 #include <stdexcept>
 #include <string>
@@ -18,8 +18,8 @@
 #include "BaseOptionContainer.hpp"
 #include "CustomLeafOption.hpp"
 
-#define DATA_FILE "../data/paint.json"
-#define TEMPLATES_FILE "../data/container_templates.json"
+#define PRESETS_FILE "data/standard_presets.json"
+#define STRUCTURE_FILE "data/tables_structure.json"
 
 namespace com = common_option_methods;
 namespace pcom = paint_calculation_option_methods;
@@ -27,16 +27,11 @@ namespace lcom = lacquer_calculation_option_methods;
 
 int main() {
 
-	std::ifstream file(DATA_FILE);
-	IConnection * conn = new JsonConnection(file);
-	ConnectionStatus status = conn->getStatus();
-	std::cout << status.toString() << std::endl;
+	std::ifstream structureFile(STRUCTURE_FILE);
+	std::fstream presetsFile(PRESETS_FILE);
 
-	if (status.getNum() != CONNECTION_SUCCESSFUL_STATUS) {
-		delete conn;
-		std::ifstream dataTemplates(TEMPLATES_FILE);
-		conn = new JsonConnection(dataTemplates);
-	}
+	IConnection * conn = new JsonConnection(structureFile, presetsFile);
+	std::cout << "Status: " << conn->getStatus() << std::endl;
 
 	PaintDataContainer paintCalculationContainer(conn);
 

@@ -2,24 +2,24 @@
 #define I_TABLE_HPP
 
 #include <vector>
-#include "IValue.hpp"
+#include "AutoValue.hpp"
 
 class ITable {
 public:
-	virtual void setValue(IValue const *, IValue const *, IValue *) = 0;
-	virtual void insertRow(IValue const *, IValue const *, std::vector<IValue *> const &) = 0;
-	virtual void insertColumn(IValue const *, IValue const *, std::vector<IValue *> const &) = 0;
-	virtual void appendRow(IValue const *, std::vector<IValue *> const &) = 0;
-	virtual void appendColumn(IValue const *, std::vector<IValue *> const &) = 0;
+	virtual void setValue(AutoValue const &, AutoValue const &, AutoValue const &) = 0;
+	virtual void insertRow(AutoValue const &, AutoValue const &, std::vector<AutoValue> const &) = 0;
+	virtual void insertColumn(AutoValue const &, AutoValue const &, std::vector<AutoValue> const &) = 0;
+	virtual void appendRow(AutoValue const &, std::vector<AutoValue> const &) = 0;
+	virtual void appendColumn(AutoValue const &, std::vector<AutoValue> const &) = 0;
 
-	virtual std::vector<IValue const *> getRowHeadings() const = 0;
-	virtual std::vector<IValue const *> getColumnHeadings() const = 0;
+	virtual std::vector<AutoValue> getRowHeadings() const = 0;
+	virtual std::vector<AutoValue> getColumnHeadings() const = 0;
 
-	virtual IValue const * getValue(IValue const *, IValue const *) const = 0;
-	virtual IValue * getValuePointer(IValue const *, IValue const *) = 0;
+	virtual AutoValue getValue(AutoValue const &, AutoValue const &) const = 0;
+	virtual AutoValue & getValueLink(AutoValue const &, AutoValue const &) = 0;
 
-	virtual std::vector<IValue const *> getRow(IValue const *) const = 0;
-	virtual std::vector<IValue const *> getColumn(IValue const *) const = 0;
+	virtual std::vector<AutoValue> getRow(AutoValue const &) const = 0;
+	virtual std::vector<AutoValue> getColumn(AutoValue const &) const = 0;
 
 	virtual std::string toString() const = 0;
 };

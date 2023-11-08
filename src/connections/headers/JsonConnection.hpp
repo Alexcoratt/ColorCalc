@@ -6,15 +6,17 @@
 
 class JsonConnection : public IConnection {
 private:
-	std::ifstream const _struct;
-	std::fstream _values;
+	std::ifstream & _structure;
+	std::fstream & _values;
+	nlohmann::json _data;
 	int _status;
 
-	nlohmann::json getTable(std::string const &) const;
-	nlohmann::json & getTableLink(std::string const &);
+	void download();
+	void upload();
+	void syncronize();
 
 public:
-	JsonConnection(std::ifstream &);
+	JsonConnection(std::ifstream &, std::fstream &);
 
 	int getStatus() const;
 

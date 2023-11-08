@@ -1,36 +1,31 @@
 {
-	"tables" :
-	{
+	"paint_consumption" :
+	[
+		"coated_paper",
+		"label_paper",
+		"paperboard",
+		"non_absorbent_material"
+	],
 
-		"расход краски" :
-		[
-			"мелованная",
-			"этикеточная",
-			"картон",
-			"невпитывающие материалы"
-		],
+	"paint_calculation" :
+	[
+		"paint_type",
+		"material_type",
+		"paint_consumption",
+		"divider",
+		"percentage",
+		"sheet_width",
+		"sheet_length",
+		"circulation",
+		"paint_reserve"
+	],
 
-		"расчет печатной краски" :
-		[
-			"тип краски",
-			"тип материала",
-			"расход краски",
-			"делитель",
-			"процент запечатки",
-			"ширина печатного листа",
-			"длина печатного листа",
-			"тираж",
-			"запас краски"
-		],
-
-		"расчет лака" :
-		[
-			"процент заливки",
-			"расход лака",
-			"длина",
-			"ширина",
-			"тираж"
-		]
-
-	}
+	"lacquer_calculation" :
+	[
+		"percentage",
+		"lacquer_consumption",
+		"sheet_length",
+		"sheet_width",
+		"circulation"
+	]
 }

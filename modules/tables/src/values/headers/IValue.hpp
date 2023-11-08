@@ -19,6 +19,10 @@ public:
 	virtual std::string toString() const = 0;
 	virtual double toDouble() const = 0;
 	virtual int toInt() const = 0;
+
+	virtual inline operator std::string() const { return toString(); }
+	virtual inline operator double() const { return toDouble(); }
+	virtual inline operator int() const { return toInt(); }
 };
 
 #endif
