@@ -5,7 +5,7 @@
 .cache
 
 # build folder
-build
+build*
 
 # macos jokes
 .DS_Store
