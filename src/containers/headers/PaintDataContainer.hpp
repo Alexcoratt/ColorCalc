@@ -2,27 +2,49 @@
 #define PAINT_DATA_CONTAINER_HPP
 
 #include <string>
-#include "IConnection.hpp"
 #include "AbstractDataContainer.hpp"
+#include "UnstableNamedValue.hpp"
 
 class PaintDataContainer : public AbstractDataContainer {
+private:
+	UnstableNamedValue<std::string> _presetName;
+	UnstableNamedValue<std::string> _paintType;
+	UnstableNamedValue<std::string> _materialType;
+	UnstableNamedValue<double> _paintConsumption;
+	UnstableNamedValue<double> _divider;
+	UnstableNamedValue<double> _percentage;
+	UnstableNamedValue<double> _sheetWidth;
+	UnstableNamedValue<double> _sheetLength;
+	UnstableNamedValue<std::size_t> _circulation;
+	UnstableNamedValue<double> _paintReserve;
+
 public:
-	PaintDataContainer(IConnection *);
+	PaintDataContainer(
+		UnstableNamedValue<std::string> const &,
+		UnstableNamedValue<std::string> const &,
+		UnstableNamedValue<std::string> const &,
+		UnstableNamedValue<double> const &,
+		UnstableNamedValue<double> const &,
+		UnstableNamedValue<double> const &,
+		UnstableNamedValue<double> const &,
+		UnstableNamedValue<double> const &,
+		UnstableNamedValue<std::size_t> const &,
+		UnstableNamedValue<double> const &
+	);
 
-	std::vector<std::string> getColumns() const;
-	nlohmann::json exportData() const;
+	std::vector<std::string> getParamNames() const;
+	std::map<std::string, std::string> toStringMap() const;
 
-	void clearData();
+	void clear();
 
-	std::vector<std::string> getAvailablePresetsNames() const;
-
-	void setPreset(std::string const &);
+	std::string getPresetName() const;
+	void setPresetName(std::string const &);
 
 	std::string getPaintType() const;
-	void setPaintType(std::string);
+	void setPaintType(std::string const &);
 
 	std::string getMaterialType() const;
-	void setMaterialType(std::string);
+	void setMaterialType(std::string const &);
 
 	double getPaintConsumption() const;
 	void setPaintConsumption(double);
@@ -40,7 +62,7 @@ public:
 	void setSheetLength(double);
 
 	std::size_t getCirculation() const;
-	void setCirculation(std::size_t);
+	void setCirculation(std::size_t const &);
 
 	double getPaintReserve() const;
 	void setPaintReserve(double);
