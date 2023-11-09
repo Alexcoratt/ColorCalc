@@ -11,6 +11,7 @@ private:
 
 public:
 	SmartPointer(T *);
+	SmartPointer(T &);
 	SmartPointer(SmartPointer<T> const &);
 	SmartPointer<T> & operator=(SmartPointer<T> const &);
 	~SmartPointer();
@@ -19,11 +20,16 @@ public:
 
 	T const * operator->() const;
 	T * operator->();
-	T operator*() const;
+
+	T const & operator*() const;
+	T & operator*();
 };
 
 template <typename T>
 SmartPointer<T>::SmartPointer(T * ptr) : _ptr(ptr), _count(new unsigned long(1)) {}
+
+template <typename T>
+SmartPointer<T>::SmartPointer(T & ptr) : _ptr(&ptr), _count(new unsigned long(1)) {}
 
 template <typename T>
 SmartPointer<T>::SmartPointer(SmartPointer<T> const & other) : _ptr(other._ptr), _count(other._count) {
@@ -60,6 +66,9 @@ template <typename T>
 T * SmartPointer<T>::operator->() { return _ptr; }
 
 template <typename T>
-T SmartPointer<T>::operator*() const { return *_ptr; }
+T const & SmartPointer<T>::operator*() const { return *_ptr; }
+
+template <typename T>
+T & SmartPointer<T>::operator*() { return *_ptr; }
 
 #endif
