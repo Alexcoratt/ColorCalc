@@ -128,7 +128,7 @@ void com::writePaintParameters(AbstractDataContainer const * container) {
 		std::cout << "null" << std::endl;
 	}
 
-	std::vector<std::string> const columns = container->getColumns();
+	std::vector<std::string> const columns = container->getParamNames();
 	nlohmann::json data = container->exportData();
 	for (std::string const & column : columns)
 		std::cout << column << ":\t" << data[column].dump() << std::endl;

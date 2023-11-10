@@ -4,7 +4,9 @@
 #include <cstddef>
 #include <vector>
 #include <string>
-#include <nlohmann/json.hpp>
+#include <map>
+
+#include <AutoValue.hpp>
 
 class IConnection {
 public:
@@ -20,19 +22,19 @@ public:
     // Queires for paint presets
     virtual std::vector<std::string> getPaintPresetsNames() const = 0;
     virtual std::vector<std::string> getPaintColumns() const = 0;
-    virtual nlohmann::json getPaintPreset(std::string const &) const = 0;
-	virtual nlohmann::json getPaintPresetTemplate() const = 0;
-    virtual void createPaintPreset(std::string const &, nlohmann::json const &) = 0;
-    virtual void updatePaintPreset(std::string const &, nlohmann::json const &) = 0;
+    virtual std::map<std::string, AutoValue> getPaintPreset(std::string const &) const = 0;
+	virtual std::map<std::string, AutoValue> getPaintPresetTemplate() const = 0;
+    virtual void createPaintPreset(std::string const &, std::map<std::string, AutoValue> const &) = 0;
+    virtual void updatePaintPreset(std::string const &, std::map<std::string, AutoValue> const &) = 0;
     virtual void removePaintPreset(std::string const &) = 0;
 
     // Queries for lacquer presets
     virtual std::vector<std::string> getLacquerPresetsNames() const = 0;
     virtual std::vector<std::string> getLacquerColumns() const = 0;
-    virtual nlohmann::json getLacquerPreset(std::string const &) const = 0;
-	virtual nlohmann::json getLacquerPresetTemplate() const = 0;
-    virtual void createLacquerPreset(std::string const &, nlohmann::json const &) = 0;
-    virtual void updateLacquerPreset(std::string const &, nlohmann::json const &) = 0;
+    virtual std::map<std::string, AutoValue> getLacquerPreset(std::string const &) const = 0;
+	virtual std::map<std::string, AutoValue> getLacquerPresetTemplate() const = 0;
+    virtual void createLacquerPreset(std::string const &, std::map<std::string, AutoValue> const &) = 0;
+    virtual void updateLacquerPreset(std::string const &, std::map<std::string, AutoValue> const &) = 0;
     virtual void removeLacquerPreset(std::string const &) = 0;
 
 };

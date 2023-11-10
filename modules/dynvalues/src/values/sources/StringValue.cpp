@@ -30,3 +30,7 @@ StringValue::operator double() const {
 StringValue::operator int() const {
 	throw std::invalid_argument("operator int(): string value cannot be represented as value of type int");
 }
+
+StringValue::operator unsigned long() const {
+	throw std::invalid_argument("operator unsigned long(): string value cannot be represented as value of type unsigned long");
+}

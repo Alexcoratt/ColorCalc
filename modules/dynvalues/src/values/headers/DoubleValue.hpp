@@ -22,6 +22,7 @@ public:
 	operator std::string() const;
 	operator double() const;
 	operator int() const;
+	operator unsigned long() const;
 };
 
 #endif

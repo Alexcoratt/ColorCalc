@@ -2,6 +2,8 @@
 #define JSON_CONNECTION_HPP
 
 #include <fstream>
+#include <nlohmann/json.hpp>
+
 #include "IConnection.hpp"
 
 class JsonConnection : public IConnection {
@@ -28,19 +30,19 @@ public:
 	// Queires for paint presets
 	std::vector<std::string> getPaintPresetsNames() const;
     std::vector<std::string> getPaintColumns() const;
-	nlohmann::json getPaintPreset(std::string const &) const;
-	nlohmann::json getPaintPresetTemplate() const;
-    void createPaintPreset(std::string const &, nlohmann::json const &);
-    void updatePaintPreset(std::string const &, nlohmann::json const &);
+	std::map<std::string, AutoValue> getPaintPreset(std::string const &) const;
+	std::map<std::string, AutoValue> getPaintPresetTemplate() const;
+    void createPaintPreset(std::string const &, std::map<std::string, AutoValue> const &);
+    void updatePaintPreset(std::string const &, std::map<std::string, AutoValue> const &);
     void removePaintPreset(std::string const &);
 
 	// Queries for lacquer presets
     std::vector<std::string> getLacquerPresetsNames() const;
     std::vector<std::string> getLacquerColumns() const;
-    nlohmann::json getLacquerPreset(std::string const &) const;
-	nlohmann::json getLacquerPresetTemplate() const;
-    void createLacquerPreset(std::string const &, nlohmann::json const &);
-    void updateLacquerPreset(std::string const &, nlohmann::json const &);
+    std::map<std::string, AutoValue> getLacquerPreset(std::string const &) const;
+	std::map<std::string, AutoValue> getLacquerPresetTemplate() const;
+    void createLacquerPreset(std::string const &, std::map<std::string, AutoValue> const &);
+    void updateLacquerPreset(std::string const &, std::map<std::string, AutoValue> const &);
     void removeLacquerPreset(std::string const &);
 };
 

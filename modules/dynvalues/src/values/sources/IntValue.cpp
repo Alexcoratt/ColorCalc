@@ -21,5 +21,6 @@ IntValue * IntValue::getClone() const { return new IntValue(_value); }
 bool IntValue::operator<(IValue const & other) const { return _value < int(other); }
 
 IntValue::operator std::string() const { return std::to_string(_value); }
-IntValue::operator double() const { return double(_value); }
+IntValue::operator double() const { return _value; }
 IntValue::operator int() const { return _value; }
+IntValue::operator unsigned long() const { return _value; }

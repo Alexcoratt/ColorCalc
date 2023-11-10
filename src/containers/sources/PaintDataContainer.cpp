@@ -1,9 +1,12 @@
 #include <cstddef>
 #include <stdexcept>
 
+#include <NullValue.hpp>
+
 #include "PaintDataContainer.hpp"
 #include "UndefinedValueException.hpp"
 
+#define PRESET_NAME "preset_name"
 #define PAINT_TYPE "paint_type"
 #define MATERIAL_TYPE "material_type"
 #define PAINT_CONSUMPTION "paint_consumption"
@@ -14,84 +17,103 @@
 #define CIRCULATION "circulation"
 #define PAINT_RESERVE "paint_reserve"
 
-PaintDataContainer::PaintDataContainer(IConnection * conn) {
-	_conn = conn;
-	_data = conn->getPaintPresetTemplate();
+void clearParam(std::map<std::string, AutoValue> & params, std::string const & key) {
+	params.at(key) = NullValue();
 }
 
-std::vector<std::string> PaintDataContainer::getColumns() const { return _conn->getPaintColumns(); }
+void setParam(std::map<std::string, AutoValue> & params, std::string const & key, AutoValue const & value, std::vector<std::string> const & paramsToClear = { PRESET_NAME }) {
+	if (params.at(key) == value)
+		return;
 
-nlohmann::json PaintDataContainer::exportData() const {
-	nlohmann::json res = _data;
+	params.at(key) = value;
+	for (std::string const & paramName : paramsToClear)
+		clearParam(params, paramName);
+}
 
+template <typename T>
+T getParam(std::map<std::string, AutoValue> const & params, std::string const & key) {
 	try {
-		res[PAINT_CONSUMPTION] = getPaintConsumption();
-	} catch (UndefinedValueException const &) {
-		res[PAINT_CONSUMPTION] = nlohmann::json::value_t::null;
-	}
+		AutoValue const & param = params.at(key);
+		if (!param.isNull())
+			return param;
+	} catch (std::out_of_range const &) {}
+	throw UndefinedValueException(key);
+}
 
+PaintDataContainer::PaintDataContainer(IConnection * conn) : _conn(conn), _params(conn->getPaintPresetTemplate()) {}
+
+std::vector<std::string> PaintDataContainer::getParamNames() const {
+	std::vector<std::string> res;
+	for (auto it = _params.begin(); it != _params.end(); ++it)
+		res.push_back(it->first);
 	return res;
 }
 
-void PaintDataContainer::clearData() {
-	_presetName.clear();
-	_data = _conn->getPaintPresetTemplate();
+std::map<std::string, std::string> PaintDataContainer::toStringMap() const {
+	std::map<std::string, std::string> res;
+	for (std::string const & paramName : getParamNames())
+		res.at(paramName) = std::string(_params.at(paramName));
+	return res;
 }
 
-std::vector<std::string> PaintDataContainer::getAvailablePresetsNames() const { return _conn->getPaintPresetsNames(); }
+void PaintDataContainer::clear() {
+	for (std::string const & paramName : getParamNames())
+		clearParam(_params, paramName);
+}
+
+std::string PaintDataContainer::getPresetName() const { return getParam<std::string>(_params, PRESET_NAME); }
 
 void PaintDataContainer::setPreset(std::string const & name) {
-	_presetName = name;
-	_data = _conn->getPaintPreset(name);
+	_params = _conn->getPaintPreset(name);
+	_params.at(PRESET_NAME) = name;
 }
 
-std::string PaintDataContainer::getPaintType() const { return getValue<std::string>(PAINT_TYPE); }
+std::string PaintDataContainer::getPaintType() const { return getParam<std::string>(_params, PAINT_TYPE); }
 
-void PaintDataContainer::setPaintType(std::string type) {
-	setValue(PAINT_TYPE, type);
-	clear(PAINT_CONSUMPTION);
+void PaintDataContainer::setPaintType(std::string const & type) {
+	setParam(_params, PAINT_TYPE, type, { PRESET_NAME, PAINT_CONSUMPTION });
 }
 
-std::string PaintDataContainer::getMaterialType() const { return getValue<std::string>(MATERIAL_TYPE); }
+std::string PaintDataContainer::getMaterialType() const { return getParam<std::string>(_params, MATERIAL_TYPE); }
 
-void PaintDataContainer::setMaterialType(std::string type) {
-	setValue(MATERIAL_TYPE, type);
-	clear(PAINT_CONSUMPTION);
+void PaintDataContainer::setMaterialType(std::string const & type) {
+	setParam(_params, MATERIAL_TYPE, type, { PRESET_NAME, PAINT_CONSUMPTION });
 }
 
 double PaintDataContainer::getPaintConsumption() const {
 	try {
-		return getValue<double>(PAINT_CONSUMPTION);
+		return getParam<double>(_params, PAINT_CONSUMPTION);
 	} catch (UndefinedValueException const &) {
-		return _conn->getPaintConsumption(getPaintType(), getMaterialType());
+		AutoValue const & consumption = _conn->getPaintConsumption(getPaintType(), getMaterialType());
+		if (consumption.isNull())
+			throw UndefinedValueException(PAINT_CONSUMPTION);
+		return consumption;
 	}
 }
 
 // In case paint consumption value was successfully updated, clears paint type and material type data
 void PaintDataContainer::setPaintConsumption(double value) {
-	setValue(PAINT_CONSUMPTION, value);
-	clear(PAINT_TYPE);
-	clear(MATERIAL_TYPE);
+	setParam(_params, PAINT_CONSUMPTION, value, { PRESET_NAME, PAINT_TYPE, MATERIAL_TYPE });
 }
 
 
-double PaintDataContainer::getDivider() const { return getValue<double>(DIVIDER); }
-void PaintDataContainer::setDivider(double value) { setValue(DIVIDER, value); }
+double PaintDataContainer::getDivider() const { return getParam<double>(_params, DIVIDER); }
+void PaintDataContainer::setDivider(double value) { setParam(_params, DIVIDER, value); }
 
-double PaintDataContainer::getPercentage() const { return getValue<double>(PERCENTAGE); }
-void PaintDataContainer::setPercentage(double value) { setValue(PERCENTAGE, value); }
+double PaintDataContainer::getPercentage() const { return getParam<double>(_params, PERCENTAGE); }
+void PaintDataContainer::setPercentage(double value) { setParam(_params, PERCENTAGE, value); }
 
-double PaintDataContainer::getSheetWidth() const { return getValue<double>(SHEET_WIDTH); }
-void PaintDataContainer::setSheetWidth(double value) { setValue(SHEET_WIDTH, value); }
+double PaintDataContainer::getSheetWidth() const { return getParam<double>(_params, SHEET_WIDTH); }
+void PaintDataContainer::setSheetWidth(double value) { setParam(_params, SHEET_WIDTH, value); }
 
-double PaintDataContainer::getSheetLength() const { return getValue<double>(SHEET_LENGTH); }
-void PaintDataContainer::setSheetLength(double value) { setValue(SHEET_LENGTH, value); }
+double PaintDataContainer::getSheetLength() const { return getParam<double>(_params, SHEET_LENGTH); }
+void PaintDataContainer::setSheetLength(double value) { setParam(_params, SHEET_LENGTH, value); }
 
-std::size_t PaintDataContainer::getCirculation() const { return getValue<std::size_t>(CIRCULATION); }
-void PaintDataContainer::setCirculation(std::size_t value) { setValue(CIRCULATION, value); }
+std::size_t PaintDataContainer::getCirculation() const { return getParam<std::size_t>(_params, CIRCULATION); }
+void PaintDataContainer::setCirculation(std::size_t const & value) { setParam(_params, CIRCULATION, value); }
 
-double PaintDataContainer::getPaintReserve() const { return getValue<double>(PAINT_RESERVE); }
-void PaintDataContainer::setPaintReserve(double value) { setValue(PAINT_RESERVE, value); }
+double PaintDataContainer::getPaintReserve() const { return getParam<double>(_params, PAINT_RESERVE); }
+void PaintDataContainer::setPaintReserve(double value) { setParam(_params, PAINT_RESERVE, value); }
 
 double PaintDataContainer::calculate() const {
 	return getSheetWidth() * getSheetLength() / 1000000 * getPaintConsumption() / 1000 / getDivider() * getCirculation() * getPercentage() / 100 + getPaintReserve();

@@ -13,17 +13,16 @@ public:
 	virtual IValue & operator=(IValue const &) = 0;
 
 	virtual bool operator<(IValue const &) const = 0;
-	/*
-	virtual bool operator>(IValue const & other) const { return *this >= other && *this != other; }
-	virtual bool operator==(IValue const & other) const { return !(*this < other || other < *this); }
+	virtual bool operator>(IValue const & other) const { return other < *this; }
+	virtual bool operator==(IValue const & other) const { return !(*this < other || *this > other); }
 	virtual bool operator!=(IValue const & other) const { return !(*this == other); }
 	virtual bool operator>=(IValue const & other) const { return !(*this < other); }
-	virtual bool operator<=(IValue const & other) const { return *this < other || *this == other; }
-	*/
+	virtual bool operator<=(IValue const & other) const { return !(*this > other); }
 
 	virtual operator std::string() const = 0;
 	virtual operator double() const = 0;
 	virtual operator int() const = 0;
+	virtual operator unsigned long() const = 0;
 
 	virtual bool isNull() const { return false; }
 };

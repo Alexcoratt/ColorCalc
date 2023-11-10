@@ -12,6 +12,7 @@ public:
 	AutoValue(IValue const &);
 	AutoValue(double);
 	AutoValue(int);
+	AutoValue(unsigned long);
 	AutoValue(std::string const &);
 	AutoValue(char const *);
 	~AutoValue();
@@ -30,6 +31,7 @@ public:
 	operator std::string() const;
 	operator double() const;
 	operator int() const;
+	operator unsigned long() const;
 
 	bool isNull() const;
 };
