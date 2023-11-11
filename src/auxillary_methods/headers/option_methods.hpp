@@ -8,8 +8,7 @@ namespace common_option_methods {
 
 	void clearValues(AbstractDataContainer *);
 	void calculateResourceAmount(AbstractDataContainer const *);
-	void loadPreset(AbstractDataContainer *);
-	void writePaintParameters(AbstractDataContainer const *);
+	void writeParameters(AbstractDataContainer const *);
 
 }
 
@@ -24,6 +23,7 @@ namespace paint_calculation_option_methods {
 	void setSheetLength(PaintDataContainer *);
 	void setCirculation(PaintDataContainer *);
 	void setReserve(PaintDataContainer *);
+	void loadPaintPreset(PaintDataContainer *);
 
 }
 
@@ -34,6 +34,7 @@ namespace lacquer_calculation_option_methods {
 	void setSheetLength(LacquerDataContainer *);
 	void setSheetWidth(LacquerDataContainer *);
 	void setCircualtion(LacquerDataContainer *);
+	void loadLacquerPreset(LacquerDataContainer *);
 
 }
 

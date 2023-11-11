@@ -38,7 +38,7 @@ int main() {
 	CustomLeafOption<PaintDataContainer *> writePaintParametersOption(
 		"write values of parameters",
 		"Print current values of all paint calculation mode parameters",
-		com::writePaintParameters,
+		com::writeParameters,
 		&paintCalculationContainer
 	);
 
@@ -106,7 +106,7 @@ int main() {
 	CustomLeafOption<PaintDataContainer *> loadPaintCalculationPresetOption(
 		"load preset",
 		"load values of existing preset",
-		com::loadPreset,
+		pcom::loadPaintPreset,
 		&paintCalculationContainer
 	);
 
@@ -145,7 +145,7 @@ int main() {
 	CustomLeafOption<LacquerDataContainer *> writeLacquerParametersOption(
 		"write values of parameters",
 		"Print current values of all lacquer calculation mode parameters",
-		com::writePaintParameters,
+		com::writeParameters,
 		&lacquerCalculationContainer
 	);
 
@@ -159,7 +159,7 @@ int main() {
 	CustomLeafOption<LacquerDataContainer *> loadLacquerCalculationPresetOption(
 		"load lacquer calculation preset",
 		"Loads values of selected preset into internal storage",
-		com::loadPreset,
+		lcom::loadLacquerPreset,
 		&lacquerCalculationContainer
 	);
 

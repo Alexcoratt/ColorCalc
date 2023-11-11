@@ -3,7 +3,7 @@
 
 #include <cstddef>
 #include <vector>
-#include "nlohmann/json.hpp"
+#include <nlohmann/json.hpp>
 
 namespace common_methods {
 
@@ -16,6 +16,14 @@ namespace common_methods {
 			++count;
 		}
 		throw std::invalid_argument("getIndex: required value is not found");
+	}
+
+	template <typename T>
+	inline std::size_t isIn(std::vector<T> const & vect, T search) {
+		for (T value : vect)
+			if (value == search)
+				return true;
+		return false;
 	}
 
 	bool jsonIsNull(nlohmann::json const & value);

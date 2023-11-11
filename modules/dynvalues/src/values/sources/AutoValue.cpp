@@ -5,9 +5,11 @@
 #include "IntValue.hpp"
 #include "UnsignedLongIntValue.hpp"
 #include "StringValue.hpp"
+#include "NullValue.hpp"
 
-AutoValue::AutoValue() : _value(new IntValue(0)) {}
-AutoValue::AutoValue(IValue const & value) { _value = value.getClone(); }
+AutoValue::AutoValue() : _value(new NullValue) {}
+AutoValue::AutoValue(AutoValue const & other) : _value(other._value->getClone()) {}
+AutoValue::AutoValue(IValue const & value) : _value(value.getClone()) {}
 AutoValue::AutoValue(double value) : _value(new DoubleValue(value)) {}
 AutoValue::AutoValue(int value) : _value(new IntValue(value)) {}
 AutoValue::AutoValue(unsigned long value) : _value(new UnsignedLongIntValue(value)) {}
@@ -30,14 +32,16 @@ AutoValue & AutoValue::operator=(IValue const & other) {
 	return *this;
 }
 
-AutoValue::~AutoValue() { delete _value; }
+AutoValue::~AutoValue() {}
 
 int AutoValue::nestCount() const {
-	AutoValue * value = dynamic_cast<AutoValue *>(_value);
+	AutoValue const * value = dynamic_cast<AutoValue const *>(_value.getPointer());
 	if (value)
 		return 1 + value->nestCount();
 	return 0;
 }
+
+void AutoValue::clear() { _value = new NullValue(); }
 
 void AutoValue::swap(AutoValue & other) { std::swap(_value, other._value); }
 

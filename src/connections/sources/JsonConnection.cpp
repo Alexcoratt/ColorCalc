@@ -1,6 +1,7 @@
 #include <cstddef>
 #include <string>
 #include <iostream>
+#include <stdexcept>
 
 #include <NullValue.hpp>
 
@@ -15,7 +16,6 @@
 #define LACQUER_CALCULATION_TABLE "lacquer_calculation"
 
 #define COLUMN_NAMES "column_names"
-#define PRESET_NAMES "preset_names"
 #define PRESETS "presets"
 
 using json_type_error = nlohmann::json_abi_v3_11_2::detail::type_error;
@@ -25,13 +25,11 @@ nlohmann::json compose(nlohmann::json const & structure, nlohmann::json const & 
 	for (auto table = values.begin(); table != values.end(); ++table) {
 		std::string tableName = table.key();
 		std::vector<std::string> columnNames = structure[tableName];
-		std::vector<std::string> presetNames;
 
 		nlohmann::json composedTable;
 		composedTable[PRESETS] = {};
 
 		for (auto preset = table.value().begin(); preset != table.value().end(); ++preset) {
-			presetNames.push_back(preset.key());
 			nlohmann::json composedPreset;
 			std::size_t count = 0;
 			for (auto columnName : columnNames)
@@ -40,7 +38,6 @@ nlohmann::json compose(nlohmann::json const & structure, nlohmann::json const & 
 		}
 
 		composedTable[COLUMN_NAMES] = columnNames;
-		composedTable[PRESET_NAMES] = presetNames;
 
 		res[tableName] = composedTable;
 	}
@@ -86,22 +83,49 @@ JsonConnection::JsonConnection(std::ifstream & structureFile, std::fstream & val
 
 int JsonConnection::getStatus() const { return _status; }
 
-std::vector<std::string> JsonConnection::getPaintTypes() const { return _data[PAINT_CONSUMPTION_TABLE][PRESET_NAMES]; }
+std::vector<std::string> JsonConnection::getPaintTypes() const {
+	std::vector<std::string> res;
+	nlohmann::json const & types = _data[PAINT_CONSUMPTION_TABLE][PRESETS];
+	for (auto it = types.begin(); it != types.end(); ++it)
+		res.push_back(it.key());
+	return res;
+}
 std::vector<std::string> JsonConnection::getMaterialTypes() const { return _data[PAINT_CONSUMPTION_TABLE][COLUMN_NAMES]; }
 
 double JsonConnection::getPaintConsumption(std::string const & paintType, std::string const & materialType) const {
 	try {
-		return _data[PAINT_CONSUMPTION_TABLE][PRESETS][paintType][materialType];
-	} catch (json_type_error const &) {
-		throw UndefinedValueException("paint consumption of " + paintType + " with " + materialType);
-	}
+		return _data[PAINT_CONSUMPTION_TABLE][PRESETS].at(paintType).at(materialType);
+	} catch (std::exception const &) {}
+	throw UndefinedValueException("paint consumption of " + paintType + " with " + materialType);
 }
 
-std::vector<std::string> JsonConnection::getPaintPresetsNames() const { return _data[PAINT_CALCULATION_TABLE][PRESET_NAMES]; }
+std::vector<std::string> JsonConnection::getPaintPresetsNames() const {
+	std::vector<std::string> res;
+	nlohmann::json const & presets = _data[PAINT_CALCULATION_TABLE][PRESETS];
+	for (auto it = presets.begin(); it != presets.end(); ++it)
+		res.push_back(it.key());
+	return res;
+}
 
 std::vector<std::string> JsonConnection::getPaintColumns() const { return _data[PAINT_CALCULATION_TABLE][COLUMN_NAMES]; }
 
-std::map<std::string, AutoValue> JsonConnection::getPaintPreset(std::string const & name) const { return _data[PAINT_CALCULATION_TABLE][PRESETS][name]; }
+std::map<std::string, AutoValue> JsonConnection::getPaintPreset(std::string const & name) const {
+	nlohmann::json const & preset = _data[PAINT_CALCULATION_TABLE][PRESETS].at(name);
+
+	if (preset.is_null())
+		throw PresetDoesNotExistException(name);
+
+	std::map<std::string, AutoValue> res;
+	for (auto it = preset.begin(); it != preset.end(); ++it) {
+		if (it.value().is_null())
+			res[it.key()] = NullValue();
+		else if (it.value().is_string())
+			res[it.key()] = it.value().get<std::string>();
+		else
+			res[it.key()] = it.value().dump();
+	}
+	return res;
+}
 
 std::map<std::string, AutoValue> JsonConnection::getPaintPresetTemplate() const {
 	std::map<std::string, AutoValue> res;
@@ -111,31 +135,59 @@ std::map<std::string, AutoValue> JsonConnection::getPaintPresetTemplate() const 
 }
 
 void JsonConnection::createPaintPreset(std::string const & name, std::map<std::string, AutoValue> const & data) {
-	if (!_data[PAINT_CALCULATION_TABLE][PRESETS][name].is_null())
+	nlohmann::json & presets = _data[PAINT_CALCULATION_TABLE][PRESETS];
+	if (presets.find(name) != presets.end())
 		throw PresetAlreadyExistsException(name);
-	_data[PAINT_CALCULATION_TABLE][PRESETS][name] = data;
+	presets[name] = nlohmann::basic_json<>();
+	for (auto it = data.begin(); it != data.end(); ++it)
+		presets[name][it->first] = (std::string)it->second;
 }
 
 void JsonConnection::updatePaintPreset(std::string const & name, std::map<std::string, AutoValue> const & data) {
-	if (_data[PAINT_CALCULATION_TABLE][PRESETS][name].is_null())
+	nlohmann::json & presets = _data[PAINT_CALCULATION_TABLE][PRESETS];
+	if (presets.find(name) == presets.end())
 		throw PresetDoesNotExistException(name);
-	_data[PAINT_CALCULATION_TABLE][PRESETS][name] = data;
+	for (auto it = data.begin(); it != data.end(); ++it)
+		presets[name][it->first] = (std::string)it->second;
 }
 
 void JsonConnection::removePaintPreset(std::string const & name) {
-	if (_data[PAINT_CALCULATION_TABLE][PRESETS][name].is_null())
+	nlohmann::json & presets = _data[PAINT_CALCULATION_TABLE][PRESETS];
+	if (presets.find(name) == presets.end())
 		throw PresetDoesNotExistException(name);
-	_data[PAINT_CALCULATION_TABLE][PRESETS].erase(name);
+	presets.erase(name);
 }
 
 
 // Queries for lacquer presets
 
-std::vector<std::string> JsonConnection::getLacquerPresetsNames() const { return _data[LACQUER_CALCULATION_TABLE][PRESET_NAMES]; }
+std::vector<std::string> JsonConnection::getLacquerPresetsNames() const {
+	std::vector<std::string> res;
+	nlohmann::json const & presets = _data[LACQUER_CALCULATION_TABLE][PRESETS];
+	for (auto it = presets.begin(); it != presets.end(); ++it)
+		res.push_back(it.key());
+	return res;
+}
 
 std::vector<std::string> JsonConnection::getLacquerColumns() const { return _data[LACQUER_CALCULATION_TABLE][COLUMN_NAMES]; }
 
-std::map<std::string, AutoValue> JsonConnection::getLacquerPreset(std::string const & name) const { return _data[LACQUER_CALCULATION_TABLE][PRESETS][name]; }
+std::map<std::string, AutoValue> JsonConnection::getLacquerPreset(std::string const & name) const {
+	nlohmann::json const & preset = _data[LACQUER_CALCULATION_TABLE][PRESETS].at(name);
+
+	if (preset.is_null())
+		throw PresetDoesNotExistException(name);
+
+	std::map<std::string, AutoValue> res;
+	for (auto it = preset.begin(); it != preset.end(); ++it) {
+		if (it.value().is_null())
+			res[it.key()] = NullValue();
+		else if (it.value().is_string())
+			res[it.key()] = it.value().get<std::string>();
+		else
+			res[it.key()] = it.value().dump();
+	}
+	return res;
+}
 
 std::map<std::string, AutoValue> JsonConnection::getLacquerPresetTemplate() const {
 	std::map<std::string, AutoValue> res;
@@ -145,19 +197,25 @@ std::map<std::string, AutoValue> JsonConnection::getLacquerPresetTemplate() cons
 }
 
 void JsonConnection::createLacquerPreset(std::string const & name, std::map<std::string, AutoValue> const & data) {
-	if (!_data[LACQUER_CALCULATION_TABLE][PRESETS][name].is_null())
+	nlohmann::json & presets = _data[LACQUER_CALCULATION_TABLE][PRESETS];
+	if (presets.find(name) != presets.end())
 		throw PresetAlreadyExistsException(name);
-	_data[LACQUER_CALCULATION_TABLE][PRESETS][name] = data;
+	presets[name] = nlohmann::basic_json<>();
+	for (auto it = data.begin(); it != data.end(); ++it)
+		presets[name][it->first] = (std::string)it->second;
 }
 
 void JsonConnection::updateLacquerPreset(std::string const & name, std::map<std::string, AutoValue> const & data) {
-	if (_data[LACQUER_CALCULATION_TABLE][PRESETS][name].is_null())
+	nlohmann::json & presets = _data[LACQUER_CALCULATION_TABLE][PRESETS];
+	if (presets.find(name) == presets.end())
 		throw PresetDoesNotExistException(name);
-	_data[LACQUER_CALCULATION_TABLE][PRESETS][name] = data;
+	for (auto it = data.begin(); it != data.end(); ++it)
+		presets[name][it->first] = (std::string)it->second;
 }
 
 void JsonConnection::removeLacquerPreset(std::string const & name) {
-	if (_data[LACQUER_CALCULATION_TABLE][PRESETS][name].is_null())
+	nlohmann::json & presets = _data[LACQUER_CALCULATION_TABLE][PRESETS];
+	if (presets.find(name) == presets.end())
 		throw PresetDoesNotExistException(name);
-	_data[LACQUER_CALCULATION_TABLE][PRESETS].erase(name);
+	presets.erase(name);
 }

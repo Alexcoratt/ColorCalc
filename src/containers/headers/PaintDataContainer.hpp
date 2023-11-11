@@ -11,9 +11,12 @@ class PaintDataContainer : public AbstractDataContainer {
 private:
 	IConnection * _conn;
 	std::map<std::string, AutoValue> _params;
+	AutoValue _presetName;
 
 public:
 	PaintDataContainer(IConnection *);
+
+	IConnection * getConnection() const;
 
 	std::vector<std::string> getParamNames() const;
 	std::map<std::string, std::string> toStringMap() const;

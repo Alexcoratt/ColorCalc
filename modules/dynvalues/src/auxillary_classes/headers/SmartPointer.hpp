@@ -23,6 +23,8 @@ public:
 
 	T const & operator*() const;
 	T & operator*();
+
+	T const * getPointer() const;
 };
 
 template <typename T>
@@ -70,5 +72,8 @@ T const & SmartPointer<T>::operator*() const { return *_ptr; }
 
 template <typename T>
 T & SmartPointer<T>::operator*() { return *_ptr; }
+
+template <typename T>
+T const * SmartPointer<T>::getPointer() const { return _ptr; }
 
 #endif

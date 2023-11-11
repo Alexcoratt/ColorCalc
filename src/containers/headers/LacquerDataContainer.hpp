@@ -1,22 +1,26 @@
 #ifndef LACQUER_DATA_CONTAINER_HPP
 #define LACQUER_DATA_CONTAINER_HPP
 
-#include "nlohmann/json.hpp"
 #include "IConnection.hpp"
 #include "AbstractDataContainer.hpp"
 
 class LacquerDataContainer : public AbstractDataContainer {
+private:
+	IConnection * _conn;
+	std::map<std::string, AutoValue> _params;
+	AutoValue _presetName;
 
 public:
 	LacquerDataContainer(IConnection *);
 
-	std::vector<std::string> getColumns() const;
-	nlohmann::json exportData() const;
+	IConnection * getConnection() const;
 
-	void clearData();
+	std::vector<std::string> getParamNames() const;
+	std::map<std::string, std::string> toStringMap() const;
 
-	std::vector<std::string> getAvailablePresetsNames() const;
+	void clear();
 
+	std::string getPresetName() const;
 	void setPreset(std::string const &);
 
 	double getPercentage() const;

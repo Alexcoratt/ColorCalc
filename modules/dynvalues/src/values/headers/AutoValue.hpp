@@ -2,13 +2,15 @@
 #define AUTO_VALUE_HPP
 
 #include "IValue.hpp"
+#include "SmartPointer.hpp"
 
 class AutoValue : public IValue {
 private:
-	IValue * _value;
+	SmartPointer<IValue> _value;
 
 public:
 	AutoValue();
+	AutoValue(AutoValue const &);
 	AutoValue(IValue const &);
 	AutoValue(double);
 	AutoValue(int);
@@ -18,6 +20,7 @@ public:
 	~AutoValue();
 
 	int nestCount() const;
+	void clear();
 
 	AutoValue & operator=(AutoValue const &);
 	AutoValue & operator=(IValue const &);

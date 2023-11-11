@@ -55,41 +55,22 @@ std::size_t readVariant(std::string const & prompt, std::vector<std::string> var
 }
 
 void setType(std::vector<std::string> const & types, std::function<std::string()> get, std::function<void(std::string)> set) {
-	std::size_t defaultVariant;
-	bool defaultVariantIsDefined = false;
 	std::string prompt;
+	AutoValue defaultVariant;
 	try {
 		defaultVariant = common_methods::getIndex(types, get());
-		prompt = "Enter index of the variant (default=" + std::to_string(defaultVariant + 1) + "): ";
-		defaultVariantIsDefined = true;
-	} catch (UndefinedValueException const & err) {
+	} catch (std::invalid_argument const &) {
+		defaultVariant.clear();
+	}
+
+	if (defaultVariant.isNull())
 		prompt = "Enter index of the variant (default=undefined): ";
-	}
+	else
+		prompt = "Enter index of the variant (default=" + std::to_string((std::size_t)defaultVariant + 1) + "): ";
 
 	try {
-		std::size_t variant = readVariant(prompt, types);
-		if (!defaultVariantIsDefined || variant != defaultVariant)
-			set(types[variant]);
+		set(types[readVariant(prompt, types)]);
 	} catch (DefaultOptionIsChosenException const & err) {}
-}
-
-void com::loadPreset(AbstractDataContainer * container) {
-	std::vector<std::string> presets = container->getAvailablePresetsNames();
-
-	std::cout << "Select the preset to load" << std::endl;
-	setType(
-		presets,
-		[&]() { return container->getPresetName(); },
-		[&](std::string name) { container->setPreset(name); }
-	);
-
-	std::cout << "Preset ";
-	try {
-		std::string presetName = container->getPresetName();
-		std::cout << "named \"" << presetName << "\" is loaded" << std::endl;
-	} catch (UndefinedValueException const &) {
-		std::cout << "is undefined" << std::endl;
-	}
 }
 
 void com::clearValues(AbstractDataContainer * container) {
@@ -105,7 +86,7 @@ void com::clearValues(AbstractDataContainer * container) {
 	);
 
 	if (answer == 1) {
-		container->clearData();
+		container->clear();
 		std::cout << "Submitted" << std::endl << "Fields are cleared" << std::endl;
 	} else
 		std::cout << "Aborted" << std::endl;
@@ -120,18 +101,14 @@ void com::calculateResourceAmount(AbstractDataContainer const * container) {
 	}
 }
 
-void com::writePaintParameters(AbstractDataContainer const * container) {
-	std::cout << "Preset name:\t";
-	try {
-		std::cout << container->getPresetName() << std::endl;
-	} catch (UndefinedValueException const &) {
-		std::cout << "null" << std::endl;
-	}
+void com::writeParameters(AbstractDataContainer const * container) {
+	auto presetName = container->getPresetName();
+	if (presetName.size() != 0)
+		std::cout << "Preset name:\t" << presetName << std::endl << std::endl;
 
-	std::vector<std::string> const columns = container->getParamNames();
-	nlohmann::json data = container->exportData();
-	for (std::string const & column : columns)
-		std::cout << column << ":\t" << data[column].dump() << std::endl;
+	auto params = container->toStringMap();
+	for (auto iter = params.begin(); iter != params.end(); ++iter)
+		std::cout << iter->first << ":\t" << iter->second << std::endl;
 }
 
 void pcom::setPaintType(PaintDataContainer * container) {
@@ -350,6 +327,26 @@ void pcom::setReserve(PaintDataContainer * container) {
 	}
 }
 
+void pcom::loadPaintPreset(PaintDataContainer * container) {
+	std::vector<std::string> presets = container->getConnection()->getPaintPresetsNames();
+
+	std::cout << "Select the preset to load" << std::endl;
+	setType(
+		presets,
+		[&]() { return container->getPresetName(); },
+		[&](std::string name) { container->setPreset(name); }
+	);
+
+	std::cout << "Preset ";
+	try {
+		std::string presetName = container->getPresetName();
+		std::cout << "named \"" << presetName << "\" is loaded" << std::endl;
+	} catch (UndefinedValueException const &) {
+		std::cout << "is undefined" << std::endl;
+	}
+}
+
+
 void lcom::setPercentage(LacquerDataContainer * container) {
 	std::cout << "Set percentage of lacquer coverage" << std::endl;
 
@@ -460,6 +457,25 @@ void lcom::setCircualtion(LacquerDataContainer * container) {
 	try {
 		auto value = container->getCirculation();
 		std::cout << "value " << value << " is set" << std::endl;
+	} catch (UndefinedValueException const &) {
+		std::cout << "is undefined" << std::endl;
+	}
+}
+
+void lcom::loadLacquerPreset(LacquerDataContainer * container) {
+	std::vector<std::string> presets = container->getConnection()->getLacquerPresetsNames();
+
+	std::cout << "Select the preset to load" << std::endl;
+	setType(
+		presets,
+		[&]() { return container->getPresetName(); },
+		[&](std::string name) { container->setPreset(name); }
+	);
+
+	std::cout << "Preset ";
+	try {
+		std::string presetName = container->getPresetName();
+		std::cout << "named \"" << presetName << "\" is loaded" << std::endl;
 	} catch (UndefinedValueException const &) {
 		std::cout << "is undefined" << std::endl;
 	}
