@@ -61,6 +61,8 @@ void setType(std::vector<std::string> const & types, std::function<std::string()
 		defaultVariant = common_methods::getIndex(types, get());
 	} catch (std::invalid_argument const &) {
 		defaultVariant.clear();
+	} catch (UndefinedValueException const &) {
+		defaultVariant.clear();
 	}
 
 	if (defaultVariant.isNull())
@@ -102,9 +104,10 @@ void com::calculateResourceAmount(AbstractDataContainer const * container) {
 }
 
 void com::writeParameters(AbstractDataContainer const * container) {
-	auto presetName = container->getPresetName();
-	if (presetName.size() != 0)
+	try {
+		auto presetName = container->getPresetName();
 		std::cout << "Preset name:\t" << presetName << std::endl << std::endl;
+	} catch (UndefinedValueException const &) {}
 
 	auto params = container->toStringMap();
 	for (auto iter = params.begin(); iter != params.end(); ++iter)

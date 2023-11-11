@@ -13,6 +13,8 @@
 #define CIRCULATION "circulation"
 #define PAINT_RESERVE "paint_reserve"
 
+namespace ccm = common_container_methods;
+
 PaintDataContainer::PaintDataContainer(IConnection * conn) : _conn(conn), _params(conn->getPaintPresetTemplate()) {}
 
 IConnection * PaintDataContainer::getConnection() const { return _conn; }
@@ -30,7 +32,7 @@ std::map<std::string, std::string> PaintDataContainer::toStringMap() const {
 		res[iter->first] = (std::string)iter->second;
 
 	try {
-		res[PAINT_CONSUMPTION] = getPaintConsumption();
+		res[PAINT_CONSUMPTION] = std::to_string(getPaintConsumption());
 	} catch (UndefinedValueException const &) {}
 
 	return res;
@@ -38,7 +40,11 @@ std::map<std::string, std::string> PaintDataContainer::toStringMap() const {
 
 void PaintDataContainer::clear() { _params = _conn->getPaintPresetTemplate(); }
 
-std::string PaintDataContainer::getPresetName() const { return _presetName; }
+std::string PaintDataContainer::getPresetName() const {
+	if (_presetName.isNull())
+		throw UndefinedValueException("preset name");
+	return _presetName;
+}
 
 void PaintDataContainer::setPreset(std::string const & name) {
 	if ((std::string)_presetName == name)
@@ -67,7 +73,7 @@ void PaintDataContainer::setPreset(std::string const & name) {
 	_params = params;
 }
 
-std::string PaintDataContainer::getPaintType() const { return _params.at(PAINT_TYPE); }
+std::string PaintDataContainer::getPaintType() const { return ccm::getParam(_params, PAINT_TYPE); }
 void PaintDataContainer::setPaintType(std::string const & type) {
 	if ((std::string)_params.at(PAINT_TYPE) == type)
 		return;
@@ -77,7 +83,7 @@ void PaintDataContainer::setPaintType(std::string const & type) {
 	_presetName.clear();
 }
 
-std::string PaintDataContainer::getMaterialType() const { return _params.at(MATERIAL_TYPE); }
+std::string PaintDataContainer::getMaterialType() const { return ccm::getParam(_params, MATERIAL_TYPE); }
 void PaintDataContainer::setMaterialType(std::string const & type) {
 	if ((std::string)_params.at(MATERIAL_TYPE) == type)
 		return;
@@ -106,7 +112,7 @@ void PaintDataContainer::setPaintConsumption(double value) {
 }
 
 
-double PaintDataContainer::getDivider() const { return _params.at(DIVIDER); }
+double PaintDataContainer::getDivider() const { return ccm::getParam(_params, DIVIDER); }
 void PaintDataContainer::setDivider(double value) {
 	if ((double)_params.at(DIVIDER) == value)
 		return;
@@ -115,7 +121,7 @@ void PaintDataContainer::setDivider(double value) {
 	_presetName.clear();
 }
 
-double PaintDataContainer::getPercentage() const { return _params.at(PERCENTAGE); }
+double PaintDataContainer::getPercentage() const { return ccm::getParam(_params, PERCENTAGE); }
 void PaintDataContainer::setPercentage(double value) {
 	if ((double)_params.at(PERCENTAGE) == value)
 		return;
@@ -124,7 +130,7 @@ void PaintDataContainer::setPercentage(double value) {
 	_presetName.clear();
 }
 
-double PaintDataContainer::getSheetWidth() const { return _params.at(SHEET_WIDTH); }
+double PaintDataContainer::getSheetWidth() const { return ccm::getParam(_params, SHEET_WIDTH); }
 void PaintDataContainer::setSheetWidth(double value) {
 	if ((double)_params.at(SHEET_WIDTH) == value)
 		return;
@@ -133,7 +139,7 @@ void PaintDataContainer::setSheetWidth(double value) {
 	_presetName.clear();
 }
 
-double PaintDataContainer::getSheetLength() const { return _params.at(SHEET_LENGTH); }
+double PaintDataContainer::getSheetLength() const { return ccm::getParam(_params, SHEET_LENGTH); }
 void PaintDataContainer::setSheetLength(double value) {
 	if ((double)_params.at(SHEET_LENGTH) == value)
 		return;
@@ -142,7 +148,7 @@ void PaintDataContainer::setSheetLength(double value) {
 	_presetName.clear();
 }
 
-std::size_t PaintDataContainer::getCirculation() const { return _params.at(CIRCULATION); }
+std::size_t PaintDataContainer::getCirculation() const { return ccm::getParam(_params, CIRCULATION); }
 void PaintDataContainer::setCirculation(std::size_t const & value) {
 	if ((std::size_t)_params.at(CIRCULATION) == value)
 		return;
@@ -151,7 +157,7 @@ void PaintDataContainer::setCirculation(std::size_t const & value) {
 	_presetName.clear();
 }
 
-double PaintDataContainer::getPaintReserve() const { return _params.at(PAINT_RESERVE); }
+double PaintDataContainer::getPaintReserve() const { return ccm::getParam(_params, PAINT_RESERVE); }
 void PaintDataContainer::setPaintReserve(double value) {
 	if ((double)_params.at(PAINT_RESERVE) == value)
 		return;

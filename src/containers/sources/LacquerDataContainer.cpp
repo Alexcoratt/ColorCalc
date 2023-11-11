@@ -1,10 +1,15 @@
+#include <stdexcept>
+
 #include "LacquerDataContainer.hpp"
+#include "UndefinedValueException.hpp"
 
 #define PERCENTAGE "percentage"
 #define LACQUER_CONSUMPTION "lacquer_consumption"
 #define SHEET_LENGTH "sheet_length"
 #define SHEET_WIDTH "sheet_width"
 #define CIRCULATION "circulation"
+
+namespace ccm = common_container_methods;
 
 LacquerDataContainer::LacquerDataContainer(IConnection * conn) : _conn(conn), _params(conn->getLacquerPresetTemplate()) {}
 
@@ -24,7 +29,11 @@ std::map<std::string, std::string> LacquerDataContainer::toStringMap() const {
 	return res;
 }
 
-std::string LacquerDataContainer::getPresetName() const { return _presetName; }
+std::string LacquerDataContainer::getPresetName() const {
+	if (_presetName.isNull())
+		throw UndefinedValueException("preset name");
+	return _presetName;
+}
 
 void LacquerDataContainer::setPreset(std::string const & name) {
 	if ((std::string)_presetName == name)
@@ -53,7 +62,7 @@ void LacquerDataContainer::setPreset(std::string const & name) {
 
 void LacquerDataContainer::clear() { _params = _conn->getLacquerPresetTemplate(); }
 
-double LacquerDataContainer::getPercentage() const { return _params.at(PERCENTAGE); }
+double LacquerDataContainer::getPercentage() const { return ccm::getParam(_params, PERCENTAGE); }
 void LacquerDataContainer::setPercentage(double value) {
 	if ((double)_params.at(PERCENTAGE) == value)
 		return;
@@ -62,7 +71,7 @@ void LacquerDataContainer::setPercentage(double value) {
 	_presetName.clear();
 }
 
-double LacquerDataContainer::getLacquerConsumption() const { return _params.at(LACQUER_CONSUMPTION); }
+double LacquerDataContainer::getLacquerConsumption() const { return ccm::getParam(_params, LACQUER_CONSUMPTION); }
 void LacquerDataContainer::setLacquerConsumption(double value) {
 	if ((double)_params.at(LACQUER_CONSUMPTION) == value)
 		return;
@@ -71,7 +80,7 @@ void LacquerDataContainer::setLacquerConsumption(double value) {
 	_presetName.clear();
 }
 
-double LacquerDataContainer::getSheetLength() const { return _params.at(SHEET_LENGTH); }
+double LacquerDataContainer::getSheetLength() const { return ccm::getParam(_params, SHEET_LENGTH); }
 void LacquerDataContainer::setSheetLength(double value) {
 	if ((double)_params.at(SHEET_LENGTH) == value)
 		return;
@@ -80,7 +89,7 @@ void LacquerDataContainer::setSheetLength(double value) {
 	_presetName.clear();
 }
 
-double LacquerDataContainer::getSheetWidth() const { return _params.at(SHEET_WIDTH); }
+double LacquerDataContainer::getSheetWidth() const { return ccm::getParam(_params, SHEET_WIDTH); }
 void LacquerDataContainer::setSheetWidth(double value) {
 	if ((double)_params.at(SHEET_WIDTH) == value)
 		return;
@@ -89,7 +98,7 @@ void LacquerDataContainer::setSheetWidth(double value) {
 	_presetName.clear();
 }
 
-std::size_t LacquerDataContainer::getCirculation() const { return _params.at(CIRCULATION); }
+std::size_t LacquerDataContainer::getCirculation() const { return ccm::getParam(_params, CIRCULATION); }
 void LacquerDataContainer::setCirculation(std::size_t value) {
 	if ((std::size_t)_params.at(CIRCULATION) == value)
 		return;
