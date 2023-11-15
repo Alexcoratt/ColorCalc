@@ -139,16 +139,26 @@ void JsonConnection::createPaintPreset(std::string const & name, std::map<std::s
 	if (presets.find(name) != presets.end())
 		throw PresetAlreadyExistsException(name);
 	presets[name] = nlohmann::basic_json<>();
-	for (auto it = data.begin(); it != data.end(); ++it)
-		presets[name][it->first] = (std::string)it->second;
+	for (auto it = data.begin(); it != data.end(); ++it) {
+		std::string value = it->second;
+		if (value.size() == 0)
+			presets[name][it->first] = nlohmann::json::value_t::null;
+		else
+			presets[name][it->first] = value;
+	}
 }
 
 void JsonConnection::updatePaintPreset(std::string const & name, std::map<std::string, AutoValue> const & data) {
 	nlohmann::json & presets = _data[PAINT_CALCULATION_TABLE][PRESETS];
 	if (presets.find(name) == presets.end())
 		throw PresetDoesNotExistException(name);
-	for (auto it = data.begin(); it != data.end(); ++it)
-		presets[name][it->first] = (std::string)it->second;
+	for (auto it = data.begin(); it != data.end(); ++it) {
+		std::string value = it->second;
+		if (value.size() == 0)
+			presets[name][it->first] = nlohmann::json::value_t::null;
+		else
+			presets[name][it->first] = value;
+	}
 }
 
 void JsonConnection::removePaintPreset(std::string const & name) {

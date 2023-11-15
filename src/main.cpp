@@ -7,16 +7,16 @@
 #include <string>
 #include <vector>
 
-#include "IConnection.hpp"
-#include "JsonConnection.hpp"
-#include "PaintDataContainer.hpp"
-#include "LacquerDataContainer.hpp"
+#include <IConnection.hpp>
+#include <JsonConnection.hpp>
+#include <PaintDataDispatcher.hpp>
+#include <LacquerDataDispatcher.hpp>
 
-#include "option_methods.hpp"
+#include <option_methods.hpp>
 
-#include "IOption.hpp"
-#include "BaseOptionContainer.hpp"
-#include "CustomLeafOption.hpp"
+#include <IOption.hpp>
+#include <BaseOptionContainer.hpp>
+#include <CustomLeafOption.hpp>
 
 #define PRESETS_FILE "data/standard_presets.json"
 #define STRUCTURE_FILE "data/tables_structure.json"
@@ -33,95 +33,116 @@ int main() {
 	IConnection * conn = new JsonConnection(structureFile, presetsFile);
 	std::cout << "Status: " << conn->getStatus() << std::endl;
 
-	PaintDataContainer paintCalculationContainer(conn);
+	PaintDataDispatcher paintCalculationDispatcher(conn);
 
-	CustomLeafOption<PaintDataContainer *> writePaintParametersOption(
+	CustomLeafOption<PaintDataDispatcher *> writePaintParametersOption(
 		"write values of parameters",
 		"Print current values of all paint calculation mode parameters",
 		com::writeParameters,
-		&paintCalculationContainer
+		&paintCalculationDispatcher
 	);
 
-	CustomLeafOption<PaintDataContainer *> setPaintTypeOption(
+	CustomLeafOption<PaintDataDispatcher *> setPaintTypeOption(
 		"set paint type",
 		"Set type of paint you are going to use",
 		pcom::setPaintType,
-		&paintCalculationContainer);
+		&paintCalculationDispatcher);
 
-	CustomLeafOption<PaintDataContainer *> setMaterialTypeOption(
+	CustomLeafOption<PaintDataDispatcher *> setMaterialTypeOption(
 		"set material type",
 		"Set type of material you are going to use",
 		pcom::setMaterialType,
-		&paintCalculationContainer);
+		&paintCalculationDispatcher);
 
-	CustomLeafOption<PaintDataContainer *> setPaintConsumptionOption(
+	CustomLeafOption<PaintDataDispatcher *> setPaintConsumptionOption(
 		"set paint consumption",
 		"Set paint consumption value manually (paint and material type settings clears if a user enters a new value)",
 		pcom::setConsumption,
-		&paintCalculationContainer
+		&paintCalculationDispatcher
 	);
 
-	CustomLeafOption<PaintDataContainer *> setPaintDividerOption(
+	CustomLeafOption<PaintDataDispatcher *> setPaintDividerOption(
 		"set divider",
 		"Set divider of formula",
 		pcom::setDivider,
-		&paintCalculationContainer
+		&paintCalculationDispatcher
 	);
 
-	CustomLeafOption<PaintDataContainer *> setPaintPercentageOption(
+	CustomLeafOption<PaintDataDispatcher *> setPaintPercentageOption(
 		"set printing percent",
 		"Set percentage of sheet sealing",
 		pcom::setPercentage,
-		&paintCalculationContainer
+		&paintCalculationDispatcher
 	);
 
-	CustomLeafOption<PaintDataContainer *> setPaintWidthOption(
+	CustomLeafOption<PaintDataDispatcher *> setPaintWidthOption(
 		"set sheet width",
 		"Set width value of the sheet",
 		pcom::setSheetWidth,
-		&paintCalculationContainer
+		&paintCalculationDispatcher
 	);
 
-	CustomLeafOption<PaintDataContainer *> setPaintLengthOption(
+	CustomLeafOption<PaintDataDispatcher *> setPaintLengthOption(
 		"set sheet width",
 		"Set width value of the sheet",
 		pcom::setSheetLength,
-		&paintCalculationContainer
+		&paintCalculationDispatcher
 	);
 
-	CustomLeafOption<PaintDataContainer *> setPaintCirculationOption(
+	CustomLeafOption<PaintDataDispatcher *> setPaintCirculationOption(
 		"set circulation",
 		"set amount of edition",
 		pcom::setCirculation,
-		&paintCalculationContainer
+		&paintCalculationDispatcher
 	);
 
-	CustomLeafOption<PaintDataContainer *> setPaintReserveOption(
+	CustomLeafOption<PaintDataDispatcher *> setPaintReserveOption(
 		"set paint reserve",
 		"set minimal amount of paint for an edition",
 		pcom::setReserve,
-		&paintCalculationContainer
+		&paintCalculationDispatcher
 	);
 
-	CustomLeafOption<PaintDataContainer *> loadPaintCalculationPresetOption(
+	CustomLeafOption<PaintDataDispatcher *> loadPaintCalculationPresetOption(
 		"load preset",
 		"load values of existing preset",
 		pcom::loadPaintPreset,
-		&paintCalculationContainer
+		&paintCalculationDispatcher
 	);
 
-	CustomLeafOption<PaintDataContainer *> clearPaintCalculationValuesOption(
+	CustomLeafOption<PaintDataDispatcher *> clearPaintCalculationValuesOption(
 		"remove values",
 		"Clears data from every paint calculation value",
 		com::clearValues,
-		&paintCalculationContainer
+		&paintCalculationDispatcher
 	);
 
-	CustomLeafOption<PaintDataContainer *> calculatePaintAmountOption(
+	CustomLeafOption<PaintDataDispatcher *> calculatePaintAmountOption(
 		"calculate amount of paint",
-		"calculates required amount of paint based on other parameters",
+		"Calculates required amount of paint based on other parameters",
 		com::calculateResourceAmount,
-		&paintCalculationContainer
+		&paintCalculationDispatcher
+	);
+
+	CustomLeafOption<PaintDataDispatcher *> createPaintPresetOption(
+		"create paint calculation preset",
+		"Creates a new paint calculation preset based on entered values",
+		pcom::createPaintPreset,
+		&paintCalculationDispatcher
+	);
+
+	CustomLeafOption<PaintDataDispatcher *> updatePaintPresetOption(
+		"update paint calculation preset",
+		"Updated data in an existing paint calculation preset",
+		pcom::updatePaintPreset,
+		&paintCalculationDispatcher
+	);
+
+	CustomLeafOption<PaintDataDispatcher *> removePaintPresetOption(
+		"remove paint calculation preset",
+		"Removes an existing paint calculation preset",
+		pcom::removePaintPreset,
+		&paintCalculationDispatcher
 	);
 
 	BaseOptionContainer paintCalculation("paint calculation", "contains options to work with paint calculation data", {
@@ -138,71 +159,74 @@ int main() {
 		{'l', &loadPaintCalculationPresetOption},
 		{'R', &clearPaintCalculationValuesOption},
 		{'a', &calculatePaintAmountOption},
+		{'+', &createPaintPresetOption},
+		{'/', &updatePaintPresetOption},
+		{'-', &removePaintPresetOption}
 	});
 
-	LacquerDataContainer lacquerCalculationContainer(conn);
+	LacquerDataDispatcher lacquerCalculationDispatcher(conn);
 
-	CustomLeafOption<LacquerDataContainer *> writeLacquerParametersOption(
+	CustomLeafOption<LacquerDataDispatcher *> writeLacquerParametersOption(
 		"write values of parameters",
 		"Print current values of all lacquer calculation mode parameters",
 		com::writeParameters,
-		&lacquerCalculationContainer
+		&lacquerCalculationDispatcher
 	);
 
-	CustomLeafOption<LacquerDataContainer *> calculateLacquerAmountOption(
+	CustomLeafOption<LacquerDataDispatcher *> calculateLacquerAmountOption(
 		"calculate amount of lacquer",
 		"Calculates required amount of lacquer based on entered parameters",
 		com::calculateResourceAmount,
-		&lacquerCalculationContainer
+		&lacquerCalculationDispatcher
 	);
 
-	CustomLeafOption<LacquerDataContainer *> loadLacquerCalculationPresetOption(
+	CustomLeafOption<LacquerDataDispatcher *> loadLacquerCalculationPresetOption(
 		"load lacquer calculation preset",
 		"Loads values of selected preset into internal storage",
 		lcom::loadLacquerPreset,
-		&lacquerCalculationContainer
+		&lacquerCalculationDispatcher
 	);
 
-	CustomLeafOption<LacquerDataContainer *> clearLacquerCalculationValuesOption(
+	CustomLeafOption<LacquerDataDispatcher *> clearLacquerCalculationValuesOption(
 		"remove lacquer calculation data",
 		"Clears all entered lacquer calculation parameters",
 		com::clearValues,
-		&lacquerCalculationContainer
+		&lacquerCalculationDispatcher
 	);
 
-	CustomLeafOption<LacquerDataContainer *> setLacquerPercentageOption(
+	CustomLeafOption<LacquerDataDispatcher *> setLacquerPercentageOption(
 		"set lacquer percentage",
 		"Sets a percentage value of the lacquer coverage",
 		lcom::setPercentage,
-		&lacquerCalculationContainer
+		&lacquerCalculationDispatcher
 	);
 
-	CustomLeafOption<LacquerDataContainer *> setLacquerConsumptionOption(
+	CustomLeafOption<LacquerDataDispatcher *> setLacquerConsumptionOption(
 		"set lacquer consumption",
 		"Sets a consumption value of the lacquer",
 		lcom::setConsumption,
-		&lacquerCalculationContainer
+		&lacquerCalculationDispatcher
 	);
 
-	CustomLeafOption<LacquerDataContainer *> setLacquerSheetLengthOption(
+	CustomLeafOption<LacquerDataDispatcher *> setLacquerSheetLengthOption(
 		"set sheet length",
 		"Sets a length value of the sheet",
 		lcom::setSheetLength,
-		&lacquerCalculationContainer
+		&lacquerCalculationDispatcher
 	);
 
-	CustomLeafOption<LacquerDataContainer *> setLacquerSheetWidthOption(
+	CustomLeafOption<LacquerDataDispatcher *> setLacquerSheetWidthOption(
 		"set sheet width",
 		"Sets a width value of the sheet",
 		lcom::setSheetWidth,
-		&lacquerCalculationContainer
+		&lacquerCalculationDispatcher
 	);
 
-	CustomLeafOption<LacquerDataContainer *> setLacquerCirculationOption(
+	CustomLeafOption<LacquerDataDispatcher *> setLacquerCirculationOption(
 		"set circulation",
 		"Sets a number of sheets",
 		lcom::setCircualtion,
-		&lacquerCalculationContainer
+		&lacquerCalculationDispatcher
 	);
 
 	BaseOptionContainer lacquerCalculation("lacquer calculation", "contains options to work with lacquer calculation data", {
