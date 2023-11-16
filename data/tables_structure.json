@@ -27,5 +27,12 @@
 		"sheet_length",
 		"sheet_width",
 		"circulation"
+	],
+
+	"foil_calculation" :
+	[
+		"circulation",
+		"length",
+		"sheet_number",
 	]
 }

@@ -14,6 +14,7 @@
 #define PAINT_CONSUMPTION_TABLE "paint_consumption"
 #define PAINT_CALCULATION_TABLE "paint_calculation"
 #define LACQUER_CALCULATION_TABLE "lacquer_calculation"
+#define FOIL_CALCULATION_TABLE "foil_calculation"
 
 #define COLUMN_NAMES "column_names"
 #define PRESETS "presets"
@@ -108,7 +109,7 @@ std::vector<std::string> JsonConnection::getPaintPresetsNames() const {
 	return res;
 }
 
-std::vector<std::string> JsonConnection::getPaintColumns() const { return _data[PAINT_CALCULATION_TABLE][COLUMN_NAMES]; }
+std::vector<std::string> JsonConnection::getPaintPresetColumns() const { return _data[PAINT_CALCULATION_TABLE][COLUMN_NAMES]; }
 
 std::map<std::string, AutoValue> JsonConnection::getPaintPreset(std::string const & name) const {
 	nlohmann::json const & preset = _data[PAINT_CALCULATION_TABLE][PRESETS].at(name);
@@ -130,7 +131,7 @@ std::map<std::string, AutoValue> JsonConnection::getPaintPreset(std::string cons
 
 std::map<std::string, AutoValue> JsonConnection::getPaintPresetTemplate() const {
 	std::map<std::string, AutoValue> res;
-	for (std::string const & column : getPaintColumns())
+	for (std::string const & column : getPaintPresetColumns())
 		res[column] = NullValue();
 	return res;
 }
@@ -186,10 +187,10 @@ std::vector<std::string> JsonConnection::getLacquerPresetsNames() const {
 	return res;
 }
 
-std::vector<std::string> JsonConnection::getLacquerColumns() const { return _data[LACQUER_CALCULATION_TABLE][COLUMN_NAMES]; }
+std::vector<std::string> JsonConnection::getLacquerPresetColumns() const { return _data[LACQUER_CALCULATION_TABLE][COLUMN_NAMES]; }
 
 std::map<std::string, AutoValue> JsonConnection::getLacquerPreset(std::string const & name) const {
-	nlohmann::json const & preset = _data[LACQUER_CALCULATION_TABLE][PRESETS].at(name);
+	nlohmann::json const & preset = _data.at(LACQUER_CALCULATION_TABLE).at(PRESETS).at(name);
 
 	if (preset.is_null())
 		throw PresetDoesNotExistException(name);
@@ -208,13 +209,13 @@ std::map<std::string, AutoValue> JsonConnection::getLacquerPreset(std::string co
 
 std::map<std::string, AutoValue> JsonConnection::getLacquerPresetTemplate() const {
 	std::map<std::string, AutoValue> res;
-	for (std::string const & column : getLacquerColumns())
+	for (std::string const & column : getLacquerPresetColumns())
 		res[column] = NullValue();
 	return res;
 }
 
 void JsonConnection::createLacquerPreset(std::string const & name, std::map<std::string, AutoValue> const & data) {
-	nlohmann::json & presets = _data[LACQUER_CALCULATION_TABLE][PRESETS];
+	nlohmann::json & presets = _data.at(LACQUER_CALCULATION_TABLE).at(PRESETS);
 	if (presets.find(name) != presets.end())
 		throw PresetAlreadyExistsException(name);
 	presets[name] = nlohmann::basic_json<>();
@@ -225,7 +226,7 @@ void JsonConnection::createLacquerPreset(std::string const & name, std::map<std:
 }
 
 void JsonConnection::updateLacquerPreset(std::string const & name, std::map<std::string, AutoValue> const & data) {
-	nlohmann::json & presets = _data[LACQUER_CALCULATION_TABLE][PRESETS];
+	nlohmann::json & presets = _data.at(LACQUER_CALCULATION_TABLE).at(PRESETS);
 	if (presets.find(name) == presets.end())
 		throw PresetDoesNotExistException(name);
 	for (auto it = data.begin(); it != data.end(); ++it)
@@ -235,7 +236,75 @@ void JsonConnection::updateLacquerPreset(std::string const & name, std::map<std:
 }
 
 void JsonConnection::removeLacquerPreset(std::string const & name) {
-	nlohmann::json & presets = _data[LACQUER_CALCULATION_TABLE][PRESETS];
+	nlohmann::json & presets = _data.at(LACQUER_CALCULATION_TABLE).at(PRESETS);
+	if (presets.find(name) == presets.end())
+		throw PresetDoesNotExistException(name);
+	presets.erase(name);
+
+	upload();
+}
+
+
+// Queries for foil presets
+
+std::vector<std::string> JsonConnection::getFoilPresetNames() const {
+	std::vector<std::string> res;
+	nlohmann::json const & presets = _data.at(FOIL_CALCULATION_TABLE).at(PRESETS);
+	for (auto it = presets.begin(); it != presets.end(); ++it)
+		res.push_back(it.key());
+	return res;
+}
+
+std::vector<std::string> JsonConnection::getFoilPresetColumns() const { return _data.at(FOIL_CALCULATION_TABLE).at(COLUMN_NAMES); }
+
+std::map<std::string, AutoValue> JsonConnection::getFoilPreset(std::string const & name) const {
+	nlohmann::json const & preset = _data.at(FOIL_CALCULATION_TABLE).at(PRESETS).at(name);
+
+	if (preset.is_null())
+		throw PresetDoesNotExistException(name);
+
+	std::map<std::string, AutoValue> res;
+	for (auto it = preset.begin(); it != preset.end(); ++it) {
+		if (it.value().is_null())
+			res[it.key()] = NullValue();
+		else if (it.value().is_string())
+			res[it.key()] = it.value().get<std::string>();
+		else
+			res[it.key()] = it.value().dump();
+	}
+	return res;
+}
+
+std::map<std::string, AutoValue> JsonConnection::getFoilPresetTemplate() const {
+	std::map<std::string, AutoValue> res;
+	for (auto column : getFoilPresetColumns())
+		res.insert({column, NullValue()});
+	return res;
+}
+
+void JsonConnection::createFoilPreset(std::string const & name, std::map<std::string, AutoValue> const & data) {
+	nlohmann::json & presets = _data.at(FOIL_CALCULATION_TABLE).at(PRESETS);
+	if (presets.find(name) != presets.end())
+		throw PresetAlreadyExistsException(name);
+	presets[name] = nlohmann::basic_json<>();
+	for (auto it = data.begin(); it != data.end(); ++it)
+		presets[name][it->first] = (std::string)it->second;
+
+	upload();
+}
+
+void JsonConnection::updateFoilPreset(std::string const & name, std::map<std::string, AutoValue> const & data) {
+	nlohmann::json & presets = _data.at(FOIL_CALCULATION_TABLE).at(PRESETS);
+	if (presets.find(name) == presets.end())
+		throw PresetDoesNotExistException(name);
+	for (auto it = data.begin(); it != data.end(); ++it)
+		presets[name][it->first] = (std::string)it->second;
+
+	upload();
+}
+
+void JsonConnection::removeFoilPreset(std::string const & name) {
+	nlohmann::json & presets = _data.at(FOIL_CALCULATION_TABLE).at(PRESETS);
 	if (presets.find(name) == presets.end())
 		throw PresetDoesNotExistException(name);
 	presets.erase(name);

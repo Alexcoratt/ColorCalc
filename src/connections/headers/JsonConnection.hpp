@@ -29,7 +29,7 @@ public:
 
 	// Queires for paint presets
 	std::vector<std::string> getPaintPresetsNames() const;
-    std::vector<std::string> getPaintColumns() const;
+    std::vector<std::string> getPaintPresetColumns() const;
 	std::map<std::string, AutoValue> getPaintPreset(std::string const &) const;
 	std::map<std::string, AutoValue> getPaintPresetTemplate() const;
     void createPaintPreset(std::string const &, std::map<std::string, AutoValue> const &);
@@ -38,12 +38,21 @@ public:
 
 	// Queries for lacquer presets
     std::vector<std::string> getLacquerPresetsNames() const;
-    std::vector<std::string> getLacquerColumns() const;
+    std::vector<std::string> getLacquerPresetColumns() const;
     std::map<std::string, AutoValue> getLacquerPreset(std::string const &) const;
 	std::map<std::string, AutoValue> getLacquerPresetTemplate() const;
     void createLacquerPreset(std::string const &, std::map<std::string, AutoValue> const &);
     void updateLacquerPreset(std::string const &, std::map<std::string, AutoValue> const &);
     void removeLacquerPreset(std::string const &);
+
+	// Queries for foil presets
+    std::vector<std::string> getFoilPresetNames() const;
+    std::vector<std::string> getFoilPresetColumns() const;
+    std::map<std::string, AutoValue> getFoilPreset(std::string const &) const;
+    std::map<std::string, AutoValue> getFoilPresetTemplate() const;
+    void createFoilPreset(std::string const &, std::map<std::string, AutoValue> const &);
+    void updateFoilPreset(std::string const &, std::map<std::string, AutoValue> const &);
+    void removeFoilPreset(std::string const &);
 };
 
 #endif
