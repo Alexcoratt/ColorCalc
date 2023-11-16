@@ -8,6 +8,7 @@
 
 #include <AutoValue.hpp>
 
+// TODO: create ConnectionManager as IConnection's proxy to control saving data into databases
 class IConnection {
 public:
     virtual ~IConnection() {}

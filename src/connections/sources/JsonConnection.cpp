@@ -72,6 +72,7 @@ void JsonConnection::download() {
 	}
 }
 
+// TODO: make the upload() save info to the json file
 void JsonConnection::upload() {}
 
 void JsonConnection::syncronize() {
@@ -146,6 +147,8 @@ void JsonConnection::createPaintPreset(std::string const & name, std::map<std::s
 		else
 			presets[name][it->first] = value;
 	}
+
+	upload();
 }
 
 void JsonConnection::updatePaintPreset(std::string const & name, std::map<std::string, AutoValue> const & data) {
@@ -159,6 +162,8 @@ void JsonConnection::updatePaintPreset(std::string const & name, std::map<std::s
 		else
 			presets[name][it->first] = value;
 	}
+
+	upload();
 }
 
 void JsonConnection::removePaintPreset(std::string const & name) {
@@ -166,6 +171,8 @@ void JsonConnection::removePaintPreset(std::string const & name) {
 	if (presets.find(name) == presets.end())
 		throw PresetDoesNotExistException(name);
 	presets.erase(name);
+
+	upload();
 }
 
 
@@ -213,6 +220,8 @@ void JsonConnection::createLacquerPreset(std::string const & name, std::map<std:
 	presets[name] = nlohmann::basic_json<>();
 	for (auto it = data.begin(); it != data.end(); ++it)
 		presets[name][it->first] = (std::string)it->second;
+
+	upload();
 }
 
 void JsonConnection::updateLacquerPreset(std::string const & name, std::map<std::string, AutoValue> const & data) {
@@ -221,6 +230,8 @@ void JsonConnection::updateLacquerPreset(std::string const & name, std::map<std:
 		throw PresetDoesNotExistException(name);
 	for (auto it = data.begin(); it != data.end(); ++it)
 		presets[name][it->first] = (std::string)it->second;
+
+	upload();
 }
 
 void JsonConnection::removeLacquerPreset(std::string const & name) {
@@ -228,4 +239,6 @@ void JsonConnection::removeLacquerPreset(std::string const & name) {
 	if (presets.find(name) == presets.end())
 		throw PresetDoesNotExistException(name);
 	presets.erase(name);
+
+	upload();
 }
