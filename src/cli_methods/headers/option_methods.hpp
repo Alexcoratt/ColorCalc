@@ -40,6 +40,10 @@ namespace lacquer_calculation_option_methods {
 	void setCircualtion(LacquerDataDispatcher *);
 	void loadLacquerPreset(LacquerDataDispatcher *);
 
+	void createLacquerPreset(LacquerDataDispatcher *);
+	void updateLacquerPreset(LacquerDataDispatcher *);
+	void removeLacquerPreset(LacquerDataDispatcher *);
+
 }
 
 #endif

@@ -72,7 +72,7 @@ void setVariant(std::vector<std::string> const & types, std::function<std::strin
 	set(types[readVariant(prompt, types)]);
 }
 
-void com::clearValues(AbstractDataDispatcher * container) {
+void com::clearValues(AbstractDataDispatcher * dispatcher) {
 	std::vector<std::string> const variants = {"no", "yes"};
 	int answer = 0;
 
@@ -87,64 +87,64 @@ void com::clearValues(AbstractDataDispatcher * container) {
 	} catch (DefaultOptionIsChosenException const &) {}
 
 	if (answer == 1) {
-		container->clear();
+		dispatcher->clear();
 		std::cout << "Submitted" << std::endl << "Fields are cleared" << std::endl;
 	} else
 		std::cout << "Aborted" << std::endl;
 }
 
-void com::calculateResourceAmount(AbstractDataDispatcher const * container) {
+void com::calculateResourceAmount(AbstractDataDispatcher const * dispatcher) {
 	try {
-		double paintAmount = container->calculate();
+		double paintAmount = dispatcher->calculate();
 		std::cout << "Required amount equals " << paintAmount << "kg" << std::endl;
 	} catch (UndefinedValueException const & err) {
 		std::cerr << "Error: " << err.what() << std::endl;
 	}
 }
 
-void com::writeParameters(AbstractDataDispatcher const * container) {
+void com::writeParameters(AbstractDataDispatcher const * dispatcher) {
 	try {
-		auto presetName = container->getPresetName();
+		auto presetName = dispatcher->getPresetName();
 		std::cout << "Preset name:\t" << presetName << std::endl << std::endl;
 	} catch (UndefinedValueException const &) {}
 
-	auto params = container->toStringMap();
+	auto params = dispatcher->toStringMap();
 	for (auto iter = params.begin(); iter != params.end(); ++iter)
 		std::cout << iter->first << ":\t" << iter->second << std::endl;
 }
 
-void pcom::setPaintType(PaintDataDispatcher * container) {
+void pcom::setPaintType(PaintDataDispatcher * dispatcher) {
 	std::cout << "Select paint type" << std::endl;
 	try {
 		setVariant(
-			container->getConnection()->getPaintTypes(),
-			[&]() { return container->getPaintType(); },
-			[&](std::string type) { container->setPaintType(type); }
+			dispatcher->getConnection()->getPaintTypes(),
+			[&]() { return dispatcher->getPaintType(); },
+			[&](std::string type) { dispatcher->setPaintType(type); }
 		);
 	} catch (DefaultOptionIsChosenException const &) {}
 
 	std::cout << "Paint type ";
 	try {
-		std::string type = container->getPaintType();
+		std::string type = dispatcher->getPaintType();
 		std::cout << "\"" << type << "\" is set" << std::endl;
 	} catch (UndefinedValueException const &) {
 		std::cout << "is undefined" << std::endl;
 	}
 }
 
-void pcom::setMaterialType(PaintDataDispatcher * container) {
+void pcom::setMaterialType(PaintDataDispatcher * dispatcher) {
 	std::cout << "Select material type" << std::endl;
 	try {
 		setVariant(
-			container->getConnection()->getMaterialTypes(),
-			[&]() { return container->getMaterialType(); },
-			[&](std::string type) { container->setMaterialType(type); }
+			dispatcher->getConnection()->getMaterialTypes(),
+			[&]() { return dispatcher->getMaterialType(); },
+			[&](std::string type) { dispatcher->setMaterialType(type); }
 		);
 	} catch (DefaultOptionIsChosenException const &) {}
 
 	std::cout << "Material type ";
 	try {
-		std::string type = container->getMaterialType();
+		std::string type = dispatcher->getMaterialType();
 		std::cout << "\"" << type << "\" is set" << std::endl;
 	} catch (UndefinedValueException const &) {
 		std::cout << "is undefined" << std::endl;
@@ -172,12 +172,12 @@ void setValue(std::function<T()> getter, std::function<void(T)> setter, std::fun
 	} catch (DefaultOptionIsChosenException const &) {}
 }
 
-void pcom::setConsumption(PaintDataDispatcher * container) {
+void pcom::setConsumption(PaintDataDispatcher * dispatcher) {
 	std::cout << "Set paint consumption value" << std::endl;
 
 	setValue<double> (
-		[&container]() { return container->getPaintConsumption(); },
-		[&container](double value) { container->setPaintConsumption(value); },
+		[&]() { return dispatcher->getPaintConsumption(); },
+		[&](double value) { dispatcher->setPaintConsumption(value); },
 		[](std::string line) { return std::stod(line); },
 		[](double value) {
 			if (value > 0)
@@ -188,19 +188,19 @@ void pcom::setConsumption(PaintDataDispatcher * container) {
 
 	std::cout << "Paint consumption ";
 	try {
-		auto paintConsumption = container->getPaintConsumption();
+		auto paintConsumption = dispatcher->getPaintConsumption();
 		std::cout << "value " << paintConsumption << " is set" << std::endl;
 	} catch (UndefinedValueException const &) {
 		std::cout << "is undefined" << std::endl;
 	}
 }
 
-void pcom::setDivider(PaintDataDispatcher * container) {
+void pcom::setDivider(PaintDataDispatcher * dispatcher) {
 	std::cout << "Set divider value" << std::endl;
 
 	setValue<double> (
-		[&container]() { return container->getDivider(); },
-		[&container](double value) { container->setDivider(value); },
+		[&]() { return dispatcher->getDivider(); },
+		[&](double value) { dispatcher->setDivider(value); },
 		[](std::string line) { return std::stod(line); },
 		[](double value) {
 			if (value > 0)
@@ -211,19 +211,19 @@ void pcom::setDivider(PaintDataDispatcher * container) {
 
 	std::cout << "Divider ";
 	try {
-		auto divider = container->getDivider();
+		auto divider = dispatcher->getDivider();
 		std::cout << "value " << divider << " is set" << std::endl;
 	} catch (UndefinedValueException const &) {
 		std::cout << "is undefined" << std::endl;
 	}
 }
 
-void pcom::setPercentage(PaintDataDispatcher * container) {
+void pcom::setPercentage(PaintDataDispatcher * dispatcher) {
 	std::cout << "Set percentage value" << std::endl;
 
 	setValue<double> (
-		[&container]() { return container->getPercentage(); },
-		[&container](double value) { container->setPercentage(value); },
+		[&]() { return dispatcher->getPercentage(); },
+		[&](double value) { dispatcher->setPercentage(value); },
 		[](std::string line) { return std::stod(line); },
 		[](double value) {
 			if (value > 0 && value <= 100)
@@ -234,19 +234,19 @@ void pcom::setPercentage(PaintDataDispatcher * container) {
 
 	std::cout << "Percentage ";
 	try {
-		auto percentage = container->getPercentage();
+		auto percentage = dispatcher->getPercentage();
 		std::cout << "value " << percentage << " is set" << std::endl;
 	} catch (UndefinedValueException const &) {
 		std::cout << "is undefined" << std::endl;
 	}
 }
 
-void pcom::setSheetWidth(PaintDataDispatcher * container) {
+void pcom::setSheetWidth(PaintDataDispatcher * dispatcher) {
 	std::cout << "Set sheet width value" << std::endl;
 
 	setValue<double> (
-		[&container]() { return container->getSheetWidth(); },
-		[&container](double value) { container->setSheetWidth(value); },
+		[&]() { return dispatcher->getSheetWidth(); },
+		[&](double value) { dispatcher->setSheetWidth(value); },
 		[](std::string line) { return std::stod(line); },
 		[](double value) {
 			if (value > 0)
@@ -257,19 +257,19 @@ void pcom::setSheetWidth(PaintDataDispatcher * container) {
 
 	std::cout << "Sheet width ";
 	try {
-		auto sheetWidth = container->getSheetWidth();
+		auto sheetWidth = dispatcher->getSheetWidth();
 		std::cout << "value " << sheetWidth << " is set" << std::endl;
 	} catch (UndefinedValueException const &) {
 		std::cout << "is undefined" << std::endl;
 	}
 }
 
-void pcom::setSheetLength(PaintDataDispatcher * container) {
+void pcom::setSheetLength(PaintDataDispatcher * dispatcher) {
 	std::cout << "Set sheet length value" << std::endl;
 
 	setValue<double> (
-		[&container]() { return container->getSheetLength(); },
-		[&container](double value) { container->setSheetLength(value); },
+		[&]() { return dispatcher->getSheetLength(); },
+		[&](double value) { dispatcher->setSheetLength(value); },
 		[](std::string line) { return std::stod(line); },
 		[](double value) {
 			if (value > 0)
@@ -280,19 +280,19 @@ void pcom::setSheetLength(PaintDataDispatcher * container) {
 
 	std::cout << "Sheet length ";
 	try {
-		auto sheetLength = container->getSheetLength();
+		auto sheetLength = dispatcher->getSheetLength();
 		std::cout << "value " << sheetLength << " is set" << std::endl;
 	} catch (UndefinedValueException const &) {
 		std::cout << "is undefined" << std::endl;
 	}
 }
 
-void pcom::setCirculation(PaintDataDispatcher * container) {
+void pcom::setCirculation(PaintDataDispatcher * dispatcher) {
 	std::cout << "Set circulation value" << std::endl;
 
 	setValue<unsigned long> (
-		[&container]() { return container->getCirculation(); },
-		[&container](unsigned long value) { container->setCirculation(value); },
+		[&]() { return dispatcher->getCirculation(); },
+		[&](unsigned long value) { dispatcher->setCirculation(value); },
 		[](std::string line) { return std::stoul(line); },
 		[](unsigned long value) {
 			if (value > 0)
@@ -303,19 +303,19 @@ void pcom::setCirculation(PaintDataDispatcher * container) {
 
 	std::cout << "Circulation ";
 	try {
-		auto circulation = container->getCirculation();
+		auto circulation = dispatcher->getCirculation();
 		std::cout << "value " << circulation << " is set" << std::endl;
 	} catch (UndefinedValueException const &) {
 		std::cout << "is undefined" << std::endl;
 	}
 }
 
-void pcom::setReserve(PaintDataDispatcher * container) {
+void pcom::setReserve(PaintDataDispatcher * dispatcher) {
 	std::cout << "Set paint reserve value" << std::endl;
 
 	setValue<double>(
-		[&container]() { return container->getPaintReserve(); },
-		[&container](double value) { container->setPaintReserve(value); },
+		[&]() { return dispatcher->getPaintReserve(); },
+		[&](double value) { dispatcher->setPaintReserve(value); },
 		[](std::string line) { return std::stod(line); },
 		[](double value) {
 			if (value > 0)
@@ -326,52 +326,51 @@ void pcom::setReserve(PaintDataDispatcher * container) {
 
 	std::cout << "Paint reserve ";
 	try {
-		auto paintReserve = container->getPaintReserve();
+		auto paintReserve = dispatcher->getPaintReserve();
 		std::cout << "value " << paintReserve << " is set" << std::endl;
 	} catch (UndefinedValueException const &) {
 		std::cout << "is undefined" << std::endl;
 	}
 }
 
-void pcom::loadPaintPreset(PaintDataDispatcher * container) {
-	std::vector<std::string> presets = container->getConnection()->getPaintPresetsNames();
+void pcom::loadPaintPreset(PaintDataDispatcher * dispatcher) {
+	std::vector<std::string> presets = dispatcher->getConnection()->getPaintPresetsNames();
 
 	std::cout << "Select the preset to load" << std::endl;
 	try {
 		setVariant(
 			presets,
-			[&]() { return container->getPresetName(); },
-			[&](std::string name) { container->setPreset(name); }
+			[&]() { return dispatcher->getPresetName(); },
+			[&](std::string name) { dispatcher->setPreset(name); }
 		);
 		std::cout << "Preset ";
-		std::string presetName = container->getPresetName();
+		std::string presetName = dispatcher->getPresetName();
 		std::cout << "named \"" << presetName << "\" is loaded" << std::endl;
+		return;
 	} catch (DefaultOptionIsChosenException const &) {
 	} catch (UndefinedValueException const &) {}
 	std::cout << "is undefined" << std::endl;
 }
 
-void pcom::createPaintPreset(PaintDataDispatcher * container) {
-	std::vector<std::string> presets = container->getConnection()->getPaintPresetsNames();
-
-	std::cout << "Enter name of the new preset (leave field empty to abort operation)" << std::endl;
+void pcom::createPaintPreset(PaintDataDispatcher * dispatcher) {
+	std::cout << "Enter name of the new paint calculation preset (leave field empty to abort operation)" << std::endl;
 
 	try {
 		std::string name = readValue<std::string>(
 			"Enter name (default=abort): ",
 			[](std::string line) { return line; }
 		);
-		container->createPreset(name);
+		dispatcher->createPreset(name);
 		std::cout << "Preset named \"" << name << "\" created" << std::endl;
 	} catch (DefaultOptionIsChosenException const &) {
 		std::cout << "Aborted" << std::endl;
 	}
 }
 
-void pcom::updatePaintPreset(PaintDataDispatcher * container) {
-	std::vector<std::string> presets = container->getConnection()->getPaintPresetsNames();
+void pcom::updatePaintPreset(PaintDataDispatcher * dispatcher) {
+	std::vector<std::string> presets = dispatcher->getConnection()->getPaintPresetsNames();
 
-	std::cout << "Select name of the preset you want to update (leave field empty to abort operation)" << std::endl;
+	std::cout << "Select name of the paint calculation preset you want to update (leave field empty to abort operation)" << std::endl;
 	std::string presetName;
 
 	try {
@@ -379,7 +378,7 @@ void pcom::updatePaintPreset(PaintDataDispatcher * container) {
 			presets,
 			[]() { return "abort"; },
 			[&](std::string name) {
-				container->updatePreset(name);
+				dispatcher->updatePreset(name);
 				presetName = name;
 			}
 		);
@@ -389,10 +388,10 @@ void pcom::updatePaintPreset(PaintDataDispatcher * container) {
 	}
 }
 
-void pcom::removePaintPreset(PaintDataDispatcher * container) {
-	std::vector<std::string> presets = container->getConnection()->getPaintPresetsNames();
+void pcom::removePaintPreset(PaintDataDispatcher * dispatcher) {
+	std::vector<std::string> presets = dispatcher->getConnection()->getPaintPresetsNames();
 
-	std::cout << "Select name of the preset you want to remove (leave field empty to abort operation)" << std::endl;
+	std::cout << "Select name of the paint calculation preset you want to remove (leave field empty to abort operation)" << std::endl;
 	std::string presetName;
 
 	try {
@@ -400,7 +399,7 @@ void pcom::removePaintPreset(PaintDataDispatcher * container) {
 			presets,
 			[]() { return "abort"; },
 			[&](std::string name) {
-				container->getConnection()->removePaintPreset(name);
+				dispatcher->getConnection()->removePaintPreset(name);
 				presetName = name;
 			}
 		);
@@ -411,12 +410,12 @@ void pcom::removePaintPreset(PaintDataDispatcher * container) {
 }
 
 
-void lcom::setPercentage(LacquerDataDispatcher * container) {
+void lcom::setPercentage(LacquerDataDispatcher * dispatcher) {
 	std::cout << "Set percentage of lacquer coverage" << std::endl;
 
 	setValue<double>(
-		[&container]() { return container->getPercentage(); },
-		[&container](double value) { container->setPercentage(value); },
+		[&]() { return dispatcher->getPercentage(); },
+		[&](double value) { dispatcher->setPercentage(value); },
 		[](std::string line) { return std::stod(line); },
 		[](double value) {
 			if (value > 0 && value <= 100)
@@ -427,19 +426,19 @@ void lcom::setPercentage(LacquerDataDispatcher * container) {
 
 	std::cout << "Lacquer coverage percentage ";
 	try {
-		auto value = container->getPercentage();
+		auto value = dispatcher->getPercentage();
 		std::cout << "value " << value << " is set" << std::endl;
 	} catch (UndefinedValueException const &) {
 		std::cout << "is undefined" << std::endl;
 	}
 }
 
-void lcom::setConsumption(LacquerDataDispatcher * container) {
+void lcom::setConsumption(LacquerDataDispatcher * dispatcher) {
 	std::cout << "Set consumption of lacquer" << std::endl;
 
 	setValue<double>(
-		[&container]() { return container->getLacquerConsumption(); },
-		[&container](double value) { container->setLacquerConsumption(value); },
+		[&]() { return dispatcher->getLacquerConsumption(); },
+		[&](double value) { dispatcher->setLacquerConsumption(value); },
 		[](std::string line) { return std::stod(line); },
 		[](double value) {
 			if (value > 0)
@@ -450,19 +449,19 @@ void lcom::setConsumption(LacquerDataDispatcher * container) {
 
 	std::cout << "Lacquer consumption ";
 	try {
-		auto value = container->getLacquerConsumption();
+		auto value = dispatcher->getLacquerConsumption();
 		std::cout << "value " << value << " is set" << std::endl;
 	} catch (UndefinedValueException const &) {
 		std::cout << "is undefined" << std::endl;
 	}
 }
 
-void lcom::setSheetLength(LacquerDataDispatcher * container) {
+void lcom::setSheetLength(LacquerDataDispatcher * dispatcher) {
 	std::cout << "Set length of the sheet" << std::endl;
 
 	setValue<double>(
-		[&container]() { return container->getSheetLength(); },
-		[&container](double value) { container->setSheetLength(value); },
+		[&]() { return dispatcher->getSheetLength(); },
+		[&](double value) { dispatcher->setSheetLength(value); },
 		[](std::string line) { return std::stod(line); },
 		[](double value) {
 			if (value > 0)
@@ -473,19 +472,19 @@ void lcom::setSheetLength(LacquerDataDispatcher * container) {
 
 	std::cout << "Length of the sheet ";
 	try {
-		auto value = container->getSheetLength();
+		auto value = dispatcher->getSheetLength();
 		std::cout << "value " << value << " is set" << std::endl;
 	} catch (UndefinedValueException const &) {
 		std::cout << "is undefined" << std::endl;
 	}
 }
 
-void lcom::setSheetWidth(LacquerDataDispatcher * container) {
+void lcom::setSheetWidth(LacquerDataDispatcher * dispatcher) {
 	std::cout << "Set width of the sheet" << std::endl;
 
 	setValue<double>(
-		[&container]() { return container->getSheetWidth(); },
-		[&container](double value) { container->setSheetWidth(value); },
+		[&]() { return dispatcher->getSheetWidth(); },
+		[&](double value) { dispatcher->setSheetWidth(value); },
 		[](std::string line) { return std::stod(line); },
 		[](double value) {
 			if (value > 0)
@@ -496,19 +495,19 @@ void lcom::setSheetWidth(LacquerDataDispatcher * container) {
 
 	std::cout << "Width of the sheet ";
 	try {
-		auto value = container->getSheetWidth();
+		auto value = dispatcher->getSheetWidth();
 		std::cout << "value " << value << " is set" << std::endl;
 	} catch (UndefinedValueException const &) {
 		std::cout << "is undefined" << std::endl;
 	}
 }
 
-void lcom::setCircualtion(LacquerDataDispatcher * container) {
+void lcom::setCircualtion(LacquerDataDispatcher * dispatcher) {
 	std::cout << "Set circulation" << std::endl;
 
 	setValue<std::size_t>(
-		[&container]() { return container->getCirculation(); },
-		[&container](std::size_t value) { container->setCirculation(value); },
+		[&]() { return dispatcher->getCirculation(); },
+		[&](std::size_t value) { dispatcher->setCirculation(value); },
 		[](std::string line) { return std::stoul(line); },
 		[](std::size_t value) {
 			if (value > 0)
@@ -519,27 +518,85 @@ void lcom::setCircualtion(LacquerDataDispatcher * container) {
 
 	std::cout << "Circulation ";
 	try {
-		auto value = container->getCirculation();
+		auto value = dispatcher->getCirculation();
 		std::cout << "value " << value << " is set" << std::endl;
 	} catch (UndefinedValueException const &) {
 		std::cout << "is undefined" << std::endl;
 	}
 }
 
-void lcom::loadLacquerPreset(LacquerDataDispatcher * container) {
-	std::vector<std::string> presets = container->getConnection()->getLacquerPresetsNames();
+void lcom::loadLacquerPreset(LacquerDataDispatcher * dispatcher) {
+	std::vector<std::string> presets = dispatcher->getConnection()->getLacquerPresetsNames();
 
 	std::cout << "Select the preset to load" << std::endl;
 	try {
 		setVariant(
 			presets,
-			[&]() { return container->getPresetName(); },
-			[&](std::string name) { container->setPreset(name); }
+			[&]() { return dispatcher->getPresetName(); },
+			[&](std::string name) { dispatcher->setPreset(name); }
 		);
 		std::cout << "Preset ";
-		std::string presetName = container->getPresetName();
+		std::string presetName = dispatcher->getPresetName();
 		std::cout << "named \"" << presetName << "\" is loaded" << std::endl;
+		return;
 	} catch (DefaultOptionIsChosenException const &) {
 	} catch (UndefinedValueException const &) {}
 	std::cout << "is undefined" << std::endl;
+}
+
+void lcom::createLacquerPreset(LacquerDataDispatcher * dispatcher) {
+	std::cout << "Enter name of the new lacquer calculation preset (leave field empty to abort operation)" << std::endl;
+
+	try {
+		std::string name = readValue<std::string>(
+			"Enter name (default=abort): ",
+			[](std::string line) { return line; }
+		);
+		dispatcher->createPreset(name);
+		std::cout << "Preset named \"" << name << "\" created" << std::endl;
+	} catch (DefaultOptionIsChosenException const &) {
+		std::cout << "Aborted" << std::endl;
+	}
+}
+
+void lcom::updateLacquerPreset(LacquerDataDispatcher * dispatcher) {
+	std::vector<std::string> presets = dispatcher->getConnection()->getLacquerPresetsNames();
+
+	std::cout << "Select name of the lacquer calculation preset you want to update (leave field empty to abort operation)" << std::endl;
+	std::string presetName;
+
+	try {
+		setVariant(
+			presets,
+			[]() { return "abort"; },
+			[&](std::string name) {
+				dispatcher->updatePreset(name);
+				presetName = name;
+			}
+		);
+		std::cout << "Preset named \"" << presetName << "\" updated" << std::endl;
+	} catch (DefaultOptionIsChosenException const &) {
+		std::cout << "Aborted" << std::endl;
+	}
+}
+
+void lcom::removeLacquerPreset(LacquerDataDispatcher * dispatcher) {
+	std::vector<std::string> presets = dispatcher->getConnection()->getLacquerPresetsNames();
+
+	std::cout << "Select name of the lacquer calculation preset you want to remove (leave field empty to abort operation)" << std::endl;
+	std::string presetName;
+
+	try {
+		setVariant(
+			presets,
+			[]() { return "abort"; },
+			[&](std::string name) {
+				dispatcher->getConnection()->removeLacquerPreset(name);
+				presetName = name;
+			}
+		);
+		std::cout << "Preset named \"" << presetName << "\" removed" << std::endl;
+	} catch (DefaultOptionIsChosenException const &) {
+		std::cout << "Aborted" << std::endl;
+	}
 }

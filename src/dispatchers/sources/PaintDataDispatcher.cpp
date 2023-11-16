@@ -41,7 +41,10 @@ std::map<std::string, std::string> PaintDataDispatcher::toStringMap() const {
 	return res;
 }
 
-void PaintDataDispatcher::clear() { _params = _conn->getPaintPresetTemplate(); }
+void PaintDataDispatcher::clear() {
+	_presetName.clear();
+	_params = _conn->getPaintPresetTemplate();
+}
 
 std::string PaintDataDispatcher::getPresetName() const {
 	if (_presetName.isNull())

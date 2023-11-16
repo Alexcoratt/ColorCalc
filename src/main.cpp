@@ -229,6 +229,27 @@ int main() {
 		&lacquerCalculationDispatcher
 	);
 
+	CustomLeafOption<LacquerDataDispatcher *> createLacquerPresetOption(
+		"create lacquer preset",
+		"Creates a new lacquer calculation preset",
+		lcom::createLacquerPreset,
+		&lacquerCalculationDispatcher
+	);
+
+	CustomLeafOption<LacquerDataDispatcher *> updateLacquerPresetOption(
+		"update lacquer preset",
+		"Updates the selected lacquer calculation preset",
+		lcom::updateLacquerPreset,
+		&lacquerCalculationDispatcher
+	);
+
+	CustomLeafOption<LacquerDataDispatcher *> removeLacquerPresetOption(
+		"remove lacquer preset",
+		"Removes the selected lacquer calculation preset",
+		lcom::removeLacquerPreset,
+		&lacquerCalculationDispatcher
+	);
+
 	BaseOptionContainer lacquerCalculation("lacquer calculation", "contains options to work with lacquer calculation data", {
 		{'w', &writeLacquerParametersOption},
 		{'a', &calculateLacquerAmountOption},
@@ -238,7 +259,10 @@ int main() {
 		{'c', &setLacquerConsumptionOption},
 		{'L', &setLacquerSheetLengthOption},
 		{'W', &setLacquerSheetWidthOption},
-		{'C', &setLacquerCirculationOption}
+		{'C', &setLacquerCirculationOption},
+		{'+', &createLacquerPresetOption},
+		{'/', &updateLacquerPresetOption},
+		{'-', &removeLacquerPresetOption}
 	});
 
 	BaseOptionContainer root("root", BASE_HELP_TEXT, {

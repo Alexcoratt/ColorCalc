@@ -70,7 +70,10 @@ void LacquerDataDispatcher::updatePreset(std::string const & name) {
 	_conn->updateLacquerPreset(name, _params);
 }
 
-void LacquerDataDispatcher::clear() { _params = _conn->getLacquerPresetTemplate(); }
+void LacquerDataDispatcher::clear() {
+	_presetName.clear();
+	_params = _conn->getLacquerPresetTemplate();
+}
 
 double LacquerDataDispatcher::getPercentage() const { return ccm::getParam(_params, PERCENTAGE); }
 void LacquerDataDispatcher::setPercentage(double value) {
