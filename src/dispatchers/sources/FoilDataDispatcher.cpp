@@ -52,7 +52,10 @@ void FoilDataDispatcher::setPreset(std::string const & name) {
 	_presetName = name;
 }
 
-void FoilDataDispatcher::createPreset(std::string const & name) { _conn->createFoilPreset(name, _params); }
+void FoilDataDispatcher::createPreset(std::string const & name) {
+	_conn->createFoilPreset(name, _params);
+	_presetName = name;
+}
 void FoilDataDispatcher::updatePreset(std::string const & name) { _conn->updateFoilPreset(name, _params); }
 void FoilDataDispatcher::removePreset(std::string const & name) { _conn->removeFoilPreset(name); }
 

@@ -83,6 +83,7 @@ void PaintDataDispatcher::setPreset(std::string const & name) {
 
 void PaintDataDispatcher::createPreset(std::string const & name) {
 	_conn->createPaintPreset(name, _params);
+	_presetName = name;
 }
 
 void PaintDataDispatcher::updatePreset(std::string const & name) {

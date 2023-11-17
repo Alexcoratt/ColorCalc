@@ -638,7 +638,7 @@ void fcom::setWidthReserve(FoilDataDispatcher * dispatcher) {
 
 	std::cout << "Width reserve of the roller ";
 	try {
-		auto value = dispatcher->getLength();
+		auto value = dispatcher->getWidthReserve();
 		std::cout << "value " << value << " is set" << std::endl;
 	} catch (UndefinedValueException const &) {
 		std::cout << "is undefined" << std::endl;

@@ -65,6 +65,7 @@ void LacquerDataDispatcher::setPreset(std::string const & name) {
 
 void LacquerDataDispatcher::createPreset(std::string const & name) {
 	_conn->createLacquerPreset(name, _params);
+	_presetName = name;
 }
 
 void LacquerDataDispatcher::updatePreset(std::string const & name) {

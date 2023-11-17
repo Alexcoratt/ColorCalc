@@ -46,6 +46,15 @@ public:
     virtual void createFoilPreset(std::string const &, std::map<std::string, AutoValue> const &) = 0;
     virtual void updateFoilPreset(std::string const &, std::map<std::string, AutoValue> const &) = 0;
     virtual void removeFoilPreset(std::string const &) = 0;
+
+    // Queries for foil roll presets
+    virtual std::vector<std::string> getFoilRollPresetNames() const = 0;
+    virtual std::vector<std::string> getFoilRollPresetColumns() const = 0;
+    virtual std::map<std::string, AutoValue> getFoilRollPreset(std::string const &) const = 0;
+    virtual std::map<std::string, AutoValue> getFoilRollPresetTemplate() const = 0;
+    virtual void createFoilRollPreset(std::string const &, std::map<std::string, AutoValue> const &) = 0;
+    virtual void updateFoilRollPreset(std::string const &, std::map<std::string, AutoValue> const &) = 0;
+    virtual void removeFoilRollPreset(std::string const &) = 0;
 };
 
 #endif

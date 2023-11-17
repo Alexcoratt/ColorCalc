@@ -312,7 +312,7 @@ int main() {
 
 	CustomLeafOption<FoilDataDispatcher *> calculateFoilLengthOption(
 		"calculate foil length",
-		"Calculates length of the foil roller",
+		"Calculates length of the foil roll",
 		fcom::calculateFoilRollerLength,
 		&foilDataDispatcher
 	);

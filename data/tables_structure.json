@@ -35,5 +35,11 @@
 		"length",
 		"sheet_number",
 		"width_reserve"
+	],
+
+	"foil_rolls" :
+	[
+		"length",
+		"width"
 	]
 }
