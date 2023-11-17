@@ -4,6 +4,7 @@
 #include "PaintDataDispatcher.hpp"
 #include "LacquerDataDispatcher.hpp"
 #include "FoilDataDispatcher.hpp"
+#include "FoilRollsDataDispatcher.hpp"
 
 namespace common_option_methods {
 
@@ -51,6 +52,14 @@ namespace foil_calculation_option_methods {
 	void setWidthReserve(FoilDataDispatcher *);
 	void loadFoilPreset(FoilDataDispatcher *);
 	void calculateFoilRollerLength(FoilDataDispatcher const *);
+
+}
+
+namespace foil_rolls_option_methods {
+
+	void setLength(FoilRollsDataDispatcher *);
+	void setWidth(FoilRollsDataDispatcher *);
+	void loadFoilRollPreset(FoilRollsDataDispatcher *);
 
 }
 
