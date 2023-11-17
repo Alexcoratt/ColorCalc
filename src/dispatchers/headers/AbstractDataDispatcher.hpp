@@ -8,11 +8,15 @@
 
 #include <AutoValue.hpp>
 
+#include "IConnection.hpp"
+
 #include "UndefinedValueException.hpp"
 
 class AbstractDataDispatcher {
 public:
 	virtual ~AbstractDataDispatcher() {}
+
+	virtual IConnection * getConnection() = 0;
 
 	virtual std::vector<std::string> getAvailablePresetNames() const = 0;
 	virtual std::vector<std::string> getParamNames() const = 0;

@@ -20,7 +20,7 @@ namespace ccm = common_container_methods;
 
 PaintDataDispatcher::PaintDataDispatcher(IConnection * conn) : _conn(conn), _params(conn->getPaintPresetTemplate()) {}
 
-IConnection * PaintDataDispatcher::getConnection() const { return _conn; }
+IConnection * PaintDataDispatcher::getConnection() { return _conn; }
 
 std::vector<std::string> PaintDataDispatcher::getAvailablePresetNames() const { return _conn->getPaintPresetNames(); }
 

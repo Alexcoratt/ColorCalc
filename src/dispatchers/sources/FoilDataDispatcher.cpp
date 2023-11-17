@@ -9,7 +9,7 @@ namespace ccm = common_container_methods;
 
 FoilDataDispatcher::FoilDataDispatcher(IConnection * conn) : _conn(conn), _params(conn->getFoilPresetTemplate()) {}
 
-IConnection * FoilDataDispatcher::getConnection() const { return _conn; }
+IConnection * FoilDataDispatcher::getConnection() { return _conn; }
 
 std::vector<std::string> FoilDataDispatcher::getAvailablePresetNames() const { return _conn->getFoilPresetNames(); }
 

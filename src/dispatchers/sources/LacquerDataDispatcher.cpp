@@ -14,7 +14,7 @@ namespace ccm = common_container_methods;
 
 LacquerDataDispatcher::LacquerDataDispatcher(IConnection * conn) : _conn(conn), _params(conn->getLacquerPresetTemplate()) {}
 
-IConnection * LacquerDataDispatcher::getConnection() const { return _conn; }
+IConnection * LacquerDataDispatcher::getConnection() { return _conn; }
 
 std::vector<std::string> LacquerDataDispatcher::getAvailablePresetNames() const { return _conn->getLacquerPresetNames(); }
 

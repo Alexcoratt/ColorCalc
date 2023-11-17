@@ -15,7 +15,7 @@ private:
 public:
 	PaintDataDispatcher(IConnection *);
 
-	IConnection * getConnection() const;
+	IConnection * getConnection();
 
 	std::vector<std::string> getAvailablePresetNames() const;
 	std::vector<std::string> getParamNames() const;
