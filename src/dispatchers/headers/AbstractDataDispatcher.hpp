@@ -21,8 +21,10 @@ public:
 
 	virtual std::string getPresetName() const = 0;
 	virtual void setPreset(std::string const &) = 0;
+
 	virtual void createPreset(std::string const &) = 0;
 	virtual void updatePreset(std::string const &) = 0;
+	virtual void removePreset(std::string const &) = 0;
 
 	virtual double calculate() const = 0;
 };

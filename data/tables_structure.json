@@ -34,5 +34,6 @@
 		"circulation",
 		"length",
 		"sheet_number",
+		"reserve"
 	]
 }

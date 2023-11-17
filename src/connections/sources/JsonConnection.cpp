@@ -42,6 +42,7 @@ nlohmann::json compose(nlohmann::json const & structure, nlohmann::json const & 
 
 		res[tableName] = composedTable;
 	}
+
 	return res;
 }
 
@@ -103,16 +104,16 @@ double JsonConnection::getPaintConsumption(std::string const & paintType, std::s
 
 std::vector<std::string> JsonConnection::getPaintPresetsNames() const {
 	std::vector<std::string> res;
-	nlohmann::json const & presets = _data[PAINT_CALCULATION_TABLE][PRESETS];
+	nlohmann::json const & presets = _data.at(PAINT_CALCULATION_TABLE).at(PRESETS);
 	for (auto it = presets.begin(); it != presets.end(); ++it)
 		res.push_back(it.key());
 	return res;
 }
 
-std::vector<std::string> JsonConnection::getPaintPresetColumns() const { return _data[PAINT_CALCULATION_TABLE][COLUMN_NAMES]; }
+std::vector<std::string> JsonConnection::getPaintPresetColumns() const { return _data.at(PAINT_CALCULATION_TABLE).at(COLUMN_NAMES); }
 
 std::map<std::string, AutoValue> JsonConnection::getPaintPreset(std::string const & name) const {
-	nlohmann::json const & preset = _data[PAINT_CALCULATION_TABLE][PRESETS].at(name);
+	nlohmann::json const & preset = _data.at(PAINT_CALCULATION_TABLE).at(PRESETS).at(name);
 
 	if (preset.is_null())
 		throw PresetDoesNotExistException(name);

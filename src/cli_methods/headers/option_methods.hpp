@@ -3,6 +3,7 @@
 
 #include "PaintDataDispatcher.hpp"
 #include "LacquerDataDispatcher.hpp"
+#include "FoilDataDispatcher.hpp"
 
 namespace common_option_methods {
 
@@ -43,6 +44,18 @@ namespace lacquer_calculation_option_methods {
 	void createLacquerPreset(LacquerDataDispatcher *);
 	void updateLacquerPreset(LacquerDataDispatcher *);
 	void removeLacquerPreset(LacquerDataDispatcher *);
+
+}
+
+namespace foil_calculation_option_methods {
+
+	void setCirulation(FoilDataDispatcher *);
+	void setLength(FoilDataDispatcher *);
+	void setSheetNumber(FoilDataDispatcher *);
+
+	void createFoilPreset(FoilDataDispatcher *);
+	void updateFoilPreset(FoilDataDispatcher *);
+	void removeFoilPreset(FoilDataDispatcher *);
 
 }
 

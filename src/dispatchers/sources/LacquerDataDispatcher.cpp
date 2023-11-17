@@ -3,7 +3,6 @@
 #include "LacquerDataDispatcher.hpp"
 
 #include "UndefinedValueException.hpp"
-#include "PresetAlreadyExistsException.hpp"
 
 #define PERCENTAGE "percentage"
 #define LACQUER_CONSUMPTION "lacquer_consumption"
@@ -32,13 +31,13 @@ std::map<std::string, std::string> LacquerDataDispatcher::toStringMap() const {
 }
 
 std::string LacquerDataDispatcher::getPresetName() const {
-	if (_presetName.isNull())
+	if (_presetName.empty())
 		throw UndefinedValueException("preset name");
 	return _presetName;
 }
 
 void LacquerDataDispatcher::setPreset(std::string const & name) {
-	if ((std::string)_presetName == name)
+	if (_presetName == name)
 		return;
 
 	auto params = _conn->getLacquerPreset(name);
@@ -68,6 +67,10 @@ void LacquerDataDispatcher::createPreset(std::string const & name) {
 
 void LacquerDataDispatcher::updatePreset(std::string const & name) {
 	_conn->updateLacquerPreset(name, _params);
+}
+
+void LacquerDataDispatcher::removePreset(std::string const & name) {
+	_conn->removeLacquerPreset(name);
 }
 
 void LacquerDataDispatcher::clear() {

@@ -1,7 +1,6 @@
 #ifndef PAINT_DATA_DISPATCHER_HPP
 #define PAINT_DATA_DISPATCHER_HPP
 
-#include <string>
 #include <AutoValue.hpp>
 
 #include "AbstractDataDispatcher.hpp"
@@ -11,7 +10,7 @@ class PaintDataDispatcher : public AbstractDataDispatcher {
 private:
 	IConnection * _conn;
 	std::map<std::string, AutoValue> _params;
-	AutoValue _presetName;
+	std::string _presetName;
 
 public:
 	PaintDataDispatcher(IConnection *);
@@ -25,8 +24,10 @@ public:
 
 	std::string getPresetName() const;
 	void setPreset(std::string const &);
+
 	void createPreset(std::string const &);
 	void updatePreset(std::string const &);
+	void removePreset(std::string const &);
 
 	std::string getPaintType() const;
 	void setPaintType(std::string const &);

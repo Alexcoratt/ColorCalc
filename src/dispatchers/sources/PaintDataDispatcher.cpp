@@ -47,13 +47,13 @@ void PaintDataDispatcher::clear() {
 }
 
 std::string PaintDataDispatcher::getPresetName() const {
-	if (_presetName.isNull())
+	if (_presetName.empty())
 		throw UndefinedValueException("preset name");
 	return _presetName;
 }
 
 void PaintDataDispatcher::setPreset(std::string const & name) {
-	if ((std::string)_presetName == name)
+	if (_presetName == name)
 		return;
 
 	auto params = _conn->getPaintPreset(name);
@@ -85,6 +85,10 @@ void PaintDataDispatcher::createPreset(std::string const & name) {
 
 void PaintDataDispatcher::updatePreset(std::string const & name) {
 	_conn->updatePaintPreset(name, _params);
+}
+
+void PaintDataDispatcher::removePreset(std::string const & name) {
+	_conn->removePaintPreset(name);
 }
 
 std::string PaintDataDispatcher::getPaintType() const { return ccm::getParam(_params, PAINT_TYPE); }

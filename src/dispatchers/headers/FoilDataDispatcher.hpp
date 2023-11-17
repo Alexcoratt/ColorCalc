@@ -1,17 +1,17 @@
-#ifndef LACQUER_DATA_DISPATCHER_HPP
-#define LACQUER_DATA_DISPATCHER_HPP
+#ifndef FOIL_DATA_DISPATCHER_HPP
+#define FOIL_DATA_DISPATCHER_HPP
 
-#include "IConnection.hpp"
 #include "AbstractDataDispatcher.hpp"
+#include "IConnection.hpp"
 
-class LacquerDataDispatcher : public AbstractDataDispatcher {
+class FoilDataDispatcher : public AbstractDataDispatcher {
 private:
 	IConnection * _conn;
 	std::map<std::string, AutoValue> _params;
 	std::string _presetName;
 
 public:
-	LacquerDataDispatcher(IConnection *);
+	FoilDataDispatcher(IConnection *);
 
 	IConnection * getConnection() const;
 
@@ -27,20 +27,17 @@ public:
 	void updatePreset(std::string const &);
 	void removePreset(std::string const &);
 
-	double getPercentage() const;
-	void setPercentage(double);
-
-	double getLacquerConsumption() const;
-	void setLacquerConsumption(double);
-
-	double getSheetLength() const;
-	void setSheetLength(double);
-
-	double getSheetWidth() const;
-	void setSheetWidth(double);
-
 	std::size_t getCirculation() const;
-	void setCirculation(std::size_t);
+	void setCirculation(std::size_t const &);
+
+	double getLength() const;
+	void setLength(double);
+
+	std::size_t getSheetNumber() const;
+	void setSheetNumber(std::size_t const &);
+
+	double getReserve() const;
+	void setReserve(double);
 
 	double calculate() const;
 };
