@@ -1,5 +1,4 @@
 #include <iostream>
-#include <algorithm>
 #include <exception>
 #include <functional>
 #include <fstream>
@@ -11,6 +10,8 @@
 #include <JsonConnection.hpp>
 #include <PaintDataDispatcher.hpp>
 #include <LacquerDataDispatcher.hpp>
+#include <FoilDataDispatcher.hpp>
+#include <FoilRollsDataDispatcher.hpp>
 
 #include <option_methods.hpp>
 
@@ -25,6 +26,7 @@ namespace com = common_option_methods;
 namespace pcom = paint_calculation_option_methods;
 namespace lcom = lacquer_calculation_option_methods;
 namespace fcom = foil_calculation_option_methods;
+namespace from = foil_rolls_option_methods;
 
 int main() {
 
@@ -107,7 +109,7 @@ int main() {
 	CustomLeafOption<PaintDataDispatcher *> loadPaintCalculationPresetOption(
 		"load preset",
 		"load values of existing preset",
-		pcom::loadPaintPreset,
+		com::loadPreset,
 		&paintCalculationDispatcher
 	);
 
@@ -184,7 +186,7 @@ int main() {
 	CustomLeafOption<LacquerDataDispatcher *> loadLacquerCalculationPresetOption(
 		"load lacquer calculation preset",
 		"Loads values of selected preset into internal storage",
-		lcom::loadLacquerPreset,
+		com::loadPreset,
 		&lacquerCalculationDispatcher
 	);
 
@@ -299,7 +301,7 @@ int main() {
 	CustomLeafOption<FoilDataDispatcher *> loadFoilPresetOption(
 		"load foil calculation preset",
 		"Loads the selected foil calculation preset",
-		fcom::loadFoilPreset,
+		com::loadPreset,
 		&foilDataDispatcher
 	);
 
@@ -359,10 +361,73 @@ int main() {
 		{'R', &clearFoilDataOption}
 	});
 
+
+	FoilRollsDataDispatcher foilRollsDataDispatcher(conn);
+
+	CustomLeafOption<FoilRollsDataDispatcher *> setFoilRollLengthOption(
+		"set roll length",
+		"Sets the length of the roll",
+		from::setLength,
+		&foilRollsDataDispatcher
+	);
+
+	CustomLeafOption<FoilRollsDataDispatcher *> setFoilRollWidthOption(
+		"set roll width",
+		"Sets the width of the roll",
+		from::setWidth,
+		&foilRollsDataDispatcher
+	);
+
+	CustomLeafOption<FoilRollsDataDispatcher *> loadFoilRollsPresetOption(
+		"load foil roll preset",
+		"Loads preset containing data about a roll of foil",
+		com::loadPreset,
+		&foilRollsDataDispatcher
+	);
+
+	CustomLeafOption<FoilRollsDataDispatcher *> createFoilRollsPresetOption(
+		"create foil roll preset",
+		"Creates a new preset containing data about a roll of foil",
+		com::createPreset,
+		&foilRollsDataDispatcher
+	);
+
+	CustomLeafOption<FoilRollsDataDispatcher *> updateFoilRollsPresetOption(
+		"update foil roll preset",
+		"Updates the selected foil roll preset with previously entered params",
+		com::updatePreset,
+		&foilRollsDataDispatcher
+	);
+
+	CustomLeafOption<FoilRollsDataDispatcher *> removeFoilRollsPresetOption(
+		"remove foil roll preset",
+		"Removes the selected foil roll preset",
+		com::updatePreset,
+		&foilRollsDataDispatcher
+	);
+
+	CustomLeafOption<FoilRollsDataDispatcher *> writeFoilRollsDispatcherParams(
+		"write parameters",
+		"Writes entered parameters",
+		com::writeParameters,
+		&foilRollsDataDispatcher
+	);
+
+	BaseOptionContainer foilRolls("foil rolls", "Contains methods to manipulate data about foil rolls being used", {
+		{'L', &setFoilRollLengthOption},
+		{'W', &setFoilRollWidthOption},
+		{'l', &loadFoilRollsPresetOption},
+		{'w', &writeFoilRollsDispatcherParams},
+		{'+', &createFoilRollsPresetOption},
+		{'/', &updateFoilRollsPresetOption},
+		{'-', &removeFoilRollsPresetOption}
+	});
+
 	BaseOptionContainer root("root", BASE_HELP_TEXT, {
 		{'p', &paintCalculation},
 		{'l', &lacquerCalculation},
-		{'f', &foilCalculation}
+		{'f', &foilCalculation},
+		{'r', &foilRolls}
 	}, true);
 	root.exec(nullptr, std::cin, std::cout, "\n");
 

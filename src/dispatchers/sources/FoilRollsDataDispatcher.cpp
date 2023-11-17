@@ -30,15 +30,19 @@ void FoilRollsDataDispatcher::clear() {
 	_presetName.clear();
 }
 
-std::string FoilRollsDataDispatcher::getPresetName() const { return _presetName; }
+std::string FoilRollsDataDispatcher::getPresetName() const {
+	if (_presetName.empty())
+		throw UndefinedValueException("preset name");
+	return _presetName;
+}
 
 void FoilRollsDataDispatcher::setPreset(std::string const & name) {
 	auto preset = _conn->getFoilRollPreset(name);
 
 	if (!preset.at(LENGTH).isNull())
-		_params[LENGTH] = preset.at(LENGTH);
+		_params[LENGTH] = std::stod(preset.at(LENGTH));
 	if (!preset.at(WIDTH).isNull())
-		_params[WIDTH] = preset.at(WIDTH);
+		_params[WIDTH] = std::stod(preset.at(WIDTH));
 
 	_presetName = name;
 }

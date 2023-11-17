@@ -16,6 +16,7 @@ namespace com = common_option_methods;
 namespace pcom = paint_calculation_option_methods;
 namespace lcom = lacquer_calculation_option_methods;
 namespace fcom = foil_calculation_option_methods;
+namespace from = foil_rolls_option_methods;
 
 template <typename T>
 inline std::size_t getIndex(std::vector<T> const & vect, T search) {
@@ -118,6 +119,27 @@ void com::writeParameters(AbstractDataDispatcher const * dispatcher) {
 	auto params = dispatcher->toStringMap();
 	for (auto iter = params.begin(); iter != params.end(); ++iter)
 		std::cout << iter->first << ":\t" << iter->second << std::endl;
+}
+
+void com::loadPreset(AbstractDataDispatcher * dispatcher) {
+	std::vector<std::string> presets = dispatcher->getAvailablePresetNames();
+
+	std::cout << "Select the preset to load" << std::endl;
+	try {
+		setVariant(
+			presets,
+			[&]() { return dispatcher->getPresetName(); },
+			[&](std::string name) { dispatcher->setPreset(name); }
+		);
+	} catch (DefaultOptionIsChosenException const &) {}
+
+	std::cout << "Preset ";
+	try {
+		std::string presetName = dispatcher->getPresetName();
+		std::cout << "named \"" << presetName << "\" is loaded" << std::endl;
+	} catch (UndefinedValueException const &) {
+		std::cout << "Preset is undefined" << std::endl;
+	}
 }
 
 void com::createPreset(AbstractDataDispatcher * dispatcher) {
@@ -398,25 +420,6 @@ void pcom::setReserve(PaintDataDispatcher * dispatcher) {
 	}
 }
 
-void pcom::loadPaintPreset(PaintDataDispatcher * dispatcher) {
-	std::vector<std::string> presets = dispatcher->getConnection()->getPaintPresetNames();
-
-	std::cout << "Select the preset to load" << std::endl;
-	try {
-		setVariant(
-			presets,
-			[&]() { return dispatcher->getPresetName(); },
-			[&](std::string name) { dispatcher->setPreset(name); }
-		);
-		std::cout << "Preset ";
-		std::string presetName = dispatcher->getPresetName();
-		std::cout << "named \"" << presetName << "\" is loaded" << std::endl;
-		return;
-	} catch (DefaultOptionIsChosenException const &) {
-	} catch (UndefinedValueException const &) {}
-	std::cout << "is undefined" << std::endl;
-}
-
 
 void lcom::setPercentage(LacquerDataDispatcher * dispatcher) {
 	std::cout << "Set percentage of lacquer coverage" << std::endl;
@@ -533,25 +536,6 @@ void lcom::setCircualtion(LacquerDataDispatcher * dispatcher) {
 	}
 }
 
-void lcom::loadLacquerPreset(LacquerDataDispatcher * dispatcher) {
-	std::vector<std::string> presets = dispatcher->getConnection()->getLacquerPresetNames();
-
-	std::cout << "Select the preset to load" << std::endl;
-	try {
-		setVariant(
-			presets,
-			[&]() { return dispatcher->getPresetName(); },
-			[&](std::string name) { dispatcher->setPreset(name); }
-		);
-		std::cout << "Preset ";
-		std::string presetName = dispatcher->getPresetName();
-		std::cout << "named \"" << presetName << "\" is loaded" << std::endl;
-		return;
-	} catch (DefaultOptionIsChosenException const &) {
-	} catch (UndefinedValueException const &) {}
-	std::cout << "is undefined" << std::endl;
-}
-
 
 void fcom::setCirulation(FoilDataDispatcher * dispatcher) {
 	std::cout << "Set circulation" << std::endl;
@@ -645,26 +629,54 @@ void fcom::setWidthReserve(FoilDataDispatcher * dispatcher) {
 	}
 }
 
-void fcom::loadFoilPreset(FoilDataDispatcher * dispatcher) {
-	std::vector<std::string> presets = dispatcher->getConnection()->getFoilPresetNames();
-
-	std::cout << "Select the preset to load" << std::endl;
-	try {
-		setVariant(
-			presets,
-			[&]() { return dispatcher->getPresetName(); },
-			[&](std::string name) { dispatcher->setPreset(name); }
-		);
-		std::cout << "Preset ";
-		std::string presetName = dispatcher->getPresetName();
-		std::cout << "named \"" << presetName << "\" is loaded" << std::endl;
-		return;
-	} catch (DefaultOptionIsChosenException const &) {
-	} catch (UndefinedValueException const &) {}
-	std::cout << "is undefined" << std::endl;
-}
-
 void fcom::calculateFoilRollerLength(FoilDataDispatcher const * dispatcher) {
 	double length = dispatcher->calculate();
 	std::cout << "Required roller's length equals " << length << "m" << std::endl;
+}
+
+
+void from::setLength(FoilRollsDataDispatcher * dispatcher) {
+	std::cout << "Set length of the roller" << std::endl;
+
+	setValue<double>(
+		[&]() { return dispatcher->getLength(); },
+		[&](double value) { dispatcher->setLength(value); },
+		[](std::string line) { return std::stod(line); },
+		[](double value) {
+			if (value > 0)
+				return true;
+			throw std::invalid_argument("value must be greater than 0");
+		}
+	);
+
+	std::cout << "Width reserve of the roller ";
+	try {
+		auto value = dispatcher->getLength();
+		std::cout << "value " << value << " is set" << std::endl;
+	} catch (UndefinedValueException const &) {
+		std::cout << "is undefined" << std::endl;
+	}
+}
+
+void from::setWidth(FoilRollsDataDispatcher * dispatcher) {
+	std::cout << "Set width of the roller" << std::endl;
+
+	setValue<double>(
+		[&]() { return dispatcher->getWidth(); },
+		[&](double value) { dispatcher->setWidth(value); },
+		[](std::string line) { return std::stod(line); },
+		[](double value) {
+			if (value > 0)
+				return true;
+			throw std::invalid_argument("value must be greater than 0");
+		}
+	);
+
+	std::cout << "Width reserve of the roller ";
+	try {
+		auto value = dispatcher->getWidth();
+		std::cout << "value " << value << " is set" << std::endl;
+	} catch (UndefinedValueException const &) {
+		std::cout << "is undefined" << std::endl;
+	}
 }

@@ -12,6 +12,7 @@ namespace common_option_methods {
 	void calculateResourceAmount(AbstractDataDispatcher const *);
 	void writeParameters(AbstractDataDispatcher const *);
 
+	void loadPreset(AbstractDataDispatcher *);
 	void createPreset(AbstractDataDispatcher *);
 	void updatePreset(AbstractDataDispatcher *);
 	void removePreset(AbstractDataDispatcher *);
@@ -29,7 +30,6 @@ namespace paint_calculation_option_methods {
 	void setSheetLength(PaintDataDispatcher *);
 	void setCirculation(PaintDataDispatcher *);
 	void setReserve(PaintDataDispatcher *);
-	void loadPaintPreset(PaintDataDispatcher *);
 
 }
 
@@ -40,7 +40,6 @@ namespace lacquer_calculation_option_methods {
 	void setSheetLength(LacquerDataDispatcher *);
 	void setSheetWidth(LacquerDataDispatcher *);
 	void setCircualtion(LacquerDataDispatcher *);
-	void loadLacquerPreset(LacquerDataDispatcher *);
 
 }
 
@@ -50,7 +49,6 @@ namespace foil_calculation_option_methods {
 	void setLength(FoilDataDispatcher *);
 	void setSheetNumber(FoilDataDispatcher *);
 	void setWidthReserve(FoilDataDispatcher *);
-	void loadFoilPreset(FoilDataDispatcher *);
 	void calculateFoilRollerLength(FoilDataDispatcher const *);
 
 }
@@ -59,7 +57,6 @@ namespace foil_rolls_option_methods {
 
 	void setLength(FoilRollsDataDispatcher *);
 	void setWidth(FoilRollsDataDispatcher *);
-	void loadFoilRollPreset(FoilRollsDataDispatcher *);
 
 }
 

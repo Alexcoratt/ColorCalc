@@ -208,7 +208,7 @@ void JsonConnection::removePaintPreset(std::string const & name) {
 // Queries for lacquer presets
 
 std::vector<std::string> JsonConnection::getLacquerPresetNames() const {
-	return getPresetNames(getPresets(_data, PAINT_CALCULATION_TABLE));
+	return getPresetNames(getPresets(_data, LACQUER_CALCULATION_TABLE));
 }
 
 std::vector<std::string> JsonConnection::getLacquerPresetColumns() const { return _data.at(LACQUER_CALCULATION_TABLE).at(COLUMN_NAMES); }
