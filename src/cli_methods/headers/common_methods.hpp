@@ -26,8 +26,6 @@ namespace common_methods {
 		return false;
 	}
 
-	bool jsonIsNull(nlohmann::json const & value);
-
 }
 
 #endif
