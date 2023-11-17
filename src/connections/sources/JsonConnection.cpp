@@ -102,7 +102,7 @@ double JsonConnection::getPaintConsumption(std::string const & paintType, std::s
 	throw UndefinedValueException("paint consumption of " + paintType + " with " + materialType);
 }
 
-std::vector<std::string> JsonConnection::getPaintPresetsNames() const {
+std::vector<std::string> JsonConnection::getPaintPresetNames() const {
 	std::vector<std::string> res;
 	nlohmann::json const & presets = _data.at(PAINT_CALCULATION_TABLE).at(PRESETS);
 	for (auto it = presets.begin(); it != presets.end(); ++it)
@@ -180,7 +180,7 @@ void JsonConnection::removePaintPreset(std::string const & name) {
 
 // Queries for lacquer presets
 
-std::vector<std::string> JsonConnection::getLacquerPresetsNames() const {
+std::vector<std::string> JsonConnection::getLacquerPresetNames() const {
 	std::vector<std::string> res;
 	nlohmann::json const & presets = _data[LACQUER_CALCULATION_TABLE][PRESETS];
 	for (auto it = presets.begin(); it != presets.end(); ++it)

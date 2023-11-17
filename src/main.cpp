@@ -24,6 +24,7 @@
 namespace com = common_option_methods;
 namespace pcom = paint_calculation_option_methods;
 namespace lcom = lacquer_calculation_option_methods;
+namespace fcom = foil_calculation_option_methods;
 
 int main() {
 
@@ -127,21 +128,21 @@ int main() {
 	CustomLeafOption<PaintDataDispatcher *> createPaintPresetOption(
 		"create paint calculation preset",
 		"Creates a new paint calculation preset based on entered values",
-		pcom::createPaintPreset,
+		com::createPreset,
 		&paintCalculationDispatcher
 	);
 
 	CustomLeafOption<PaintDataDispatcher *> updatePaintPresetOption(
 		"update paint calculation preset",
 		"Updated data in an existing paint calculation preset",
-		pcom::updatePaintPreset,
+		com::updatePreset,
 		&paintCalculationDispatcher
 	);
 
 	CustomLeafOption<PaintDataDispatcher *> removePaintPresetOption(
 		"remove paint calculation preset",
 		"Removes an existing paint calculation preset",
-		pcom::removePaintPreset,
+		com::removePreset,
 		&paintCalculationDispatcher
 	);
 
@@ -232,21 +233,21 @@ int main() {
 	CustomLeafOption<LacquerDataDispatcher *> createLacquerPresetOption(
 		"create lacquer preset",
 		"Creates a new lacquer calculation preset",
-		lcom::createLacquerPreset,
+		com::createPreset,
 		&lacquerCalculationDispatcher
 	);
 
 	CustomLeafOption<LacquerDataDispatcher *> updateLacquerPresetOption(
 		"update lacquer preset",
 		"Updates the selected lacquer calculation preset",
-		lcom::updateLacquerPreset,
+		com::updatePreset,
 		&lacquerCalculationDispatcher
 	);
 
 	CustomLeafOption<LacquerDataDispatcher *> removeLacquerPresetOption(
 		"remove lacquer preset",
 		"Removes the selected lacquer calculation preset",
-		lcom::removeLacquerPreset,
+		com::removePreset,
 		&lacquerCalculationDispatcher
 	);
 
@@ -265,11 +266,105 @@ int main() {
 		{'-', &removeLacquerPresetOption}
 	});
 
+	FoilDataDispatcher foilDataDispatcher(conn);
+
+	CustomLeafOption<FoilDataDispatcher *> setFoilCirculationOption(
+		"set circulation",
+		"Sets quantity of the edition",
+		fcom::setCirulation,
+		&foilDataDispatcher
+	);
+
+	CustomLeafOption<FoilDataDispatcher *> setFoilStampLengthOption(
+		"set length",
+		"Sets length of the stamp",
+		fcom::setLength,
+		&foilDataDispatcher
+	);
+
+	CustomLeafOption<FoilDataDispatcher *> setFoilSheetNumberOption(
+		"set sheet number",
+		"Sets the number of sheets to be printed with one part of the foil",
+		fcom::setSheetNumber,
+		&foilDataDispatcher
+	);
+
+	CustomLeafOption<FoilDataDispatcher *> setFoilWidthReserveOption(
+		"set width reserve",
+		"Sets reserve value of width of the foil roller",
+		fcom::setWidthReserve,
+		&foilDataDispatcher
+	);
+
+	CustomLeafOption<FoilDataDispatcher *> loadFoilPresetOption(
+		"load foil calculation preset",
+		"Loads the selected foil calculation preset",
+		fcom::loadFoilPreset,
+		&foilDataDispatcher
+	);
+
+	CustomLeafOption<FoilDataDispatcher *> writeFoilParametersOption(
+		"write parameters",
+		"Writes entered foil calculation parameters",
+		com::writeParameters,
+		&foilDataDispatcher
+	);
+
+	CustomLeafOption<FoilDataDispatcher *> calculateFoilLengthOption(
+		"calculate foil length",
+		"Calculates length of the foil roller",
+		fcom::calculateFoilRollerLength,
+		&foilDataDispatcher
+	);
+
+	CustomLeafOption<FoilDataDispatcher *> createFoilPresetOption(
+		"create foil preset",
+		"Creates the new foil calculation preset",
+		com::createPreset,
+		&foilDataDispatcher
+	);
+
+	CustomLeafOption<FoilDataDispatcher *> updateFoilPresetOption(
+		"update foil preset",
+		"Updates the selected foil calculation preset",
+		com::updatePreset,
+		&foilDataDispatcher
+	);
+
+	CustomLeafOption<FoilDataDispatcher *> removeFoilPresetOption(
+		"remove foil preset",
+		"Removes the selected foil calculation preset",
+		com::removePreset,
+		&foilDataDispatcher
+	);
+
+	CustomLeafOption<FoilDataDispatcher *> clearFoilDataOption(
+		"clears data",
+		"Clears all foil calculation params",
+		com::clearValues,
+		&foilDataDispatcher
+	);
+
+	BaseOptionContainer foilCalculation("foil calculation", "Contains methods to perform foil calculations", {
+		{'C', &setFoilCirculationOption},
+		{'L', &setFoilStampLengthOption},
+		{'n', &setFoilSheetNumberOption},
+		{'r', &setFoilWidthReserveOption},
+		{'l', &loadFoilPresetOption},
+		{'w', &writeFoilParametersOption},
+		{'a', &calculateFoilLengthOption},
+		{'+', &createFoilPresetOption},
+		{'/', &updateFoilPresetOption},
+		{'-', &removeFoilPresetOption},
+		{'R', &clearFoilDataOption}
+	});
+
 	BaseOptionContainer root("root", BASE_HELP_TEXT, {
 		{'p', &paintCalculation},
-		{'l', &lacquerCalculation}
+		{'l', &lacquerCalculation},
+		{'f', &foilCalculation}
 	}, true);
-	root.exec(0, std::cin, std::cout, "\n");
+	root.exec(nullptr, std::cin, std::cout, "\n");
 
 	delete conn;
 

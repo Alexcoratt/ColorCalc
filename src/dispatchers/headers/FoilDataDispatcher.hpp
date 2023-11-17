@@ -15,6 +15,7 @@ public:
 
 	IConnection * getConnection() const;
 
+	std::vector<std::string> getAvailablePresetNames() const;
 	std::vector<std::string> getParamNames() const;
 	std::map<std::string, std::string> toStringMap() const;
 
@@ -36,8 +37,8 @@ public:
 	std::size_t getSheetNumber() const;
 	void setSheetNumber(std::size_t const &);
 
-	double getReserve() const;
-	void setReserve(double);
+	double getWidthReserve() const;
+	void setWidthReserve(double);
 
 	double calculate() const;
 };

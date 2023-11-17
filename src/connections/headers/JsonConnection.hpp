@@ -28,7 +28,7 @@ public:
 	double getPaintConsumption(std::string const &, std::string const &) const;
 
 	// Queires for paint presets
-	std::vector<std::string> getPaintPresetsNames() const;
+	std::vector<std::string> getPaintPresetNames() const;
     std::vector<std::string> getPaintPresetColumns() const;
 	std::map<std::string, AutoValue> getPaintPreset(std::string const &) const;
 	std::map<std::string, AutoValue> getPaintPresetTemplate() const;
@@ -37,7 +37,7 @@ public:
     void removePaintPreset(std::string const &);
 
 	// Queries for lacquer presets
-    std::vector<std::string> getLacquerPresetsNames() const;
+    std::vector<std::string> getLacquerPresetNames() const;
     std::vector<std::string> getLacquerPresetColumns() const;
     std::map<std::string, AutoValue> getLacquerPreset(std::string const &) const;
 	std::map<std::string, AutoValue> getLacquerPresetTemplate() const;

@@ -14,6 +14,7 @@ class AbstractDataDispatcher {
 public:
 	virtual ~AbstractDataDispatcher() {}
 
+	virtual std::vector<std::string> getAvailablePresetNames() const = 0;
 	virtual std::vector<std::string> getParamNames() const = 0;
 	virtual std::map<std::string, std::string> toStringMap() const = 0;
 

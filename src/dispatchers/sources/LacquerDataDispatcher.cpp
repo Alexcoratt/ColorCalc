@@ -16,6 +16,8 @@ LacquerDataDispatcher::LacquerDataDispatcher(IConnection * conn) : _conn(conn), 
 
 IConnection * LacquerDataDispatcher::getConnection() const { return _conn; }
 
+std::vector<std::string> LacquerDataDispatcher::getAvailablePresetNames() const { return _conn->getLacquerPresetNames(); }
+
 std::vector<std::string> LacquerDataDispatcher::getParamNames() const {
 	std::vector<std::string> res;
 	for (auto it = _params.begin(); it != _params.end(); ++it)

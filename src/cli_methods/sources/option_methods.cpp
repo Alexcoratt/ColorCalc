@@ -11,11 +11,22 @@
 #include <AbstractDataDispatcher.hpp>
 #include "UndefinedValueException.hpp"
 #include "option_methods.hpp"
-#include "common_methods.hpp"
 
 namespace com = common_option_methods;
 namespace pcom = paint_calculation_option_methods;
 namespace lcom = lacquer_calculation_option_methods;
+namespace fcom = foil_calculation_option_methods;
+
+template <typename T>
+inline std::size_t getIndex(std::vector<T> const & vect, T search) {
+	std::size_t count = 0;
+	for (T value : vect) {
+		if (value == search)
+			return count;
+		++count;
+	}
+	throw std::invalid_argument("getIndex: required value is not found");
+}
 
 template <typename T>
 T readValue(std::string const & prompt, std::function<T(std::string)> converter, std::function<bool(T)> checker = [](T) { return true; }) {
@@ -57,7 +68,7 @@ void setVariant(std::vector<std::string> const & types, std::function<std::strin
 	std::string prompt;
 	AutoValue defaultVariant;
 	try {
-		defaultVariant = common_methods::getIndex(types, get());
+		defaultVariant = getIndex(types, get());
 	} catch (std::invalid_argument const &) {
 		defaultVariant.clear();
 	} catch (UndefinedValueException const &) {
@@ -76,13 +87,13 @@ void com::clearValues(AbstractDataDispatcher * dispatcher) {
 	std::vector<std::string> const variants = {"no", "yes"};
 	int answer = 0;
 
-	std::cout << "Clear all paint calculation fields" << std::endl;
-	std::cout << "Are you sure you want to clear fields?" << std::endl;
+	std::cout << "Clear all parameters" << std::endl;
+	std::cout << "Are you sure you want to clear parameters?" << std::endl;
 	try {
 		setVariant(
 			variants,
 			[&]() { return variants[answer]; },
-			[&](std::string variant) { answer = common_methods::getIndex(variants, variant); }
+			[&](std::string variant) { answer = getIndex(variants, variant); }
 		);
 	} catch (DefaultOptionIsChosenException const &) {}
 
@@ -94,12 +105,8 @@ void com::clearValues(AbstractDataDispatcher * dispatcher) {
 }
 
 void com::calculateResourceAmount(AbstractDataDispatcher const * dispatcher) {
-	try {
-		double paintAmount = dispatcher->calculate();
-		std::cout << "Required amount equals " << paintAmount << "kg" << std::endl;
-	} catch (UndefinedValueException const & err) {
-		std::cerr << "Error: " << err.what() << std::endl;
-	}
+	double res = dispatcher->calculate();
+	std::cout << "Required amount equals " << res << "kg" << std::endl;
 }
 
 void com::writeParameters(AbstractDataDispatcher const * dispatcher) {
@@ -112,6 +119,64 @@ void com::writeParameters(AbstractDataDispatcher const * dispatcher) {
 	for (auto iter = params.begin(); iter != params.end(); ++iter)
 		std::cout << iter->first << ":\t" << iter->second << std::endl;
 }
+
+void com::createPreset(AbstractDataDispatcher * dispatcher) {
+	std::cout << "Enter name of the new preset (leave field empty to abort operation)" << std::endl;
+
+	try {
+		std::string name = readValue<std::string>(
+			"Enter name (default=abort): ",
+			[](std::string line) { return line; }
+		);
+		dispatcher->createPreset(name);
+		std::cout << "Preset named \"" << name << "\" created" << std::endl;
+	} catch (DefaultOptionIsChosenException const &) {
+		std::cout << "Aborted" << std::endl;
+	}
+}
+
+void com::updatePreset(AbstractDataDispatcher * dispatcher) {
+	std::vector<std::string> presets = dispatcher->getAvailablePresetNames();
+
+	std::cout << "Select name of the preset you want to update (leave field empty to abort operation)" << std::endl;
+	std::string presetName;
+
+	try {
+		setVariant(
+			presets,
+			[]() { return "abort"; },
+			[&](std::string name) {
+				dispatcher->updatePreset(name);
+				presetName = name;
+			}
+		);
+		std::cout << "Preset named \"" << presetName << "\" updated" << std::endl;
+	} catch (DefaultOptionIsChosenException const &) {
+		std::cout << "Aborted" << std::endl;
+	}
+}
+
+void com::removePreset(AbstractDataDispatcher * dispatcher) {
+	std::vector<std::string> presets = dispatcher->getAvailablePresetNames();
+
+	std::cout << "Select name of the paint calculation preset you want to remove (leave field empty to abort operation)" << std::endl;
+	std::string presetName;
+
+	try {
+		setVariant(
+			presets,
+			[]() { return "abort"; },
+			[&](std::string name) {
+				dispatcher->removePreset(name);
+				presetName = name;
+			}
+		);
+		std::cout << "Preset named \"" << presetName << "\" removed" << std::endl;
+	} catch (DefaultOptionIsChosenException const &) {
+		std::cout << "Aborted" << std::endl;
+	}
+}
+
 
 void pcom::setPaintType(PaintDataDispatcher * dispatcher) {
 	std::cout << "Select paint type" << std::endl;
@@ -334,7 +399,7 @@ void pcom::setReserve(PaintDataDispatcher * dispatcher) {
 }
 
 void pcom::loadPaintPreset(PaintDataDispatcher * dispatcher) {
-	std::vector<std::string> presets = dispatcher->getConnection()->getPaintPresetsNames();
+	std::vector<std::string> presets = dispatcher->getConnection()->getPaintPresetNames();
 
 	std::cout << "Select the preset to load" << std::endl;
 	try {
@@ -350,63 +415,6 @@ void pcom::loadPaintPreset(PaintDataDispatcher * dispatcher) {
 	} catch (DefaultOptionIsChosenException const &) {
 	} catch (UndefinedValueException const &) {}
 	std::cout << "is undefined" << std::endl;
-}
-
-void pcom::createPaintPreset(PaintDataDispatcher * dispatcher) {
-	std::cout << "Enter name of the new paint calculation preset (leave field empty to abort operation)" << std::endl;
-
-	try {
-		std::string name = readValue<std::string>(
-			"Enter name (default=abort): ",
-			[](std::string line) { return line; }
-		);
-		dispatcher->createPreset(name);
-		std::cout << "Preset named \"" << name << "\" created" << std::endl;
-	} catch (DefaultOptionIsChosenException const &) {
-		std::cout << "Aborted" << std::endl;
-	}
-}
-
-void pcom::updatePaintPreset(PaintDataDispatcher * dispatcher) {
-	std::vector<std::string> presets = dispatcher->getConnection()->getPaintPresetsNames();
-
-	std::cout << "Select name of the paint calculation preset you want to update (leave field empty to abort operation)" << std::endl;
-	std::string presetName;
-
-	try {
-		setVariant(
-			presets,
-			[]() { return "abort"; },
-			[&](std::string name) {
-				dispatcher->updatePreset(name);
-				presetName = name;
-			}
-		);
-		std::cout << "Preset named \"" << presetName << "\" updated" << std::endl;
-	} catch (DefaultOptionIsChosenException const &) {
-		std::cout << "Aborted" << std::endl;
-	}
-}
-
-void pcom::removePaintPreset(PaintDataDispatcher * dispatcher) {
-	std::vector<std::string> presets = dispatcher->getConnection()->getPaintPresetsNames();
-
-	std::cout << "Select name of the paint calculation preset you want to remove (leave field empty to abort operation)" << std::endl;
-	std::string presetName;
-
-	try {
-		setVariant(
-			presets,
-			[]() { return "abort"; },
-			[&](std::string name) {
-				dispatcher->getConnection()->removePaintPreset(name);
-				presetName = name;
-			}
-		);
-		std::cout << "Preset named \"" << presetName << "\" removed" << std::endl;
-	} catch (DefaultOptionIsChosenException const &) {
-		std::cout << "Aborted" << std::endl;
-	}
 }
 
 
@@ -526,7 +534,7 @@ void lcom::setCircualtion(LacquerDataDispatcher * dispatcher) {
 }
 
 void lcom::loadLacquerPreset(LacquerDataDispatcher * dispatcher) {
-	std::vector<std::string> presets = dispatcher->getConnection()->getLacquerPresetsNames();
+	std::vector<std::string> presets = dispatcher->getConnection()->getLacquerPresetNames();
 
 	std::cout << "Select the preset to load" << std::endl;
 	try {
@@ -544,59 +552,119 @@ void lcom::loadLacquerPreset(LacquerDataDispatcher * dispatcher) {
 	std::cout << "is undefined" << std::endl;
 }
 
-void lcom::createLacquerPreset(LacquerDataDispatcher * dispatcher) {
-	std::cout << "Enter name of the new lacquer calculation preset (leave field empty to abort operation)" << std::endl;
 
+void fcom::setCirulation(FoilDataDispatcher * dispatcher) {
+	std::cout << "Set circulation" << std::endl;
+
+	setValue<std::size_t>(
+		[&]() { return dispatcher->getCirculation(); },
+		[&](std::size_t value) { dispatcher->setCirculation(value); },
+		[](std::string line) { return std::stoul(line); },
+		[](std::size_t value) {
+			if (value > 0)
+				return true;
+			throw std::invalid_argument("value must be greater than 0");
+		}
+	);
+
+	std::cout << "Circulation ";
 	try {
-		std::string name = readValue<std::string>(
-			"Enter name (default=abort): ",
-			[](std::string line) { return line; }
-		);
-		dispatcher->createPreset(name);
-		std::cout << "Preset named \"" << name << "\" created" << std::endl;
-	} catch (DefaultOptionIsChosenException const &) {
-		std::cout << "Aborted" << std::endl;
+		auto value = dispatcher->getCirculation();
+		std::cout << "value " << value << " is set" << std::endl;
+	} catch (UndefinedValueException const &) {
+		std::cout << "is undefined" << std::endl;
 	}
 }
 
-void lcom::updateLacquerPreset(LacquerDataDispatcher * dispatcher) {
-	std::vector<std::string> presets = dispatcher->getConnection()->getLacquerPresetsNames();
+void fcom::setLength(FoilDataDispatcher * dispatcher) {
+	std::cout << "Set length of the roller" << std::endl;
 
-	std::cout << "Select name of the lacquer calculation preset you want to update (leave field empty to abort operation)" << std::endl;
-	std::string presetName;
+	setValue<double>(
+		[&]() { return dispatcher->getLength(); },
+		[&](double value) { dispatcher->setLength(value); },
+		[](std::string line) { return std::stod(line); },
+		[](double value) {
+			if (value > 0)
+				return true;
+			throw std::invalid_argument("value must be greater than 0");
+		}
+	);
 
+	std::cout << "Length of the roller ";
 	try {
-		setVariant(
-			presets,
-			[]() { return "abort"; },
-			[&](std::string name) {
-				dispatcher->updatePreset(name);
-				presetName = name;
-			}
-		);
-		std::cout << "Preset named \"" << presetName << "\" updated" << std::endl;
-	} catch (DefaultOptionIsChosenException const &) {
-		std::cout << "Aborted" << std::endl;
+		auto value = dispatcher->getLength();
+		std::cout << "value " << value << " is set" << std::endl;
+	} catch (UndefinedValueException const &) {
+		std::cout << "is undefined" << std::endl;
 	}
 }
 
-void lcom::removeLacquerPreset(LacquerDataDispatcher * dispatcher) {
-	std::vector<std::string> presets = dispatcher->getConnection()->getLacquerPresetsNames();
+void fcom::setSheetNumber(FoilDataDispatcher * dispatcher) {
+	std::cout << "Set number of sheets" << std::endl;
 
-	std::cout << "Select name of the lacquer calculation preset you want to remove (leave field empty to abort operation)" << std::endl;
-	std::string presetName;
+	setValue<std::size_t>(
+		[&]() { return dispatcher->getSheetNumber(); },
+		[&](std::size_t value) { dispatcher->setSheetNumber(value); },
+		[](std::string line) { return std::stoul(line); },
+		[](std::size_t value) {
+			if (value > 0)
+				return true;
+			throw std::invalid_argument("value must be greater than 0");
+		}
+	);
 
+	std::cout << "Number of sheets ";
+	try {
+		auto value = dispatcher->getSheetNumber();
+		std::cout << "value " << value << " is set" << std::endl;
+	} catch (UndefinedValueException const &) {
+		std::cout << "is undefined" << std::endl;
+	}
+}
+
+void fcom::setWidthReserve(FoilDataDispatcher * dispatcher) {
+	std::cout << "Set width reserve of the roller" << std::endl;
+
+	setValue<double>(
+		[&]() { return dispatcher->getWidthReserve(); },
+		[&](double value) { dispatcher->setWidthReserve(value); },
+		[](std::string line) { return std::stod(line); },
+		[](double value) {
+			if (value > 0)
+				return true;
+			throw std::invalid_argument("value must be greater than 0");
+		}
+	);
+
+	std::cout << "Width reserve of the roller ";
+	try {
+		auto value = dispatcher->getLength();
+		std::cout << "value " << value << " is set" << std::endl;
+	} catch (UndefinedValueException const &) {
+		std::cout << "is undefined" << std::endl;
+	}
+}
+
+void fcom::loadFoilPreset(FoilDataDispatcher * dispatcher) {
+	std::vector<std::string> presets = dispatcher->getConnection()->getFoilPresetNames();
+
+	std::cout << "Select the preset to load" << std::endl;
 	try {
 		setVariant(
 			presets,
-			[]() { return "abort"; },
-			[&](std::string name) {
-				dispatcher->getConnection()->removeLacquerPreset(name);
-				presetName = name;
-			}
+			[&]() { return dispatcher->getPresetName(); },
+			[&](std::string name) { dispatcher->setPreset(name); }
 		);
-		std::cout << "Preset named \"" << presetName << "\" removed" << std::endl;
+		std::cout << "Preset ";
+		std::string presetName = dispatcher->getPresetName();
+		std::cout << "named \"" << presetName << "\" is loaded" << std::endl;
+		return;
 	} catch (DefaultOptionIsChosenException const &) {
-		std::cout << "Aborted" << std::endl;
-	}
+	} catch (UndefinedValueException const &) {}
+	std::cout << "is undefined" << std::endl;
+}
+
+void fcom::calculateFoilRollerLength(FoilDataDispatcher const * dispatcher) {
+	double length = dispatcher->calculate();
+	std::cout << "Required roller's length equals " << length << "m" << std::endl;
 }

@@ -22,6 +22,8 @@ PaintDataDispatcher::PaintDataDispatcher(IConnection * conn) : _conn(conn), _par
 
 IConnection * PaintDataDispatcher::getConnection() const { return _conn; }
 
+std::vector<std::string> PaintDataDispatcher::getAvailablePresetNames() const { return _conn->getPaintPresetNames(); }
+
 std::vector<std::string> PaintDataDispatcher::getParamNames() const {
 	std::vector<std::string> res;
 	for (auto it = _params.begin(); it != _params.end(); ++it)

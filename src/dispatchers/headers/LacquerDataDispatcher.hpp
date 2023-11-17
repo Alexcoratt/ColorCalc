@@ -15,6 +15,7 @@ public:
 
 	IConnection * getConnection() const;
 
+	std::vector<std::string> getAvailablePresetNames() const;
 	std::vector<std::string> getParamNames() const;
 	std::map<std::string, std::string> toStringMap() const;
 

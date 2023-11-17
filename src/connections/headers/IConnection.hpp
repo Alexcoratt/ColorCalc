@@ -21,7 +21,7 @@ public:
     virtual double getPaintConsumption(std::string const &, std::string const &) const = 0;
 
     // Queires for paint presets
-    virtual std::vector<std::string> getPaintPresetsNames() const = 0;
+    virtual std::vector<std::string> getPaintPresetNames() const = 0;
     virtual std::vector<std::string> getPaintPresetColumns() const = 0;
     virtual std::map<std::string, AutoValue> getPaintPreset(std::string const &) const = 0;
 	virtual std::map<std::string, AutoValue> getPaintPresetTemplate() const = 0;
@@ -30,7 +30,7 @@ public:
     virtual void removePaintPreset(std::string const &) = 0;
 
     // Queries for lacquer presets
-    virtual std::vector<std::string> getLacquerPresetsNames() const = 0;
+    virtual std::vector<std::string> getLacquerPresetNames() const = 0;
     virtual std::vector<std::string> getLacquerPresetColumns() const = 0;
     virtual std::map<std::string, AutoValue> getLacquerPreset(std::string const &) const = 0;
 	virtual std::map<std::string, AutoValue> getLacquerPresetTemplate() const = 0;

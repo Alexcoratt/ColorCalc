@@ -11,6 +11,10 @@ namespace common_option_methods {
 	void calculateResourceAmount(AbstractDataDispatcher const *);
 	void writeParameters(AbstractDataDispatcher const *);
 
+	void createPreset(AbstractDataDispatcher *);
+	void updatePreset(AbstractDataDispatcher *);
+	void removePreset(AbstractDataDispatcher *);
+
 }
 
 namespace paint_calculation_option_methods {
@@ -26,10 +30,6 @@ namespace paint_calculation_option_methods {
 	void setReserve(PaintDataDispatcher *);
 	void loadPaintPreset(PaintDataDispatcher *);
 
-	void createPaintPreset(PaintDataDispatcher *);
-	void updatePaintPreset(PaintDataDispatcher *);
-	void removePaintPreset(PaintDataDispatcher *);
-
 }
 
 namespace lacquer_calculation_option_methods {
@@ -41,10 +41,6 @@ namespace lacquer_calculation_option_methods {
 	void setCircualtion(LacquerDataDispatcher *);
 	void loadLacquerPreset(LacquerDataDispatcher *);
 
-	void createLacquerPreset(LacquerDataDispatcher *);
-	void updateLacquerPreset(LacquerDataDispatcher *);
-	void removeLacquerPreset(LacquerDataDispatcher *);
-
 }
 
 namespace foil_calculation_option_methods {
@@ -52,10 +48,9 @@ namespace foil_calculation_option_methods {
 	void setCirulation(FoilDataDispatcher *);
 	void setLength(FoilDataDispatcher *);
 	void setSheetNumber(FoilDataDispatcher *);
-
-	void createFoilPreset(FoilDataDispatcher *);
-	void updateFoilPreset(FoilDataDispatcher *);
-	void removeFoilPreset(FoilDataDispatcher *);
+	void setWidthReserve(FoilDataDispatcher *);
+	void loadFoilPreset(FoilDataDispatcher *);
+	void calculateFoilRollerLength(FoilDataDispatcher const *);
 
 }
 
