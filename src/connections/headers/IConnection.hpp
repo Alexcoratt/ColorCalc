@@ -9,12 +9,15 @@
 #include <AutoValue.hpp>
 
 // TODO: create ConnectionManager as IConnection's proxy to control saving data into databases
+// FIXME: reduce quantity of repeating methods for different tables
 class IConnection {
 public:
     virtual ~IConnection() {}
 
     virtual int getStatus() const = 0;
 
+    // FIXME: please do that as it supposed to be after you succeed
+    // All inter-dispatcher methods must be out of connection
     // Queries for paint/material types table
     virtual std::vector<std::string> getPaintTypes() const = 0;
     virtual std::vector<std::string> getMaterialTypes() const = 0;
@@ -55,6 +58,10 @@ public:
     virtual void createFoilRollPreset(std::string const &, std::map<std::string, AutoValue> const &) = 0;
     virtual void updateFoilRollPreset(std::string const &, std::map<std::string, AutoValue> const &) = 0;
     virtual void removeFoilRollPreset(std::string const &) = 0;
+
+    // WARNING: inter-dispatcher method
+    virtual std::vector<std::string> selectFoilRollPresets(double minLength, double minWidth) const;
 };
+
 
 #endif

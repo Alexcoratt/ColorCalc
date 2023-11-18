@@ -47,9 +47,12 @@ namespace foil_calculation_option_methods {
 
 	void setCirulation(FoilDataDispatcher *);
 	void setLength(FoilDataDispatcher *);
+	void setWidth(FoilDataDispatcher *);
 	void setSheetNumber(FoilDataDispatcher *);
+	void setLengthReserve(FoilDataDispatcher *);
 	void setWidthReserve(FoilDataDispatcher *);
-	void calculateFoilRollerLength(FoilDataDispatcher const *);
+	void calculateFoilRollLength(FoilDataDispatcher const *);
+	void writeSuitableRolls(FoilDataDispatcher const *);
 
 }
 

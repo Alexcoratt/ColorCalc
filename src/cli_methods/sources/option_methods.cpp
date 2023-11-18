@@ -561,7 +561,7 @@ void fcom::setCirulation(FoilDataDispatcher * dispatcher) {
 }
 
 void fcom::setLength(FoilDataDispatcher * dispatcher) {
-	std::cout << "Set length of the roller" << std::endl;
+	std::cout << "Set length of the roll" << std::endl;
 
 	setValue<double>(
 		[&]() { return dispatcher->getLength(); },
@@ -574,9 +574,32 @@ void fcom::setLength(FoilDataDispatcher * dispatcher) {
 		}
 	);
 
-	std::cout << "Length of the roller ";
+	std::cout << "Length of the roll ";
 	try {
 		auto value = dispatcher->getLength();
+		std::cout << "value " << value << " is set" << std::endl;
+	} catch (UndefinedValueException const &) {
+		std::cout << "is undefined" << std::endl;
+	}
+}
+
+void fcom::setWidth(FoilDataDispatcher * dispatcher) {
+	std::cout << "Set width of the roll" << std::endl;
+
+	setValue<double>(
+		[&]() { return dispatcher->getWidth(); },
+		[&](double value) { dispatcher->setWidth(value); },
+		[](std::string line) { return std::stod(line); },
+		[](double value) {
+			if (value > 0)
+				return true;
+			throw std::invalid_argument("value must be greater than 0");
+		}
+	);
+
+	std::cout << "Width of the roll ";
+	try {
+		auto value = dispatcher->getWidth();
 		std::cout << "value " << value << " is set" << std::endl;
 	} catch (UndefinedValueException const &) {
 		std::cout << "is undefined" << std::endl;
@@ -606,8 +629,31 @@ void fcom::setSheetNumber(FoilDataDispatcher * dispatcher) {
 	}
 }
 
+void fcom::setLengthReserve(FoilDataDispatcher * dispatcher) {
+	std::cout << "Set length reserve of the roll" << std::endl;
+
+	setValue<double>(
+		[&]() { return dispatcher->getLengthReserve(); },
+		[&](double value) { dispatcher->setLengthReserve(value); },
+		[](std::string line) { return std::stod(line); },
+		[](double value) {
+			if (value > 0)
+				return true;
+			throw std::invalid_argument("value must be greater than 0");
+		}
+	);
+
+	std::cout << "Length reserve of the roll ";
+	try {
+		auto value = dispatcher->getLengthReserve();
+		std::cout << "value " << value << " is set" << std::endl;
+	} catch (UndefinedValueException const &) {
+		std::cout << "is undefined" << std::endl;
+	}
+}
+
 void fcom::setWidthReserve(FoilDataDispatcher * dispatcher) {
-	std::cout << "Set width reserve of the roller" << std::endl;
+	std::cout << "Set width reserve of the roll" << std::endl;
 
 	setValue<double>(
 		[&]() { return dispatcher->getWidthReserve(); },
@@ -620,7 +666,7 @@ void fcom::setWidthReserve(FoilDataDispatcher * dispatcher) {
 		}
 	);
 
-	std::cout << "Width reserve of the roller ";
+	std::cout << "Width reserve of the roll ";
 	try {
 		auto value = dispatcher->getWidthReserve();
 		std::cout << "value " << value << " is set" << std::endl;
@@ -629,14 +675,26 @@ void fcom::setWidthReserve(FoilDataDispatcher * dispatcher) {
 	}
 }
 
-void fcom::calculateFoilRollerLength(FoilDataDispatcher const * dispatcher) {
+void fcom::calculateFoilRollLength(FoilDataDispatcher const * dispatcher) {
 	double length = dispatcher->calculate();
 	std::cout << "Required roller's length equals " << length << "m" << std::endl;
 }
 
+void fcom::writeSuitableRolls(FoilDataDispatcher const * dispatcher) {
+	auto rollNames = dispatcher->getSuitableFoilRolls();
+	if (rollNames.size() == 0) {
+		std::cout << "No suitable rolls found\n";
+		return;
+	}
+
+	std::cout << "Suitable rolls are:\n";
+	for (auto rollName : rollNames)
+		std::cout << rollName << '\n';
+}
+
 
 void from::setLength(FoilRollsDataDispatcher * dispatcher) {
-	std::cout << "Set length of the roller" << std::endl;
+	std::cout << "Set length of the roll" << std::endl;
 
 	setValue<double>(
 		[&]() { return dispatcher->getLength(); },
@@ -649,7 +707,7 @@ void from::setLength(FoilRollsDataDispatcher * dispatcher) {
 		}
 	);
 
-	std::cout << "Width reserve of the roller ";
+	std::cout << "Width reserve of the roll ";
 	try {
 		auto value = dispatcher->getLength();
 		std::cout << "value " << value << " is set" << std::endl;
@@ -659,7 +717,7 @@ void from::setLength(FoilRollsDataDispatcher * dispatcher) {
 }
 
 void from::setWidth(FoilRollsDataDispatcher * dispatcher) {
-	std::cout << "Set width of the roller" << std::endl;
+	std::cout << "Set width of the roll" << std::endl;
 
 	setValue<double>(
 		[&]() { return dispatcher->getWidth(); },
@@ -672,7 +730,7 @@ void from::setWidth(FoilRollsDataDispatcher * dispatcher) {
 		}
 	);
 
-	std::cout << "Width reserve of the roller ";
+	std::cout << "Width reserve of the roll ";
 	try {
 		auto value = dispatcher->getWidth();
 		std::cout << "value " << value << " is set" << std::endl;

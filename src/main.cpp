@@ -284,10 +284,24 @@ int main() {
 		&foilDataDispatcher
 	);
 
+	CustomLeafOption<FoilDataDispatcher *> setFoilStampWidthOption(
+		"set width",
+		"Sets width of the stamp",
+		fcom::setWidth,
+		&foilDataDispatcher
+	);
+
 	CustomLeafOption<FoilDataDispatcher *> setFoilSheetNumberOption(
 		"set sheet number",
 		"Sets the number of sheets to be printed with one part of the foil",
 		fcom::setSheetNumber,
+		&foilDataDispatcher
+	);
+
+	CustomLeafOption<FoilDataDispatcher *> setFoilLengthReserveOption(
+		"set length reserve",
+		"Sets reserve value of length of the foil roller",
+		fcom::setLengthReserve,
 		&foilDataDispatcher
 	);
 
@@ -315,7 +329,14 @@ int main() {
 	CustomLeafOption<FoilDataDispatcher *> calculateFoilLengthOption(
 		"calculate foil length",
 		"Calculates length of the foil roll",
-		fcom::calculateFoilRollerLength,
+		fcom::calculateFoilRollLength,
+		&foilDataDispatcher
+	);
+
+	CustomLeafOption<FoilDataDispatcher *> writeSuitableFoilRollsOption(
+		"write suitable rolls",
+		"Writes the most suitable rolls of foil in descending order",
+		fcom::writeSuitableRolls,
 		&foilDataDispatcher
 	);
 
@@ -350,11 +371,14 @@ int main() {
 	BaseOptionContainer foilCalculation("foil calculation", "Contains methods to perform foil calculations", {
 		{'C', &setFoilCirculationOption},
 		{'L', &setFoilStampLengthOption},
+		{'W', &setFoilStampWidthOption},
 		{'n', &setFoilSheetNumberOption},
-		{'r', &setFoilWidthReserveOption},
+		{'e', &setFoilLengthReserveOption},
+		{'i', &setFoilWidthReserveOption},
 		{'l', &loadFoilPresetOption},
 		{'w', &writeFoilParametersOption},
 		{'a', &calculateFoilLengthOption},
+		{'s', &writeSuitableFoilRollsOption},
 		{'+', &createFoilPresetOption},
 		{'/', &updateFoilPresetOption},
 		{'-', &removeFoilPresetOption},

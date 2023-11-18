@@ -33,7 +33,9 @@
 	[
 		"circulation",
 		"length",
+		"width",
 		"sheet_number",
+		"length_reserve",
 		"width_reserve"
 	],
 

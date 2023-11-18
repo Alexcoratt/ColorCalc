@@ -34,11 +34,19 @@ public:
 	double getLength() const;
 	void setLength(double);
 
+	double getWidth() const;
+	void setWidth(double);
+
 	std::size_t getSheetNumber() const;
 	void setSheetNumber(std::size_t const &);
 
+	double getLengthReserve() const;
+	void setLengthReserve(double);
+
 	double getWidthReserve() const;
 	void setWidthReserve(double);
+
+	std::vector<std::string> getSuitableFoilRolls() const;
 
 	double calculate() const;
 };

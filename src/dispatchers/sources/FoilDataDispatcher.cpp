@@ -1,8 +1,13 @@
+#include <array>
+#include <iostream>
+
 #include "FoilDataDispatcher.hpp"
 
 #define CIRCULATION "circulation"
 #define LENGTH "length"
+#define WIDTH "width"
 #define SHEET_NUMBER "sheet_number"
+#define LENGTH_RESERVE "length_reserve"
 #define WIDTH_RESERVE "width_reserve"
 
 namespace ccm = common_container_methods;
@@ -40,14 +45,23 @@ void FoilDataDispatcher::setPreset(std::string const & name) {
 
 	auto params = _conn->getFoilPreset(name);
 
+	constexpr std::array<char const *, 4> doubleValues = {
+		LENGTH,
+		WIDTH,
+		LENGTH_RESERVE,
+		WIDTH_RESERVE
+	};
+
+	for (auto const & key : doubleValues) {
+		auto param = params.at(key);
+		if (!param.isNull())
+			_params[key] = std::stod(param);
+	}
+
 	if (!params.at(CIRCULATION).isNull())
 		_params[CIRCULATION] = std::stoul(params.at(CIRCULATION));
-	if (!params.at(LENGTH).isNull())
-		_params[LENGTH] = std::stod(params.at(LENGTH));
 	if (!params.at(SHEET_NUMBER).isNull())
 		_params[SHEET_NUMBER] = std::stoul(params.at(SHEET_NUMBER));
-	if (!params.at(WIDTH_RESERVE).isNull())
-		_params[WIDTH_RESERVE] = std::stod(params.at(WIDTH_RESERVE));
 
 	_presetName = name;
 }
@@ -77,12 +91,30 @@ void FoilDataDispatcher::setLength(double value) {
 	_presetName.clear();
 }
 
+double FoilDataDispatcher::getWidth() const { return ccm::getParam(_params, WIDTH); }
+void FoilDataDispatcher::setWidth(double value) {
+	if ((double)_params.at(WIDTH) == value)
+		return;
+
+	_params[WIDTH] = value;
+	_presetName.clear();
+}
+
 std::size_t FoilDataDispatcher::getSheetNumber() const { return ccm::getParam(_params, SHEET_NUMBER); }
 void FoilDataDispatcher::setSheetNumber(std::size_t const & value) {
 	if ((std::size_t)_params.at(SHEET_NUMBER) == value)
 		return;
 
 	_params[SHEET_NUMBER] = value;
+	_presetName.clear();
+}
+
+double FoilDataDispatcher::getLengthReserve() const { return ccm::getParam(_params, LENGTH_RESERVE); }
+void FoilDataDispatcher::setLengthReserve(double value) {
+	if ((double)_params.at(LENGTH_RESERVE) == value)
+		return;
+
+	_params[LENGTH_RESERVE] = value;
 	_presetName.clear();
 }
 
@@ -95,4 +127,8 @@ void FoilDataDispatcher::setWidthReserve(double value) {
 	_presetName.clear();
 }
 
-double FoilDataDispatcher::calculate() const { return (getLength() + getWidthReserve()) * getCirculation() / getSheetNumber() / 1000; }
+std::vector<std::string> FoilDataDispatcher::getSuitableFoilRolls() const {
+	return _conn->selectFoilRollPresets(calculate() * 1000, getWidth() + getWidthReserve());
+}
+
+double FoilDataDispatcher::calculate() const { return (getLength() + getLengthReserve()) * getCirculation() / getSheetNumber() / 1000; }
