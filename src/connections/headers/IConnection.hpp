@@ -15,6 +15,7 @@ public:
     virtual ~IConnection() {}
 
     virtual int getStatus() const = 0;
+    virtual bool isReadOnly() const = 0;
 
     // FIXME: please do that as it supposed to be after you succeed
     // All inter-dispatcher methods must be out of connection

@@ -12,16 +12,18 @@ private:
 	std::string _valuesFileName;
 	nlohmann::json _data;
 	int _status;
+    bool _readOnly;
 
-	void download();
-	void upload();
+	void download(bool quiet = false);
+	void upload(bool quiet = false);
 	void syncronize();
 
 public:
-	JsonConnection(std::string const &, std::string const &);
+	JsonConnection(std::string const & structureFileName, std::string const & valuesFileName, bool readOnly = true);
     ~JsonConnection();
 
 	int getStatus() const;
+    bool isReadOnly() const;
 
 	// Queries for paint/material types table
 	std::vector<std::string> getPaintTypes() const;

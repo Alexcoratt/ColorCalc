@@ -24,20 +24,24 @@ using json_type_error = nlohmann::json_abi_v3_11_2::detail::type_error;
 
 nlohmann::json compose(nlohmann::json const & structure, nlohmann::json const & values) {
 	nlohmann::json res;
-	for (auto table = values.begin(); table != values.end(); ++table) {
-		std::string tableName = table.key();
-		std::vector<std::string> columnNames = structure[tableName];
+	for (auto it = structure.begin(); it != structure.end(); ++it) {
+		std::string tableName = it.key();
+		std::vector<std::string> columnNames = it.value();
+
 
 		nlohmann::json composedTable;
-		composedTable[PRESETS] = {};
+		composedTable[PRESETS] = nlohmann::basic_json<>();
 
-		for (auto preset = table.value().begin(); preset != table.value().end(); ++preset) {
-			nlohmann::json composedPreset;
-			std::size_t count = 0;
-			for (auto columnName : columnNames)
-				composedPreset[columnName] = preset.value()[count++];
-			composedTable[PRESETS][preset.key()] = composedPreset;
-		}
+		try {
+			nlohmann::json const & sourceTable = values.at(tableName);
+			for (auto preset = sourceTable.begin(); preset != sourceTable.end(); ++preset) {
+				nlohmann::json composedPreset;
+				std::size_t count = 0;
+				for (auto columnName : columnNames)
+					composedPreset[columnName] = preset.value()[count++];
+				composedTable[PRESETS][preset.key()] = composedPreset;
+			}
+		} catch (nlohmann::json_abi_v3_11_2::detail::out_of_range const &) {}
 
 		composedTable[COLUMN_NAMES] = columnNames;
 
@@ -113,6 +117,7 @@ void createPreset(nlohmann::json & presets, std::string const & name, std::map<s
 		else
 			presets[name][it->first] = value;
 	}
+	std::cout << "Preset named \"" << name << "\" created\n";
 }
 
 void updatePreset(nlohmann::json & presets, std::string const & name, std::map<std::string, AutoValue> const & params) {
@@ -125,17 +130,22 @@ void updatePreset(nlohmann::json & presets, std::string const & name, std::map<s
 		else
 			presets[name][it->first] = value;
 	}
+	std::cout << "Preset named \"" << name << "\" updated\n";
 }
 
 void removePreset(nlohmann::json & presets, std::string const & name) {
 	if (presets.find(name) == presets.end())
 		throw PresetDoesNotExistException(name);
 	presets.erase(name);
+	std::cout << "Preset named \"" << name << "\" removed\n";
 }
 
 
-void JsonConnection::download() {
+void JsonConnection::download(bool quiet) {
 	try {
+		if (!quiet)
+			std::cout << "Trying to download from " << _valuesFileName << "\t";
+
 		std::ifstream structureFile(_structureFileName);
 		nlohmann::json structure = nlohmann::json::parse(structureFile);
 		structureFile.close();
@@ -146,18 +156,27 @@ void JsonConnection::download() {
 
 		_data = compose(structure, values);
 		_status = 0;
+
+		if (!quiet)
+			std::cout << "OK\n";
 	} catch (nlohmann::json_abi_v3_11_2::detail::parse_error const & err) {
 		_status = -1;
 		std::cerr << err.what() << std::endl;
 	}
 }
 
-// TODO: make the upload() save info to the json file
-void JsonConnection::upload() {
-	std::cout << "uploading\n";
+void JsonConnection::upload(bool quiet) {
+	if (!quiet)
+		std::cout << "Trying to upload to " << _valuesFileName << "\t";
+	if (isReadOnly())
+		throw std::runtime_error("connection is read-only");
+
 	std::ofstream valuesFile(_valuesFileName);
 	valuesFile << decomposePresets(_data).dump(1) << '\n';
 	valuesFile.close();
+
+	if (!quiet)
+		std::cout << "OK\n";
 }
 
 void JsonConnection::syncronize() {
@@ -165,11 +184,16 @@ void JsonConnection::syncronize() {
 	download();
 }
 
-JsonConnection::JsonConnection(std::string const & structureFileName, std::string const & valueFileName) : _structureFileName(structureFileName), _valuesFileName(valueFileName) { download(); }
+JsonConnection::JsonConnection(std::string const & structureFileName, std::string const & valueFileName, bool readOnly) : _structureFileName(structureFileName), _valuesFileName(valueFileName) {
+	download();
+	_readOnly = readOnly;
+}
 
 JsonConnection::~JsonConnection() {}
 
 int JsonConnection::getStatus() const { return _status; }
+
+bool JsonConnection::isReadOnly() const { return _readOnly; }
 
 std::vector<std::string> JsonConnection::getPaintTypes() const {
 	return getPresetNames(getPresets(_data, PAINT_CONSUMPTION_TABLE));
@@ -207,8 +231,7 @@ std::map<std::string, AutoValue> JsonConnection::getPaintPresetTemplate() const 
 
 void JsonConnection::createPaintPreset(std::string const & name, std::map<std::string, AutoValue> const & params) {
 	createPreset(getPresets(_data, PAINT_CALCULATION_TABLE), name, params);
-	//upload();
-	syncronize();
+	upload();
 }
 
 void JsonConnection::updatePaintPreset(std::string const & name, std::map<std::string, AutoValue> const & params) {

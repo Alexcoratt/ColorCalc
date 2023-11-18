@@ -49,6 +49,10 @@ T readValue(std::string const & prompt, std::function<T(std::string)> converter,
 }
 
 std::size_t readVariant(std::string const & prompt, std::vector<std::string> variants) {
+	if (variants.size() == 0) {
+		std::cout << "No available variants\n";
+		throw DefaultOptionIsChosenException();
+	}
 	std::cout << "Avilable variants" << std::endl;
 	std::size_t count = 0;
 	for (std::string const & variant : variants)
@@ -65,11 +69,11 @@ std::size_t readVariant(std::string const & prompt, std::vector<std::string> var
 	);
 }
 
-void setVariant(std::vector<std::string> const & types, std::function<std::string()> get, std::function<void(std::string)> set) {
+void setVariant(std::vector<std::string> const & variants, std::function<std::string()> get, std::function<void(std::string)> set) {
 	std::string prompt;
 	AutoValue defaultVariant;
 	try {
-		defaultVariant = getIndex(types, get());
+		defaultVariant = getIndex(variants, get());
 	} catch (std::invalid_argument const &) {
 		defaultVariant.clear();
 	} catch (UndefinedValueException const &) {
@@ -81,7 +85,7 @@ void setVariant(std::vector<std::string> const & types, std::function<std::strin
 	else
 		prompt = "Enter index of the variant (default=" + std::to_string((std::size_t)defaultVariant + 1) + "): ";
 
-	set(types[readVariant(prompt, types)]);
+	set(variants[readVariant(prompt, variants)]);
 }
 
 void com::clearValues(AbstractDataDispatcher * dispatcher) {
@@ -151,7 +155,6 @@ void com::createPreset(AbstractDataDispatcher * dispatcher) {
 			[](std::string line) { return line; }
 		);
 		dispatcher->createPreset(name);
-		std::cout << "Preset named \"" << name << "\" created" << std::endl;
 	} catch (DefaultOptionIsChosenException const &) {
 		std::cout << "Aborted" << std::endl;
 	}
@@ -172,7 +175,6 @@ void com::updatePreset(AbstractDataDispatcher * dispatcher) {
 				presetName = name;
 			}
 		);
-		std::cout << "Preset named \"" << presetName << "\" updated" << std::endl;
 	} catch (DefaultOptionIsChosenException const &) {
 		std::cout << "Aborted" << std::endl;
 	}
@@ -193,7 +195,6 @@ void com::removePreset(AbstractDataDispatcher * dispatcher) {
 				presetName = name;
 			}
 		);
-		std::cout << "Preset named \"" << presetName << "\" removed" << std::endl;
 	} catch (DefaultOptionIsChosenException const &) {
 		std::cout << "Aborted" << std::endl;
 	}

@@ -19,8 +19,9 @@
 #include <BaseOptionContainer.hpp>
 #include <CustomLeafOption.hpp>
 
-#define PRESETS_FILE "data/standard_presets.json"
 #define STRUCTURE_FILE "data/tables_structure.json"
+#define STANDARD_PRESETS_FILE "data/standard_presets.json"
+#define USER_PRESETS_FILE "data/user_presets.json"
 
 namespace com = common_option_methods;
 namespace pcom = paint_calculation_option_methods;
@@ -29,10 +30,10 @@ namespace fcom = foil_calculation_option_methods;
 namespace from = foil_rolls_option_methods;
 
 int main() {
-	IConnection * conn = new JsonConnection(STRUCTURE_FILE, PRESETS_FILE);
-	std::cout << "Status: " << conn->getStatus() << std::endl;
+	IConnection * conn = new JsonConnection(STRUCTURE_FILE, STANDARD_PRESETS_FILE);
+	IConnection * userConn = new JsonConnection(STRUCTURE_FILE, USER_PRESETS_FILE, false);
 
-	PaintDataDispatcher paintCalculationDispatcher(conn);
+	PaintDataDispatcher paintCalculationDispatcher(userConn);
 
 	CustomLeafOption<PaintDataDispatcher *> writePaintParametersOption(
 		"write values of parameters",
@@ -452,6 +453,7 @@ int main() {
 	root.exec(nullptr, std::cin, std::cout, "\n");
 
 	delete conn;
+	delete userConn;
 
 	return 0;
 }
