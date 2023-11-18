@@ -29,11 +29,7 @@ namespace fcom = foil_calculation_option_methods;
 namespace from = foil_rolls_option_methods;
 
 int main() {
-
-	std::ifstream structureFile(STRUCTURE_FILE);
-	std::fstream presetsFile(PRESETS_FILE);
-
-	IConnection * conn = new JsonConnection(structureFile, presetsFile);
+	IConnection * conn = new JsonConnection(STRUCTURE_FILE, PRESETS_FILE);
 	std::cout << "Status: " << conn->getStatus() << std::endl;
 
 	PaintDataDispatcher paintCalculationDispatcher(conn);

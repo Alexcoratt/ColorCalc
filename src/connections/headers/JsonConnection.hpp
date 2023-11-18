@@ -8,8 +8,8 @@
 
 class JsonConnection : public IConnection {
 private:
-	std::ifstream & _structure;
-	std::fstream & _values;
+	std::string _structureFileName;
+	std::string _valuesFileName;
 	nlohmann::json _data;
 	int _status;
 
@@ -18,7 +18,8 @@ private:
 	void syncronize();
 
 public:
-	JsonConnection(std::ifstream &, std::fstream &);
+	JsonConnection(std::string const &, std::string const &);
+    ~JsonConnection();
 
 	int getStatus() const;
 

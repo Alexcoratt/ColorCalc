@@ -51,13 +51,16 @@ nlohmann::json decomposePresets(nlohmann::json const & data) {
 	nlohmann::json res;
 
 	for (auto table = data.begin(); table != data.end(); ++table) {
-		nlohmann::json values;
+		nlohmann::json decomposedPresets;
 		nlohmann::json const & presets = table.value().at(PRESETS);
 		std::vector<std::string> columnNames = table.value().at(COLUMN_NAMES);
-		for (auto preset = presets.begin(); preset != presets.end(); ++preset)
+		for (auto preset = presets.begin(); preset != presets.end(); ++preset) {
+			nlohmann::json values;
 			for (std::string columnName : columnNames)
 				values.push_back(preset.value()[columnName]);
-		res[table.key()] = values;
+			decomposedPresets[preset.key()] = values;
+		}
+		res[table.key()] = decomposedPresets;
 	}
 
 	return res;
@@ -133,8 +136,14 @@ void removePreset(nlohmann::json & presets, std::string const & name) {
 
 void JsonConnection::download() {
 	try {
-		nlohmann::json structure = nlohmann::json::parse(_structure);
-		nlohmann::json values = nlohmann::json::parse(_values);
+		std::ifstream structureFile(_structureFileName);
+		nlohmann::json structure = nlohmann::json::parse(structureFile);
+		structureFile.close();
+
+		std::ifstream valuesFile(_valuesFileName);
+		nlohmann::json values = nlohmann::json::parse(valuesFile);
+		valuesFile.close();
+
 		_data = compose(structure, values);
 		_status = 0;
 	} catch (nlohmann::json_abi_v3_11_2::detail::parse_error const & err) {
@@ -144,14 +153,21 @@ void JsonConnection::download() {
 }
 
 // TODO: make the upload() save info to the json file
-void JsonConnection::upload() {}
+void JsonConnection::upload() {
+	std::cout << "uploading\n";
+	std::ofstream valuesFile(_valuesFileName);
+	valuesFile << decomposePresets(_data).dump(1) << '\n';
+	valuesFile.close();
+}
 
 void JsonConnection::syncronize() {
 	upload();
 	download();
 }
 
-JsonConnection::JsonConnection(std::ifstream & structureFile, std::fstream & valueFile) : _structure(structureFile), _values(valueFile) { download(); }
+JsonConnection::JsonConnection(std::string const & structureFileName, std::string const & valueFileName) : _structureFileName(structureFileName), _valuesFileName(valueFileName) { download(); }
+
+JsonConnection::~JsonConnection() {}
 
 int JsonConnection::getStatus() const { return _status; }
 
@@ -191,7 +207,8 @@ std::map<std::string, AutoValue> JsonConnection::getPaintPresetTemplate() const 
 
 void JsonConnection::createPaintPreset(std::string const & name, std::map<std::string, AutoValue> const & params) {
 	createPreset(getPresets(_data, PAINT_CALCULATION_TABLE), name, params);
-	upload();
+	//upload();
+	syncronize();
 }
 
 void JsonConnection::updatePaintPreset(std::string const & name, std::map<std::string, AutoValue> const & params) {
