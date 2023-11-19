@@ -1,0 +1,28 @@
+{
+ "foil_calculation": {
+  "test_preset": [
+   5000,
+   203,
+   200,
+   5,
+   40,
+   20
+  ]
+ },
+ "foil_rolls": null,
+ "lacquer_calculation": null,
+ "paint_calculation": {
+  "test2": [
+   null,
+   null,
+   "0.322000",
+   "4.000000",
+   "80.000000",
+   "900.000000",
+   "1200.000000",
+   "5000",
+   "1.200000"
+  ]
+ },
+ "paint_consumption": null
+}

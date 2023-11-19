@@ -12,10 +12,18 @@ add_subdirectory(modules/json)
 
 file(GLOB CONNECTION_SOURCES "src/connections/sources/*.cpp")
 file(GLOB DISPATCHER_SOURCES "src/dispatchers/sources/*.cpp")
-add_library(${PROJECT_NAME}_lib STATIC ${CONNECTION_SOURCES} ${DISPATCHER_SOURCES})
+file(GLOB CONTAINER_SOURCES "src/containers/sources/*.cpp")
+file(GLOB VALUE_SOURCES "src/values/sources/*.cpp")
+
+add_library(${PROJECT_NAME}_lib STATIC
+    ${CONNECTION_SOURCES}
+    ${DISPATCHER_SOURCES}
+    ${CONTAINER_SOURCES}
+    ${VALUE_SOURCES})
 target_include_directories(${PROJECT_NAME}_lib
     PUBLIC src/connections/headers
     PUBLIC src/dispatchers/headers
+    PUBLIC src/containers/headers
     PUBLIC src/values/headers
     PUBLIC src/exceptions
 )
