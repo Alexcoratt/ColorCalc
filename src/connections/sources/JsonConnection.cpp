@@ -7,139 +7,10 @@
 
 #include "JsonConnection.hpp"
 
-#include "UndefinedValueException.hpp"
+#include <nlohmann/json.hpp>
+
 #include "PresetAlreadyExistsException.hpp"
 #include "PresetDoesNotExistException.hpp"
-
-#define PAINT_CONSUMPTION_TABLE "paint_consumption"
-#define PAINT_CALCULATION_TABLE "paint_calculation"
-#define LACQUER_CALCULATION_TABLE "lacquer_calculation"
-#define FOIL_CALCULATION_TABLE "foil_calculation"
-#define FOIL_ROLLS_TABLE "foil_rolls"
-
-#define COLUMN_NAMES "column_names"
-#define PRESETS "presets"
-
-using json_type_error = nlohmann::json_abi_v3_11_2::detail::type_error;
-
-nlohmann::json compose(nlohmann::json const & structure, nlohmann::json const & values) {
-	nlohmann::json res;
-	for (auto it = structure.begin(); it != structure.end(); ++it) {
-		std::string tableName = it.key();
-		std::vector<std::string> columnNames = it.value();
-
-
-		nlohmann::json composedTable;
-		composedTable[PRESETS] = nlohmann::basic_json<>();
-
-		try {
-			nlohmann::json const & sourceTable = values.at(tableName);
-			for (auto preset = sourceTable.begin(); preset != sourceTable.end(); ++preset) {
-				nlohmann::json composedPreset;
-				std::size_t count = 0;
-				for (auto columnName : columnNames)
-					composedPreset[columnName] = preset.value()[count++];
-				composedTable[PRESETS][preset.key()] = composedPreset;
-			}
-		} catch (nlohmann::json_abi_v3_11_2::detail::out_of_range const &) {}
-
-		composedTable[COLUMN_NAMES] = columnNames;
-
-		res[tableName] = composedTable;
-	}
-
-	return res;
-}
-
-nlohmann::json decomposePresets(nlohmann::json const & data) {
-	nlohmann::json res;
-
-	for (auto table = data.begin(); table != data.end(); ++table) {
-		nlohmann::json decomposedPresets;
-		nlohmann::json const & presets = table.value().at(PRESETS);
-		std::vector<std::string> columnNames = table.value().at(COLUMN_NAMES);
-		for (auto preset = presets.begin(); preset != presets.end(); ++preset) {
-			nlohmann::json values;
-			for (std::string columnName : columnNames)
-				values.push_back(preset.value()[columnName]);
-			decomposedPresets[preset.key()] = values;
-		}
-		res[table.key()] = decomposedPresets;
-	}
-
-	return res;
-}
-
-nlohmann::json & getPresets(nlohmann::json & data, std::string const & table) {
-	if (data.at(table).is_null())
-		throw UndefinedValueException(table);
-	return data.at(table).at(PRESETS);
-}
-nlohmann::json const & getPresets(nlohmann::json const & data, std::string const & table) {
-	if (data.at(table).is_null())
-		throw UndefinedValueException(table);
-	return data.at(table).at(PRESETS);
-}
-
-nlohmann::json & getPreset(nlohmann::json & presets, std::string const & name) { return presets.at(name); }
-nlohmann::json & getPreset(nlohmann::json & data, std::string const & table, std::string const & name) { return getPreset(getPresets(data, table), name); }
-nlohmann::json const & getPreset(nlohmann::json const & presets, std::string const & name) { return presets.at(name); }
-nlohmann::json const & getPreset(nlohmann::json const & data, std::string const & table, std::string const & name) { return getPreset(getPresets(data, table), name); }
-
-std::vector<std::string> getPresetNames(nlohmann::json const & presets) {
-	std::vector<std::string> res;
-	for (auto it = presets.begin(); it != presets.end(); ++it)
-		res.push_back(it.key());
-	return res;
-}
-
-std::map<std::string, AutoValue> convertPreset(nlohmann::json const & preset) {
-	std::map<std::string, AutoValue> res;
-	for (auto it = preset.begin(); it != preset.end(); ++it) {
-		if (it.value().is_null())
-			res[it.key()] = NullValue();
-		else if (it.value().is_string())
-			res[it.key()] = it.value().get<std::string>();
-		else
-			res[it.key()] = it.value().dump();
-	}
-	return res;
-}
-
-void createPreset(nlohmann::json & presets, std::string const & name, std::map<std::string, AutoValue> const & params) {
-	if (presets.find(name) != presets.end())
-		throw PresetAlreadyExistsException(name);
-	presets[name] = nlohmann::basic_json<>();
-	for (auto it = params.begin(); it != params.end(); ++it) {
-		std::string value = it->second;
-		if (value.size() == 0)
-			presets[name][it->first] = nlohmann::json::value_t::null;
-		else
-			presets[name][it->first] = value;
-	}
-	std::cout << "Preset named \"" << name << "\" created\n";
-}
-
-void updatePreset(nlohmann::json & presets, std::string const & name, std::map<std::string, AutoValue> const & params) {
-	if (presets.find(name) == presets.end())
-		throw PresetDoesNotExistException(name);
-	for (auto it = params.begin(); it != params.end(); ++it) {
-		std::string value = it->second;
-		if (value.size() == 0)
-			presets[name][it->first] = nlohmann::json::value_t::null;
-		else
-			presets[name][it->first] = value;
-	}
-	std::cout << "Preset named \"" << name << "\" updated\n";
-}
-
-void removePreset(nlohmann::json & presets, std::string const & name) {
-	if (presets.find(name) == presets.end())
-		throw PresetDoesNotExistException(name);
-	presets.erase(name);
-	std::cout << "Preset named \"" << name << "\" removed\n";
-}
-
 
 void JsonConnection::download(bool quiet) {
 	try {
@@ -147,14 +18,30 @@ void JsonConnection::download(bool quiet) {
 			std::cout << "Trying to download from " << _valuesFileName << "\t";
 
 		std::ifstream structureFile(_structureFileName);
-		nlohmann::json structure = nlohmann::json::parse(structureFile);
+		_paramNames = nlohmann::json::parse(structureFile).at(_tableName);
 		structureFile.close();
 
 		std::ifstream valuesFile(_valuesFileName);
-		nlohmann::json values = nlohmann::json::parse(valuesFile);
+		nlohmann::json presets = nlohmann::json::parse(valuesFile).at(_tableName);
 		valuesFile.close();
 
-		_data = compose(structure, values);
+		for (auto it = presets.begin(); it != presets.end(); ++it) {
+			std::vector<AutoValue> values;
+			for (nlohmann::basic_json<> const & value : it.value()) {
+				if (value.is_number_float())
+					values.push_back(value.get<double>());
+				else if (value.is_number_unsigned())
+					values.push_back(value.get<unsigned long>());
+				else if (value.is_number_integer())
+					values.push_back(value.get<int>());
+				else if (value.is_string())
+					values.push_back(value.get<std::string>());
+				else
+					values.push_back(NullValue());
+			}
+			_presets[it.key()] = values;
+		}
+
 		_status = 0;
 
 		if (!quiet)
@@ -171,188 +58,98 @@ void JsonConnection::upload(bool quiet) {
 	if (isReadOnly())
 		throw std::runtime_error("connection is read-only");
 
-	std::ofstream valuesFile(_valuesFileName);
-	valuesFile << decomposePresets(_data).dump(1) << '\n';
-	valuesFile.close();
+	std::fstream file(_valuesFileName);
+	nlohmann::json data = nlohmann::json::parse(file);
+	data[_tableName] = _presets;
+	file << data.dump(1) << '\n';
+	file.close();
 
 	if (!quiet)
 		std::cout << "OK\n";
 }
 
-void JsonConnection::syncronize() {
-	upload();
-	download();
+void JsonConnection::syncronize(bool quiet) {
+	upload(quiet);
+	download(quiet);
 }
 
-JsonConnection::JsonConnection(std::string const & structureFileName, std::string const & valueFileName, bool readOnly) : _structureFileName(structureFileName), _valuesFileName(valueFileName) {
+JsonConnection::JsonConnection(std::string const & structureFileName, std::string const & valueFileName, std::string const & tableName, bool readOnly) : _structureFileName(structureFileName), _valuesFileName(valueFileName), _tableName(tableName) {
 	download();
 	_readOnly = readOnly;
 }
 
 JsonConnection::~JsonConnection() {}
-
 int JsonConnection::getStatus() const { return _status; }
-
 bool JsonConnection::isReadOnly() const { return _readOnly; }
+bool JsonConnection::hasPreset(std::string const & name) const { return _presets.find(name) != _presets.end(); }
 
-std::vector<std::string> JsonConnection::getPaintTypes() const {
-	return getPresetNames(getPresets(_data, PAINT_CONSUMPTION_TABLE));
-}
-std::vector<std::string> JsonConnection::getMaterialTypes() const { return _data.at(PAINT_CONSUMPTION_TABLE).at(COLUMN_NAMES); }
-
-double JsonConnection::getPaintConsumption(std::string const & paintType, std::string const & materialType) const {
-	try {
-		return getPresets(_data, PAINT_CONSUMPTION_TABLE).at(paintType).at(materialType);
-	} catch (std::exception const &) {}
-	throw UndefinedValueException("paint consumption of " + paintType + " with " + materialType);
-}
-
-std::vector<std::string> JsonConnection::getPaintPresetNames() const {
-	return getPresetNames(getPresets(_data, PAINT_CALCULATION_TABLE));
-}
-
-std::vector<std::string> JsonConnection::getPaintPresetColumns() const { return _data.at(PAINT_CALCULATION_TABLE).at(COLUMN_NAMES); }
-
-std::map<std::string, AutoValue> JsonConnection::getPaintPreset(std::string const & name) const {
-	nlohmann::json const & preset = getPreset(_data, PAINT_CALCULATION_TABLE, name);
-
-	if (preset.is_null())
-		throw PresetDoesNotExistException(name);
-
-	return convertPreset(preset);
-}
-
-std::map<std::string, AutoValue> JsonConnection::getPaintPresetTemplate() const {
-	std::map<std::string, AutoValue> res;
-	for (std::string const & column : getPaintPresetColumns())
-		res[column] = NullValue();
+std::vector<std::string> JsonConnection::getPresetNames() const {
+	std::vector<std::string> res;
+	for (auto it = _presets.begin(); it != _presets.end(); ++it)
+		res.push_back(it->first);
 	return res;
 }
 
-void JsonConnection::createPaintPreset(std::string const & name, std::map<std::string, AutoValue> const & params) {
-	createPreset(getPresets(_data, PAINT_CALCULATION_TABLE), name, params);
-	upload();
-}
+std::vector<std::string> JsonConnection::getPresetParamNames() const { return _paramNames; }
 
-void JsonConnection::updatePaintPreset(std::string const & name, std::map<std::string, AutoValue> const & params) {
-	updatePreset(getPresets(_data, PAINT_CALCULATION_TABLE), name, params);
-	upload();
-}
-
-void JsonConnection::removePaintPreset(std::string const & name) {
-	removePreset(getPresets(_data, PAINT_CALCULATION_TABLE), name);
-	upload();
-}
-
-
-// Queries for lacquer presets
-
-std::vector<std::string> JsonConnection::getLacquerPresetNames() const {
-	return getPresetNames(getPresets(_data, LACQUER_CALCULATION_TABLE));
-}
-
-std::vector<std::string> JsonConnection::getLacquerPresetColumns() const { return _data.at(LACQUER_CALCULATION_TABLE).at(COLUMN_NAMES); }
-
-std::map<std::string, AutoValue> JsonConnection::getLacquerPreset(std::string const & name) const {
-	nlohmann::json const & preset = getPreset(_data, LACQUER_CALCULATION_TABLE, name);
-	if (preset.is_null())
+DataContainer JsonConnection::getPreset(std::string const & name) const {
+	if (hasPreset(name))
 		throw PresetDoesNotExistException(name);
-	return convertPreset(preset);
-}
 
-std::map<std::string, AutoValue> JsonConnection::getLacquerPresetTemplate() const {
-	std::map<std::string, AutoValue> res;
-	for (std::string const & column : getLacquerPresetColumns())
-		res[column] = NullValue();
+	DataContainer res(name);
+	auto const & values = _presets.at(name);
+	auto paramNames = getPresetParamNames();
+	unsigned paramCount = paramNames.size();
+
+	for (unsigned i = 0; i < paramCount; ++i)
+		res.setValue(paramNames[i], values[i]);
+
 	return res;
 }
 
-void JsonConnection::createLacquerPreset(std::string const & name, std::map<std::string, AutoValue> const & params) {
-	createPreset(getPresets(_data, LACQUER_CALCULATION_TABLE), name, params);
-	upload();
-}
-
-void JsonConnection::updateLacquerPreset(std::string const & name, std::map<std::string, AutoValue> const & params) {
-	updatePreset(getPresets(_data, LACQUER_CALCULATION_TABLE), name, params);
-	upload();
-}
-
-void JsonConnection::removeLacquerPreset(std::string const & name) {
-	removePreset(getPresets(_data, LACQUER_CALCULATION_TABLE), name);
-	upload();
-}
-
-
-// Queries for foil presets
-
-std::vector<std::string> JsonConnection::getFoilPresetNames() const {
-	return getPresetNames(getPresets(_data, FOIL_CALCULATION_TABLE));
-}
-
-std::vector<std::string> JsonConnection::getFoilPresetColumns() const { return _data.at(FOIL_CALCULATION_TABLE).at(COLUMN_NAMES); }
-
-std::map<std::string, AutoValue> JsonConnection::getFoilPreset(std::string const & name) const {
-	nlohmann::json const & preset = getPreset(_data, FOIL_CALCULATION_TABLE, name);
-	if (preset.is_null())
-		throw PresetDoesNotExistException(name);
-	return convertPreset(preset);
-}
-
-std::map<std::string, AutoValue> JsonConnection::getFoilPresetTemplate() const {
-	std::map<std::string, AutoValue> res;
-	for (auto column : getFoilPresetColumns())
-		res.insert({column, NullValue()});
+DataContainer JsonConnection::getPresetTemplate() const {
+	DataContainer res("template");
+	for (std::string name : getPresetParamNames())
+		res.setValue(name, NullValue());
 	return res;
 }
 
-void JsonConnection::createFoilPreset(std::string const & name, std::map<std::string, AutoValue> const & params) {
-	createPreset(getPresets(_data, FOIL_CALCULATION_TABLE), name, params);
+void JsonConnection::createPreset(DataContainer const & container) {
+	auto name = container.getName();
+	if (hasPreset(name))
+		throw PresetAlreadyExistsException(name);
+
+	std::vector<AutoValue> preset;
+	for (auto paramName : getPresetParamNames())
+		preset.push_back(container.getValue(paramName));
+	_presets[name] = preset;
+
+	std::cout << "Preset named \"" << name << "\" created\n";
+
 	upload();
 }
 
-void JsonConnection::updateFoilPreset(std::string const & name, std::map<std::string, AutoValue> const & params) {
-	updatePreset(getPresets(_data, FOIL_CALCULATION_TABLE), name, params);
-	upload();
-}
-
-void JsonConnection::removeFoilPreset(std::string const & name) {
-	removePreset(getPresets(_data, FOIL_CALCULATION_TABLE), name);
-	upload();
-}
-
-// Queries for foil roll presets
-
-std::vector<std::string> JsonConnection::getFoilRollPresetNames() const {
-	return getPresetNames(getPresets(_data, FOIL_ROLLS_TABLE));
-}
-
-std::vector<std::string> JsonConnection::getFoilRollPresetColumns() const { return _data.at(FOIL_ROLLS_TABLE).at(COLUMN_NAMES); }
-
-std::map<std::string, AutoValue> JsonConnection::getFoilRollPreset(std::string const & name) const {
-	nlohmann::json const & preset = getPreset(_data, FOIL_ROLLS_TABLE, name);
-	if (preset.is_null())
+void JsonConnection::updatePreset(DataContainer const & container) {
+	auto name = container.getName();
+	if (!hasPreset(name))
 		throw PresetDoesNotExistException(name);
-	return convertPreset(preset);
-}
 
-std::map<std::string, AutoValue> JsonConnection::getFoilRollPresetTemplate() const {
-	std::map<std::string, AutoValue> res;
-	for (auto column : getFoilRollPresetColumns())
-		res.insert({column, NullValue()});
-	return res;
-}
+	std::vector<AutoValue> preset;
+	for (auto paramName : getPresetParamNames())
+		preset.push_back(container.getValue(paramName));
+	_presets[name] = preset;
 
-void JsonConnection::createFoilRollPreset(std::string const & name, std::map<std::string, AutoValue> const & params) {
-	createPreset(getPresets(_data, FOIL_ROLLS_TABLE), name, params);
+	std::cout << "Preset named \"" << name << "\" updated\n";
+
 	upload();
 }
 
-void JsonConnection::updateFoilRollPreset(std::string const & name, std::map<std::string, AutoValue> const & params) {
-	updatePreset(getPresets(_data, FOIL_ROLLS_TABLE), name, params);
-	upload();
-}
+void JsonConnection::removePreset(std::string const & name) {
+	if (!hasPreset(name))
+		throw PresetDoesNotExistException(name);
 
-void JsonConnection::removeFoilRollPreset(std::string const & name) {
-	removePreset(getPresets(_data, FOIL_ROLLS_TABLE), name);
+	_presets.erase(name);
+	std::cout << "Preset named \"" << name << "\" removed\n";
+
 	upload();
 }

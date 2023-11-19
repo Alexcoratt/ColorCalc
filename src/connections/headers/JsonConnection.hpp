@@ -2,7 +2,7 @@
 #define JSON_CONNECTION_HPP
 
 #include <fstream>
-#include <nlohmann/json.hpp>
+#include <map>
 
 #include "IConnection.hpp"
 
@@ -10,61 +10,33 @@ class JsonConnection : public IConnection {
 private:
 	std::string _structureFileName;
 	std::string _valuesFileName;
-	nlohmann::json _data;
+
+    std::string _tableName;
+	std::vector<std::string> _paramNames;
+    std::map<std::string, std::vector<AutoValue>> _presets;
+
 	int _status;
     bool _readOnly;
 
 	void download(bool quiet = false);
 	void upload(bool quiet = false);
-	void syncronize();
+	void syncronize(bool quiet = false);
 
 public:
-	JsonConnection(std::string const & structureFileName, std::string const & valuesFileName, bool readOnly = true);
+	JsonConnection(std::string const & structureFileName, std::string const & valuesFileName, std::string const & tableName, bool readOnly = true);
     ~JsonConnection();
 
 	int getStatus() const;
     bool isReadOnly() const;
+    bool hasPreset(std::string const &) const;
 
-	// Queries for paint/material types table
-	std::vector<std::string> getPaintTypes() const;
-	std::vector<std::string> getMaterialTypes() const;
-	double getPaintConsumption(std::string const &, std::string const &) const;
-
-	// Queires for paint presets
-	std::vector<std::string> getPaintPresetNames() const;
-    std::vector<std::string> getPaintPresetColumns() const;
-	std::map<std::string, AutoValue> getPaintPreset(std::string const &) const;
-	std::map<std::string, AutoValue> getPaintPresetTemplate() const;
-    void createPaintPreset(std::string const &, std::map<std::string, AutoValue> const &);
-    void updatePaintPreset(std::string const &, std::map<std::string, AutoValue> const &);
-    void removePaintPreset(std::string const &);
-
-	// Queries for lacquer presets
-    std::vector<std::string> getLacquerPresetNames() const;
-    std::vector<std::string> getLacquerPresetColumns() const;
-    std::map<std::string, AutoValue> getLacquerPreset(std::string const &) const;
-	std::map<std::string, AutoValue> getLacquerPresetTemplate() const;
-    void createLacquerPreset(std::string const &, std::map<std::string, AutoValue> const &);
-    void updateLacquerPreset(std::string const &, std::map<std::string, AutoValue> const &);
-    void removeLacquerPreset(std::string const &);
-
-	// Queries for foil presets
-    std::vector<std::string> getFoilPresetNames() const;
-    std::vector<std::string> getFoilPresetColumns() const;
-    std::map<std::string, AutoValue> getFoilPreset(std::string const &) const;
-    std::map<std::string, AutoValue> getFoilPresetTemplate() const;
-    void createFoilPreset(std::string const &, std::map<std::string, AutoValue> const &);
-    void updateFoilPreset(std::string const &, std::map<std::string, AutoValue> const &);
-    void removeFoilPreset(std::string const &);
-
-	// Queries for foil roll presets
-    std::vector<std::string> getFoilRollPresetNames() const;
-    std::vector<std::string> getFoilRollPresetColumns() const;
-    std::map<std::string, AutoValue> getFoilRollPreset(std::string const &) const;
-    std::map<std::string, AutoValue> getFoilRollPresetTemplate() const;
-    void createFoilRollPreset(std::string const &, std::map<std::string, AutoValue> const &);
-    void updateFoilRollPreset(std::string const &, std::map<std::string, AutoValue> const &);
-    void removeFoilRollPreset(std::string const &);
+	std::vector<std::string> getPresetNames() const;
+    std::vector<std::string> getPresetParamNames() const;
+    DataContainer getPreset(std::string const &) const;
+	DataContainer getPresetTemplate() const;
+    void createPreset(DataContainer const &);
+    void updatePreset(DataContainer const &);
+    void removePreset(std::string const &);
 };
 
 #endif
