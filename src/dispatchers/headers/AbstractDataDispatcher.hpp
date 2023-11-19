@@ -9,41 +9,45 @@
 #include <AutoValue.hpp>
 
 #include "IConnection.hpp"
-
 #include "UndefinedValueException.hpp"
 
 class AbstractDataDispatcher {
+protected:
+	IConnection * _conn;
+	DataContainer _data;
+
 public:
 	virtual ~AbstractDataDispatcher() {}
 
-	virtual IConnection * getConnection() = 0;
+	virtual IConnection * getConnection();
 
-	virtual std::vector<std::string> getAvailablePresetNames() const = 0;
-	virtual std::vector<std::string> getParamNames() const = 0;
-	virtual std::map<std::string, std::string> toStringMap() const = 0;
+	virtual std::vector<std::string> getAvailablePresetNames() const;
+	virtual std::vector<std::string> getParamNames() const;
+	virtual std::map<std::string, std::string> toStringMap() const;
 
-	virtual void clear() = 0;
+	virtual void clear();
 
-	virtual std::string getPresetName() const = 0;
-	virtual void setPreset(std::string const &) = 0;
+	virtual std::string getPresetName() const;
+	virtual void setPreset(std::string const &);
 
-	virtual void createPreset(std::string const &) = 0;
-	virtual void updatePreset(std::string const &) = 0;
-	virtual void removePreset(std::string const &) = 0;
+	virtual void createPreset(std::string const &);
+	virtual void updatePreset(std::string const &);
+	virtual void removePreset(std::string const &);
 
 	virtual double calculate() const = 0;
 };
 
-namespace common_container_methods {
+namespace common_dispatcher_methods {
 
-	inline AutoValue getParam(std::map<std::string, AutoValue> const & params, std::string const key) {
-	try {
-		AutoValue res = params.at(key);
-		if (!res.isNull())
-			return res;
-	} catch (std::out_of_range const &) {}
-	throw UndefinedValueException(key);
-}
+	template <typename T>
+	T getValue(DataContainer const & data, std::string const & key) {
+		try {
+			auto value = data.at(key);
+			if (!value.isNull())
+				return (T)value;
+		} catch (std::out_of_range const &) {}
+		throw UndefinedValueException(key);
+	}
 
 }
 

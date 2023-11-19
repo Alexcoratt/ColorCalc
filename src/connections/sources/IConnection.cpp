@@ -1,6 +1,8 @@
+/*
 #include <cmath>
 
 #include "IConnection.hpp"
+
 
 class CompareFoilRolls {
 private:
@@ -17,7 +19,7 @@ private:
 
 public:
 	CompareFoilRolls(IConnection const * conn, double minLength, double minWidth) : _conn(conn), _minLength(minLength), _minWidth(minWidth) {}
-
+	*/
 	/*
 	* comparing method
 	* name being valued more when its roll prodused less waste
@@ -25,6 +27,7 @@ public:
 	* if both rolls produses the same waste the most valued one is that
 	* which requires less roll count
 	*/
+	/*
 	bool operator()(std::string const & leftName, std::string const & rightName) {
 		auto leftRoll = _conn->getFoilRollPreset(leftName);
 		auto rightRoll = _conn->getFoilRollPreset(rightName);
@@ -55,3 +58,4 @@ std::vector<std::string> IConnection::selectFoilRollPresets(double minLength, do
 	std::sort(res.begin(), res.end(), CompareFoilRolls(this, minLength, minWidth));
 	return res;
 };
+*/

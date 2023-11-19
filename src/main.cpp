@@ -30,10 +30,8 @@ namespace fcom = foil_calculation_option_methods;
 namespace from = foil_rolls_option_methods;
 
 int main() {
-	IConnection * conn = new JsonConnection(STRUCTURE_FILE, STANDARD_PRESETS_FILE);
-	IConnection * userConn = new JsonConnection(STRUCTURE_FILE, USER_PRESETS_FILE, false);
-
-	PaintDataDispatcher paintCalculationDispatcher(userConn);
+	IConnection * paintConn = new JsonConnection(STRUCTURE_FILE, STANDARD_PRESETS_FILE, "paint_calculation");
+	PaintDataDispatcher paintCalculationDispatcher(paintConn);
 
 	CustomLeafOption<PaintDataDispatcher *> writePaintParametersOption(
 		"write values of parameters",
@@ -42,17 +40,21 @@ int main() {
 		&paintCalculationDispatcher
 	);
 
+	/*
 	CustomLeafOption<PaintDataDispatcher *> setPaintTypeOption(
 		"set paint type",
 		"Set type of paint you are going to use",
 		pcom::setPaintType,
-		&paintCalculationDispatcher);
+		&paintCalculationDispatcher
+	);
 
 	CustomLeafOption<PaintDataDispatcher *> setMaterialTypeOption(
 		"set material type",
 		"Set type of material you are going to use",
 		pcom::setMaterialType,
-		&paintCalculationDispatcher);
+		&paintCalculationDispatcher
+	);
+	*/
 
 	CustomLeafOption<PaintDataDispatcher *> setPaintConsumptionOption(
 		"set paint consumption",
@@ -147,8 +149,8 @@ int main() {
 
 	BaseOptionContainer paintCalculation("paint calculation", "contains options to work with paint calculation data", {
 		{'w', &writePaintParametersOption},
-		{'p', &setPaintTypeOption},
-		{'m', &setMaterialTypeOption},
+		//{'p', &setPaintTypeOption},
+		//{'m', &setMaterialTypeOption},
 		{'c', &setPaintConsumptionOption},
 		{'d', &setPaintDividerOption},
 		{'%', &setPaintPercentageOption},
@@ -164,7 +166,8 @@ int main() {
 		{'-', &removePaintPresetOption}
 	});
 
-	LacquerDataDispatcher lacquerCalculationDispatcher(conn);
+	IConnection * lacquerConnection = new JsonConnection(STRUCTURE_FILE, STANDARD_PRESETS_FILE, "lacquer_calculation");
+	LacquerDataDispatcher lacquerCalculationDispatcher(lacquerConnection);
 
 	CustomLeafOption<LacquerDataDispatcher *> writeLacquerParametersOption(
 		"write values of parameters",
@@ -265,7 +268,8 @@ int main() {
 		{'-', &removeLacquerPresetOption}
 	});
 
-	FoilDataDispatcher foilDataDispatcher(conn);
+	IConnection * foilConnection = new JsonConnection(STRUCTURE_FILE, STANDARD_PRESETS_FILE, "foil_calculation");
+	FoilDataDispatcher foilDataDispatcher(foilConnection);
 
 	CustomLeafOption<FoilDataDispatcher *> setFoilCirculationOption(
 		"set circulation",
@@ -383,7 +387,8 @@ int main() {
 	});
 
 
-	FoilRollsDataDispatcher foilRollsDataDispatcher(conn);
+	IConnection * foilRollsConnection = new JsonConnection(STRUCTURE_FILE, STANDARD_PRESETS_FILE, "foil_rolls");
+	FoilRollsDataDispatcher foilRollsDataDispatcher(foilRollsConnection);
 
 	CustomLeafOption<FoilRollsDataDispatcher *> setFoilRollLengthOption(
 		"set roll length",
@@ -451,9 +456,6 @@ int main() {
 		{'r', &foilRolls}
 	}, true);
 	root.exec(nullptr, std::cin, std::cout, "\n");
-
-	delete conn;
-	delete userConn;
 
 	return 0;
 }

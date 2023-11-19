@@ -200,7 +200,7 @@ void com::removePreset(AbstractDataDispatcher * dispatcher) {
 	}
 }
 
-
+/*
 void pcom::setPaintType(PaintDataDispatcher * dispatcher) {
 	std::cout << "Select paint type" << std::endl;
 	try {
@@ -238,6 +238,7 @@ void pcom::setMaterialType(PaintDataDispatcher * dispatcher) {
 		std::cout << "is undefined" << std::endl;
 	}
 }
+*/
 
 template <typename T>
 void setValue(std::function<T()> getter, std::function<void(T)> setter, std::function<T(std::string)> converter, std::function<bool(T)> checker) {

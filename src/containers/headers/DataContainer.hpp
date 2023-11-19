@@ -4,35 +4,37 @@
 #include <map>
 #include <string>
 #include <stdexcept>
+#include <set>
 
 #include <AutoValue.hpp>
 
-#include "UndefinedValueException.hpp"
-
 class DataContainer {
 private:
-	std::string _name;
+	AutoValue _name;
 	std::map<std::string, AutoValue> _data;
 
 public:
-	DataContainer(std::string const & name, std::map<std::string, AutoValue> const & data = {}) : _name(name), _data(data) {}
+	DataContainer(std::string const & = "", std::map<std::string, AutoValue> const & = {});
 
-	std::map<std::string, AutoValue> exportData() const { return _data; }
-	void importData(std::map<std::string, AutoValue> const & data) { _data = data; }
-	void clear() { _data.clear(); }
+	std::map<std::string, AutoValue> exportData() const;
+	void importData(std::map<std::string, AutoValue> const &);
+	std::set<std::string> getKeys() const;
+	void clear();
 
-	std::string getName() const { return _name; }
-	void setName(std::string const & name) { _name = name; }
+	AutoValue const & name() const;
+	AutoValue & name();
 
-	AutoValue getValue(std::string const & key) const {
-		try {
-			AutoValue const & res = _data.at(key);
-			if (!res.isNull())
-				return res;
-		} catch (std::out_of_range const &) {}
-		throw UndefinedValueException(key);
-	}
-	void setValue(std::string const & key, AutoValue const & value) { _data[key] = value; }
+	AutoValue const & at(std::string const &) const;
+	AutoValue & at(std::string const &);
+
+	AutoValue & operator[](std::string const &);
+
+	// map iteration
+	std::map<std::string, AutoValue>::iterator begin();
+	std::map<std::string, AutoValue>::const_iterator begin() const;
+
+	std::map<std::string, AutoValue>::iterator end();
+	std::map<std::string, AutoValue>::const_iterator end() const;
 };
 
 #endif

@@ -9,7 +9,6 @@
 #include "DataContainer.hpp"
 
 // TODO: create ConnectionManager as IConnection's proxy to control saving data into databases
-// FIXME: reduce quantity of repeating methods for different tables
 class IConnection {
 public:
     virtual ~IConnection() {}

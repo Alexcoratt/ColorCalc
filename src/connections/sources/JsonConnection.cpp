@@ -12,6 +12,8 @@
 #include "PresetAlreadyExistsException.hpp"
 #include "PresetDoesNotExistException.hpp"
 
+#include "UndefinedValueException.hpp"
+
 void JsonConnection::download(bool quiet) {
 	try {
 		if (!quiet)
@@ -93,7 +95,7 @@ std::vector<std::string> JsonConnection::getPresetNames() const {
 std::vector<std::string> JsonConnection::getPresetParamNames() const { return _paramNames; }
 
 DataContainer JsonConnection::getPreset(std::string const & name) const {
-	if (hasPreset(name))
+	if (!hasPreset(name))
 		throw PresetDoesNotExistException(name);
 
 	DataContainer res(name);
@@ -102,26 +104,28 @@ DataContainer JsonConnection::getPreset(std::string const & name) const {
 	unsigned paramCount = paramNames.size();
 
 	for (unsigned i = 0; i < paramCount; ++i)
-		res.setValue(paramNames[i], values[i]);
+		res[paramNames[i]] = values[i];
 
 	return res;
 }
 
 DataContainer JsonConnection::getPresetTemplate() const {
-	DataContainer res("template");
+	DataContainer res;
 	for (std::string name : getPresetParamNames())
-		res.setValue(name, NullValue());
+		res[name] = NullValue();
 	return res;
 }
 
 void JsonConnection::createPreset(DataContainer const & container) {
-	auto name = container.getName();
+	auto const & name = container.name();
+	if (name.isNull())
+		throw UndefinedValueException("name");
 	if (hasPreset(name))
 		throw PresetAlreadyExistsException(name);
 
 	std::vector<AutoValue> preset;
 	for (auto paramName : getPresetParamNames())
-		preset.push_back(container.getValue(paramName));
+		preset.push_back(container.at(paramName));
 	_presets[name] = preset;
 
 	std::cout << "Preset named \"" << name << "\" created\n";
@@ -130,13 +134,15 @@ void JsonConnection::createPreset(DataContainer const & container) {
 }
 
 void JsonConnection::updatePreset(DataContainer const & container) {
-	auto name = container.getName();
+	auto const & name = container.name();
+	if (name.isNull())
+		throw UndefinedValueException("name");
 	if (!hasPreset(name))
 		throw PresetDoesNotExistException(name);
 
 	std::vector<AutoValue> preset;
 	for (auto paramName : getPresetParamNames())
-		preset.push_back(container.getValue(paramName));
+		preset.push_back(container.at(paramName));
 	_presets[name] = preset;
 
 	std::cout << "Preset named \"" << name << "\" updated\n";

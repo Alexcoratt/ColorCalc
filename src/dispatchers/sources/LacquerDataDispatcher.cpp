@@ -2,128 +2,62 @@
 
 #include "LacquerDataDispatcher.hpp"
 
-#include "UndefinedValueException.hpp"
-
 #define PERCENTAGE "percentage"
 #define LACQUER_CONSUMPTION "lacquer_consumption"
 #define SHEET_LENGTH "sheet_length"
 #define SHEET_WIDTH "sheet_width"
 #define CIRCULATION "circulation"
 
-namespace ccm = common_container_methods;
+namespace cdm = common_dispatcher_methods;
 
-LacquerDataDispatcher::LacquerDataDispatcher(IConnection * conn) : _conn(conn), _params(conn->getLacquerPresetTemplate()) {}
-
-IConnection * LacquerDataDispatcher::getConnection() { return _conn; }
-
-std::vector<std::string> LacquerDataDispatcher::getAvailablePresetNames() const { return _conn->getLacquerPresetNames(); }
-
-std::vector<std::string> LacquerDataDispatcher::getParamNames() const {
-	std::vector<std::string> res;
-	for (auto it = _params.begin(); it != _params.end(); ++it)
-		res.push_back(it->first);
-	return res;
+LacquerDataDispatcher::LacquerDataDispatcher(IConnection * conn) {
+	_conn = conn;
+	_data = conn->getPresetTemplate();
 }
 
-std::map<std::string, std::string> LacquerDataDispatcher::toStringMap() const {
-	std::map<std::string, std::string> res;
-	for (auto it = _params.begin(); it != _params.end(); ++it)
-		res[it->first] = (std::string)it->second;
-	return res;
-}
-
-std::string LacquerDataDispatcher::getPresetName() const {
-	if (_presetName.empty())
-		throw UndefinedValueException("preset name");
-	return _presetName;
-}
-
-void LacquerDataDispatcher::setPreset(std::string const & name) {
-	if (_presetName == name)
-		return;
-
-	auto params = _conn->getLacquerPreset(name);
-	std::vector<std::string> doubleValuedColumns = {
-		PERCENTAGE,
-		LACQUER_CONSUMPTION,
-		SHEET_WIDTH,
-		SHEET_LENGTH,
-	};
-
-	for (std::string column : doubleValuedColumns) {
-		AutoValue & value = params.at(column);
-		if (!value.isNull())
-			value = std::stod(value);
-	}
-
-	if (!params[CIRCULATION].isNull())
-		params[CIRCULATION] = std::stoul(params[CIRCULATION]);
-
-	_presetName = name;
-	_params = params;
-}
-
-void LacquerDataDispatcher::createPreset(std::string const & name) {
-	_conn->createLacquerPreset(name, _params);
-	_presetName = name;
-}
-
-void LacquerDataDispatcher::updatePreset(std::string const & name) {
-	_conn->updateLacquerPreset(name, _params);
-}
-
-void LacquerDataDispatcher::removePreset(std::string const & name) {
-	_conn->removeLacquerPreset(name);
-}
-
-void LacquerDataDispatcher::clear() {
-	_presetName.clear();
-	_params = _conn->getLacquerPresetTemplate();
-}
-
-double LacquerDataDispatcher::getPercentage() const { return ccm::getParam(_params, PERCENTAGE); }
+double LacquerDataDispatcher::getPercentage() const { return cdm::getValue<double>(_data, PERCENTAGE); }
 void LacquerDataDispatcher::setPercentage(double value) {
-	if ((double)_params.at(PERCENTAGE) == value)
+	if (_data.at(PERCENTAGE) == AutoValue(value))
 		return;
 
-	_params.at(PERCENTAGE) = value;
-	_presetName.clear();
+	_data[PERCENTAGE] = value;
+	_data.name().clear();
 }
 
-double LacquerDataDispatcher::getLacquerConsumption() const { return ccm::getParam(_params, LACQUER_CONSUMPTION); }
+double LacquerDataDispatcher::getLacquerConsumption() const { return cdm::getValue<double>(_data, LACQUER_CONSUMPTION); }
 void LacquerDataDispatcher::setLacquerConsumption(double value) {
-	if ((double)_params.at(LACQUER_CONSUMPTION) == value)
+	if (_data.at(LACQUER_CONSUMPTION) == AutoValue(value))
 		return;
 
-	_params.at(LACQUER_CONSUMPTION) = value;
-	_presetName.clear();
+	_data[LACQUER_CONSUMPTION] = value;
+	_data.name().clear();
 }
 
-double LacquerDataDispatcher::getSheetLength() const { return ccm::getParam(_params, SHEET_LENGTH); }
+double LacquerDataDispatcher::getSheetLength() const { return cdm::getValue<double>(_data, SHEET_LENGTH); }
 void LacquerDataDispatcher::setSheetLength(double value) {
-	if ((double)_params.at(SHEET_LENGTH) == value)
+	if (_data.at(SHEET_LENGTH) == AutoValue(value))
 		return;
 
-	_params.at(SHEET_LENGTH) = value;
-	_presetName.clear();
+	_data[SHEET_LENGTH] = value;
+	_data.name().clear();
 }
 
-double LacquerDataDispatcher::getSheetWidth() const { return ccm::getParam(_params, SHEET_WIDTH); }
+double LacquerDataDispatcher::getSheetWidth() const { return cdm::getValue<double>(_data, SHEET_WIDTH); }
 void LacquerDataDispatcher::setSheetWidth(double value) {
-	if ((double)_params.at(SHEET_WIDTH) == value)
+	if (_data.at(SHEET_WIDTH) == AutoValue(value))
 		return;
 
-	_params.at(SHEET_WIDTH) = value;
-	_presetName.clear();
+	_data[SHEET_WIDTH] = value;
+	_data.name().clear();
 }
 
-std::size_t LacquerDataDispatcher::getCirculation() const { return ccm::getParam(_params, CIRCULATION); }
+std::size_t LacquerDataDispatcher::getCirculation() const { return cdm::getValue<std::size_t>(_data, CIRCULATION); }
 void LacquerDataDispatcher::setCirculation(std::size_t value) {
-	if ((std::size_t)_params.at(CIRCULATION) == value)
+	if ((std::size_t)_data.at(CIRCULATION) == value)
 		return;
 
-	_params.at(CIRCULATION) = value;
-	_presetName.clear();
+	_data[CIRCULATION] = value;
+	_data.name().clear();
 }
 
 double LacquerDataDispatcher::calculate() const {
