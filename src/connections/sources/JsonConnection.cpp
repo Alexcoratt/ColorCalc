@@ -17,7 +17,7 @@
 void JsonConnection::download(bool quiet) {
 	try {
 		if (!quiet)
-			std::cout << "Trying to download from " << _valuesFileName << "\t";
+			std::cout << "Trying to download from " << _valuesFileName << ':' << _tableName << '\t';
 
 		std::ifstream structureFile(_structureFileName);
 		_paramNames = nlohmann::json::parse(structureFile).at(_tableName);
@@ -56,15 +56,36 @@ void JsonConnection::download(bool quiet) {
 
 void JsonConnection::upload(bool quiet) {
 	if (!quiet)
-		std::cout << "Trying to upload to " << _valuesFileName << "\t";
+		std::cout << "Trying to upload to " << _valuesFileName << ':' << _tableName << '\t';
 	if (isReadOnly())
 		throw std::runtime_error("connection is read-only");
 
-	std::fstream file(_valuesFileName);
-	nlohmann::json data = nlohmann::json::parse(file);
-	data[_tableName] = _presets;
-	file << data.dump(1) << '\n';
-	file.close();
+	std::ifstream ifile(_valuesFileName);
+	nlohmann::json data = nlohmann::json::parse(ifile);
+	ifile.close();
+
+	data[_tableName] = nlohmann::basic_json<>();
+	for (auto it = _presets.begin(); it != _presets.end(); ++it) {
+		std::string presetName {it->first};
+		nlohmann::json preset;
+		for (auto value : it->second) {
+			if (value.isDouble())
+				preset.push_back((double)value);
+			else if (value.isUnsignedLongInt())
+				preset.push_back((unsigned long)value);
+			else if (value.isInt())
+				preset.push_back((int)value);
+			else if (value.isString())
+				preset.push_back((std::string)value);
+			else
+				preset.push_back(nlohmann::json::value_t::null);
+		}
+		data[_tableName][presetName] = preset;
+	}
+
+	std::ofstream ofile(_valuesFileName);
+	ofile << data.dump(1) << '\n';
+	ofile.close();
 
 	if (!quiet)
 		std::cout << "OK\n";

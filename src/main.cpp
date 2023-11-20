@@ -12,6 +12,7 @@
 #include <LacquerDataDispatcher.hpp>
 #include <FoilDataDispatcher.hpp>
 #include <FoilRollsDataDispatcher.hpp>
+#include <PaintConsumptionDispatcher.hpp>
 
 #include <option_methods.hpp>
 
@@ -30,8 +31,11 @@ namespace fcom = foil_calculation_option_methods;
 namespace from = foil_rolls_option_methods;
 
 int main() {
-	IConnection * paintConn = new JsonConnection(STRUCTURE_FILE, STANDARD_PRESETS_FILE, "paint_calculation");
-	PaintDataDispatcher paintCalculationDispatcher(paintConn);
+	IConnection * paintConn = new JsonConnection(STRUCTURE_FILE, USER_PRESETS_FILE, "paint_calculation", false);
+	IConnection * paintConsumptionConn = new JsonConnection(STRUCTURE_FILE, STANDARD_PRESETS_FILE, "paint_consumption");
+
+	PaintConsumptionDispatcher paintConsumptionDispatcher(paintConsumptionConn);
+	PaintDataDispatcher paintCalculationDispatcher(paintConn, &paintConsumptionDispatcher);
 
 	CustomLeafOption<PaintDataDispatcher *> writePaintParametersOption(
 		"write values of parameters",
@@ -40,7 +44,6 @@ int main() {
 		&paintCalculationDispatcher
 	);
 
-	/*
 	CustomLeafOption<PaintDataDispatcher *> setPaintTypeOption(
 		"set paint type",
 		"Set type of paint you are going to use",
@@ -54,7 +57,6 @@ int main() {
 		pcom::setMaterialType,
 		&paintCalculationDispatcher
 	);
-	*/
 
 	CustomLeafOption<PaintDataDispatcher *> setPaintConsumptionOption(
 		"set paint consumption",
@@ -149,8 +151,8 @@ int main() {
 
 	BaseOptionContainer paintCalculation("paint calculation", "contains options to work with paint calculation data", {
 		{'w', &writePaintParametersOption},
-		//{'p', &setPaintTypeOption},
-		//{'m', &setMaterialTypeOption},
+		{'p', &setPaintTypeOption},
+		{'m', &setMaterialTypeOption},
 		{'c', &setPaintConsumptionOption},
 		{'d', &setPaintDividerOption},
 		{'%', &setPaintPercentageOption},

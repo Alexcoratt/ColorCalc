@@ -21,10 +21,8 @@ namespace common_option_methods {
 
 namespace paint_calculation_option_methods {
 
-	/*
 	void setPaintType(PaintDataDispatcher *);
 	void setMaterialType(PaintDataDispatcher *);
-	*/
 	void setConsumption(PaintDataDispatcher *);
 	void setDivider(PaintDataDispatcher *);
 	void setPercentage(PaintDataDispatcher *);

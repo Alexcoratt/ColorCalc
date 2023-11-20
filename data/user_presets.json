@@ -12,6 +12,17 @@
  "foil_rolls": null,
  "lacquer_calculation": null,
  "paint_calculation": {
+  "test": [
+   "folic_paint",
+   "non_absorbent_material",
+   null,
+   4,
+   80,
+   900,
+   1200,
+   5000,
+   1.2
+  ],
   "test2": [
    null,
    null,

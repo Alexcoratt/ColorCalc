@@ -1,5 +1,6 @@
 #include "DataContainer.hpp"
 
+DataContainer::DataContainer() {}
 DataContainer::DataContainer(std::string const & name, std::map<std::string, AutoValue> const & data) : _name(name), _data(data) {}
 
 std::map<std::string, AutoValue> DataContainer::exportData() const { return _data; }

@@ -2,6 +2,7 @@
 #include <iostream>
 
 #include "PaintDataDispatcher.hpp"
+#include "PaintConsumptionDispatcher.hpp"
 
 #define PRESET_NAME "preset_name"
 #define PAINT_TYPE "paint_type"
@@ -16,15 +17,27 @@
 
 namespace cdm = common_dispatcher_methods;
 
-PaintDataDispatcher::PaintDataDispatcher(IConnection * conn) {
+PaintDataDispatcher::PaintDataDispatcher(IConnection * conn, PaintConsumptionDispatcher const * paintConsumptionDispatcher) {
 	_conn = conn;
 	_data = conn->getPresetTemplate();
+	_paintConsumptionDispatcher = paintConsumptionDispatcher;
 }
+
+std::map<std::string, std::string> PaintDataDispatcher::toStringMap() const {
+	auto res = AbstractDataDispatcher::toStringMap();
+	try {
+		res[PAINT_CONSUMPTION] = std::to_string(getPaintConsumption());
+	} catch (UndefinedValueException const &) {}
+	return res;
+}
+
+std::vector<std::string> PaintDataDispatcher::getPaintTypes() const { return _paintConsumptionDispatcher->getPaintTypes(); }
+std::vector<std::string> PaintDataDispatcher::getMaterialTypes() const { return _paintConsumptionDispatcher->getMaterialTypes(); }
 
 std::string PaintDataDispatcher::getPaintType() const { return cdm::getValue<std::string>(_data, PAINT_TYPE); }
 
 void PaintDataDispatcher::setPaintType(std::string const & type) {
-	if (_data.at(type) == AutoValue(type))
+	if (_data.at(PAINT_TYPE) == AutoValue(type))
 		return;
 
 	_data[PAINT_TYPE] = type;
@@ -39,7 +52,7 @@ void PaintDataDispatcher::setMaterialType(std::string const & type) {
 		return;
 
 	_data[MATERIAL_TYPE] = type;
-	_data.at(PAINT_CONSUMPTION);
+	_data.at(PAINT_CONSUMPTION).clear();
 	_data.name().clear();
 }
 
@@ -47,10 +60,7 @@ double PaintDataDispatcher::getPaintConsumption() const {
 	try {
 		return cdm::getValue<double>(_data, PAINT_CONSUMPTION);
 	} catch (UndefinedValueException const &) {
-		// FIXME
-		std::cerr << "coming soon\n";
-		return 0;
-		//return _conn->getPaintConsumption(getPaintType(), getMaterialType());
+		return _paintConsumptionDispatcher->getPaintConsumption(getPaintType(), getMaterialType());
 	}
 }
 

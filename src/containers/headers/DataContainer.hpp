@@ -14,7 +14,8 @@ private:
 	std::map<std::string, AutoValue> _data;
 
 public:
-	DataContainer(std::string const & = "", std::map<std::string, AutoValue> const & = {});
+	DataContainer();
+	DataContainer(std::string const &, std::map<std::string, AutoValue> const & = {});
 
 	std::map<std::string, AutoValue> exportData() const;
 	void importData(std::map<std::string, AutoValue> const &);

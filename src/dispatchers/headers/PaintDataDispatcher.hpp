@@ -6,9 +6,19 @@
 #include "AbstractDataDispatcher.hpp"
 #include "IConnection.hpp"
 
+#include "PaintConsumptionDispatcher.hpp"
+
 class PaintDataDispatcher : public AbstractDataDispatcher {
+private:
+	PaintConsumptionDispatcher const * _paintConsumptionDispatcher;
+
 public:
-	PaintDataDispatcher(IConnection * paintTableConnection);
+	PaintDataDispatcher(IConnection * paintTableConnection, PaintConsumptionDispatcher const *);
+
+	std::map<std::string, std::string> toStringMap() const; // override parent's method'
+
+	std::vector<std::string> getPaintTypes() const;
+	std::vector<std::string> getMaterialTypes() const;
 
 	std::string getPaintType() const;
 	void setPaintType(std::string const &);

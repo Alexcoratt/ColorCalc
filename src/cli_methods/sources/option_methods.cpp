@@ -34,7 +34,7 @@ T readValue(std::string const & prompt, std::function<T(std::string)> converter,
 	std::string line;
 	std::cin.ignore();
 	while (std::cout << prompt && std::getline(std::cin, line)) {
-		if (line.size() < 1)
+		if (!line.size())
 			break;
 		try {
 			T res = converter(line);
@@ -200,12 +200,11 @@ void com::removePreset(AbstractDataDispatcher * dispatcher) {
 	}
 }
 
-/*
 void pcom::setPaintType(PaintDataDispatcher * dispatcher) {
 	std::cout << "Select paint type" << std::endl;
 	try {
 		setVariant(
-			dispatcher->getConnection()->getPaintTypes(),
+			dispatcher->getPaintTypes(),
 			[&]() { return dispatcher->getPaintType(); },
 			[&](std::string type) { dispatcher->setPaintType(type); }
 		);
@@ -224,7 +223,7 @@ void pcom::setMaterialType(PaintDataDispatcher * dispatcher) {
 	std::cout << "Select material type" << std::endl;
 	try {
 		setVariant(
-			dispatcher->getConnection()->getMaterialTypes(),
+			dispatcher->getMaterialTypes(),
 			[&]() { return dispatcher->getMaterialType(); },
 			[&](std::string type) { dispatcher->setMaterialType(type); }
 		);
@@ -238,7 +237,6 @@ void pcom::setMaterialType(PaintDataDispatcher * dispatcher) {
 		std::cout << "is undefined" << std::endl;
 	}
 }
-*/
 
 template <typename T>
 void setValue(std::function<T()> getter, std::function<void(T)> setter, std::function<T(std::string)> converter, std::function<bool(T)> checker) {
