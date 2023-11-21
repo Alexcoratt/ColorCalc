@@ -113,7 +113,7 @@ std::vector<std::string> JsonConnection::getPresetNames() const {
 	return res;
 }
 
-std::vector<std::string> JsonConnection::getPresetParamNames() const { return _paramNames; }
+std::vector<std::string> JsonConnection::getParamNames() const { return _paramNames; }
 
 DataContainer JsonConnection::getPreset(std::string const & name) const {
 	if (!hasPreset(name))
@@ -121,7 +121,7 @@ DataContainer JsonConnection::getPreset(std::string const & name) const {
 
 	DataContainer res(name);
 	auto const & values = _presets.at(name);
-	auto paramNames = getPresetParamNames();
+	auto paramNames = getParamNames();
 	unsigned paramCount = paramNames.size();
 
 	for (unsigned i = 0; i < paramCount; ++i)
@@ -132,7 +132,7 @@ DataContainer JsonConnection::getPreset(std::string const & name) const {
 
 DataContainer JsonConnection::getPresetTemplate() const {
 	DataContainer res;
-	for (std::string name : getPresetParamNames())
+	for (std::string name : getParamNames())
 		res[name] = NullValue();
 	return res;
 }
@@ -145,7 +145,7 @@ void JsonConnection::createPreset(DataContainer const & container) {
 		throw PresetAlreadyExistsException(name);
 
 	std::vector<AutoValue> preset;
-	for (auto paramName : getPresetParamNames())
+	for (auto paramName : getParamNames())
 		preset.push_back(container.at(paramName));
 	_presets[name] = preset;
 
@@ -162,7 +162,7 @@ void JsonConnection::updatePreset(DataContainer const & container) {
 		throw PresetDoesNotExistException(name);
 
 	std::vector<AutoValue> preset;
-	for (auto paramName : getPresetParamNames())
+	for (auto paramName : getParamNames())
 		preset.push_back(container.at(paramName));
 	_presets[name] = preset;
 

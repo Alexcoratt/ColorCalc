@@ -8,14 +8,14 @@
 
 namespace common_option_methods {
 
-	void clearValues(AbstractDataDispatcher *);
-	void calculateResourceAmount(AbstractDataDispatcher const *);
-	void writeParameters(AbstractDataDispatcher const *);
+	void clearValues(IDataManager *);
+	void calculateResourceAmount(IDataManager const *);
+	void writeParameters(IDataManager const *);
 
-	void loadPreset(AbstractDataDispatcher *);
-	void createPreset(AbstractDataDispatcher *);
-	void updatePreset(AbstractDataDispatcher *);
-	void removePreset(AbstractDataDispatcher *);
+	void loadPreset(IDataManager *);
+	void createPreset(IDataManager *);
+	void updatePreset(IDataManager *);
+	void removePreset(IDataManager *);
 
 }
 

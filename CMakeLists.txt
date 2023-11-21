@@ -11,20 +11,22 @@ set(JSON_BuildTests OFF CACHE INTERNAL "")
 add_subdirectory(modules/json)
 
 file(GLOB CONNECTION_SOURCES "src/connections/sources/*.cpp")
-file(GLOB DISPATCHER_SOURCES "src/dispatchers/sources/*.cpp")
-file(GLOB CONTAINER_SOURCES "src/containers/sources/*.cpp")
+file(GLOB MANAGER_SOURCES "src/managers/sources/*.cpp")
 file(GLOB VALUE_SOURCES "src/values/sources/*.cpp")
+file(GLOB CONNECTION_STRATEGIES_SOURCES "src/table_connection_strategies/sources/*.cpp")
 
 add_library(${PROJECT_NAME}_lib STATIC
     ${CONNECTION_SOURCES}
-    ${DISPATCHER_SOURCES}
-    ${CONTAINER_SOURCES}
-    ${VALUE_SOURCES})
+    ${MANAGER_SOURCES}
+    ${VALUE_SOURCES}
+    ${CONNECTION_STRATEGIES_SOURCES}
+)
 target_include_directories(${PROJECT_NAME}_lib
     PUBLIC src/connections/headers
-    PUBLIC src/dispatchers/headers
-    PUBLIC src/containers/headers
+    PUBLIC src/managers/headers
     PUBLIC src/values/headers
+    PUBLIC src/auxillary_classes/headers
+    PUBLIC src/table_connection_strategies/headers
     PUBLIC src/exceptions
 )
 target_link_libraries(${PROJECT_NAME}_lib

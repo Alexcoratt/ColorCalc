@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 
-#include <IConnection.hpp>
+#include <ITableConnection.hpp>
 #include <JsonConnection.hpp>
 #include <PaintDataDispatcher.hpp>
 #include <LacquerDataDispatcher.hpp>
@@ -31,8 +31,8 @@ namespace fcom = foil_calculation_option_methods;
 namespace from = foil_rolls_option_methods;
 
 int main() {
-	IConnection * paintConn = new JsonConnection(STRUCTURE_FILE, USER_PRESETS_FILE, "paint_calculation", false);
-	IConnection * paintConsumptionConn = new JsonConnection(STRUCTURE_FILE, STANDARD_PRESETS_FILE, "paint_consumption");
+	ITableConnection * paintConn = new JsonConnection(STRUCTURE_FILE, USER_PRESETS_FILE, "paint_calculation", false);
+	ITableConnection * paintConsumptionConn = new JsonConnection(STRUCTURE_FILE, STANDARD_PRESETS_FILE, "paint_consumption");
 
 	PaintConsumptionDispatcher paintConsumptionDispatcher(paintConsumptionConn);
 	PaintDataDispatcher paintCalculationDispatcher(paintConn, &paintConsumptionDispatcher);
@@ -168,7 +168,7 @@ int main() {
 		{'-', &removePaintPresetOption}
 	});
 
-	IConnection * lacquerConnection = new JsonConnection(STRUCTURE_FILE, STANDARD_PRESETS_FILE, "lacquer_calculation");
+	ITableConnection * lacquerConnection = new JsonConnection(STRUCTURE_FILE, STANDARD_PRESETS_FILE, "lacquer_calculation");
 	LacquerDataDispatcher lacquerCalculationDispatcher(lacquerConnection);
 
 	CustomLeafOption<LacquerDataDispatcher *> writeLacquerParametersOption(
@@ -270,7 +270,7 @@ int main() {
 		{'-', &removeLacquerPresetOption}
 	});
 
-	IConnection * foilConnection = new JsonConnection(STRUCTURE_FILE, STANDARD_PRESETS_FILE, "foil_calculation");
+	ITableConnection * foilConnection = new JsonConnection(STRUCTURE_FILE, STANDARD_PRESETS_FILE, "foil_calculation");
 	FoilDataDispatcher foilDataDispatcher(foilConnection);
 
 	CustomLeafOption<FoilDataDispatcher *> setFoilCirculationOption(
@@ -389,7 +389,7 @@ int main() {
 	});
 
 
-	IConnection * foilRollsConnection = new JsonConnection(STRUCTURE_FILE, STANDARD_PRESETS_FILE, "foil_rolls");
+	ITableConnection * foilRollsConnection = new JsonConnection(STRUCTURE_FILE, STANDARD_PRESETS_FILE, "foil_rolls");
 	FoilRollsDataDispatcher foilRollsDataDispatcher(foilRollsConnection);
 
 	CustomLeafOption<FoilRollsDataDispatcher *> setFoilRollLengthOption(

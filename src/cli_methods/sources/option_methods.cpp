@@ -88,7 +88,7 @@ void setVariant(std::vector<std::string> const & variants, std::function<std::st
 	set(variants[readVariant(prompt, variants)]);
 }
 
-void com::clearValues(AbstractDataDispatcher * dispatcher) {
+void com::clearValues(IDataManager * dispatcher) {
 	std::vector<std::string> const variants = {"no", "yes"};
 	int answer = 0;
 
@@ -109,12 +109,12 @@ void com::clearValues(AbstractDataDispatcher * dispatcher) {
 		std::cout << "Aborted" << std::endl;
 }
 
-void com::calculateResourceAmount(AbstractDataDispatcher const * dispatcher) {
+void com::calculateResourceAmount(IDataManager const * dispatcher) {
 	double res = dispatcher->calculate();
 	std::cout << "Required amount equals " << res << "kg" << std::endl;
 }
 
-void com::writeParameters(AbstractDataDispatcher const * dispatcher) {
+void com::writeParameters(IDataManager const * dispatcher) {
 	try {
 		auto presetName = dispatcher->getPresetName();
 		std::cout << "Preset name:\t" << presetName << std::endl << std::endl;
@@ -125,7 +125,7 @@ void com::writeParameters(AbstractDataDispatcher const * dispatcher) {
 		std::cout << iter->first << ":\t" << iter->second << std::endl;
 }
 
-void com::loadPreset(AbstractDataDispatcher * dispatcher) {
+void com::loadPreset(IDataManager * dispatcher) {
 	std::vector<std::string> presets = dispatcher->getAvailablePresetNames();
 
 	std::cout << "Select the preset to load" << std::endl;
@@ -146,7 +146,7 @@ void com::loadPreset(AbstractDataDispatcher * dispatcher) {
 	}
 }
 
-void com::createPreset(AbstractDataDispatcher * dispatcher) {
+void com::createPreset(IDataManager * dispatcher) {
 	std::cout << "Enter name of the new preset (leave field empty to abort operation)" << std::endl;
 
 	try {
@@ -160,7 +160,7 @@ void com::createPreset(AbstractDataDispatcher * dispatcher) {
 	}
 }
 
-void com::updatePreset(AbstractDataDispatcher * dispatcher) {
+void com::updatePreset(IDataManager * dispatcher) {
 	std::vector<std::string> presets = dispatcher->getAvailablePresetNames();
 
 	std::cout << "Select name of the preset you want to update (leave field empty to abort operation)" << std::endl;
@@ -180,7 +180,7 @@ void com::updatePreset(AbstractDataDispatcher * dispatcher) {
 	}
 }
 
-void com::removePreset(AbstractDataDispatcher * dispatcher) {
+void com::removePreset(IDataManager * dispatcher) {
 	std::vector<std::string> presets = dispatcher->getAvailablePresetNames();
 
 	std::cout << "Select name of the paint calculation preset you want to remove (leave field empty to abort operation)" << std::endl;
