@@ -1,10 +1,10 @@
 #ifndef PAINT_CALCULATION_OPTION_METHODS
 #define PAINT_CALCULATION_OPTION_METHODS
 
-#include "PaintDataDispatcher.hpp"
-#include "LacquerDataDispatcher.hpp"
-#include "FoilDataDispatcher.hpp"
-#include "FoilRollsDataDispatcher.hpp"
+#include "PaintDataManager.hpp"
+#include "LacquerDataManager.hpp"
+#include "FoilDataManager.hpp"
+#include "FoilRollsDataManager.hpp"
 
 namespace common_option_methods {
 
@@ -21,45 +21,45 @@ namespace common_option_methods {
 
 namespace paint_calculation_option_methods {
 
-	void setPaintType(PaintDataDispatcher *);
-	void setMaterialType(PaintDataDispatcher *);
-	void setConsumption(PaintDataDispatcher *);
-	void setDivider(PaintDataDispatcher *);
-	void setPercentage(PaintDataDispatcher *);
-	void setSheetWidth(PaintDataDispatcher *);
-	void setSheetLength(PaintDataDispatcher *);
-	void setCirculation(PaintDataDispatcher *);
-	void setReserve(PaintDataDispatcher *);
+	void setPaintType(PaintDataManager *);
+	void setMaterialType(PaintDataManager *);
+	void setConsumption(PaintDataManager *);
+	void setDivider(PaintDataManager *);
+	void setPercentage(PaintDataManager *);
+	void setSheetWidth(PaintDataManager *);
+	void setSheetLength(PaintDataManager *);
+	void setCirculation(PaintDataManager *);
+	void setReserve(PaintDataManager *);
 
 }
 
 namespace lacquer_calculation_option_methods {
 
-	void setPercentage(LacquerDataDispatcher *);
-	void setConsumption(LacquerDataDispatcher *);
-	void setSheetLength(LacquerDataDispatcher *);
-	void setSheetWidth(LacquerDataDispatcher *);
-	void setCircualtion(LacquerDataDispatcher *);
+	void setPercentage(LacquerDataManager *);
+	void setConsumption(LacquerDataManager *);
+	void setSheetLength(LacquerDataManager *);
+	void setSheetWidth(LacquerDataManager *);
+	void setCircualtion(LacquerDataManager *);
 
 }
 
 namespace foil_calculation_option_methods {
 
-	void setCirulation(FoilDataDispatcher *);
-	void setLength(FoilDataDispatcher *);
-	void setWidth(FoilDataDispatcher *);
-	void setSheetNumber(FoilDataDispatcher *);
-	void setLengthReserve(FoilDataDispatcher *);
-	void setWidthReserve(FoilDataDispatcher *);
-	void calculateFoilRollLength(FoilDataDispatcher const *);
-	void writeSuitableRolls(FoilDataDispatcher const *);
+	void setCirulation(FoilDataManager *);
+	void setLength(FoilDataManager *);
+	void setWidth(FoilDataManager *);
+	void setSheetNumber(FoilDataManager *);
+	void setLengthReserve(FoilDataManager *);
+	void setWidthReserve(FoilDataManager *);
+	void calculateFoilRollLength(FoilDataManager const *);
+	void writeSuitableRolls(FoilDataManager const *);
 
 }
 
 namespace foil_rolls_option_methods {
 
-	void setLength(FoilRollsDataDispatcher *);
-	void setWidth(FoilRollsDataDispatcher *);
+	void setLength(FoilRollsDataManager *);
+	void setWidth(FoilRollsDataManager *);
 
 }
 

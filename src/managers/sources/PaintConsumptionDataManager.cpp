@@ -13,6 +13,7 @@ std::map<std::string, AutoValue> PaintConsumptionDataManager::exportData() const
 void PaintConsumptionDataManager::clear() {}
 
 void PaintConsumptionDataManager::setName(std::string const &) {}
+void PaintConsumptionDataManager::clearName() {}
 std::string PaintConsumptionDataManager::getName() const { return "noname"; }
 
 std::vector<std::string> PaintConsumptionDataManager::getPaintTypes() const { return getConnection()->getPresetNames(); }

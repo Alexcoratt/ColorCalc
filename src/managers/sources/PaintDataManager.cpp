@@ -3,6 +3,7 @@
 
 #include "PaintDataManager.hpp"
 #include "PaintConsumptionDataManager.hpp"
+#include "auxillary_methods.hpp"
 
 #define PAINT_TYPE "paint_type"
 #define MATERIAL_TYPE "material_type"
@@ -20,24 +21,16 @@ PaintDataManager::PaintDataManager(ITableConnection * conn, PaintConsumptionData
 	_paintConsumptionDispatcher = paintConsumptionDispatcher;
 }
 
-template <typename T>
-void setParam(UnstableNamedValue<T> & param, std::string const & key, std::map<std::string, AutoValue> const & params) {
-	param.setName(key);
-	auto value = params.at(key);
-	if (!value.isNull())
-		param.setValue((T)value);
-}
-
 void PaintDataManager::importData(std::map<std::string, AutoValue> const & params) {
-	setParam(_paintType, PAINT_TYPE, params);
-	setParam(_materialType, MATERIAL_TYPE, params);
-	setParam(_paintConsumption, PAINT_CONSUMPTION, params);
-	setParam(_divider, DIVIDER, params);
-	setParam(_percentage, PERCENTAGE, params);
-	setParam(_sheetWidth, SHEET_WIDTH, params);
-	setParam(_sheetLength, SHEET_LENGTH, params);
-	setParam(_circulation, CIRCULATION, params);
-	setParam(_paintReserve, PAINT_RESERVE, params);
+	auxillary_methods::setParam(_paintType, PAINT_TYPE, params);
+	auxillary_methods::setParam(_materialType, MATERIAL_TYPE, params);
+	auxillary_methods::setParam(_paintConsumption, PAINT_CONSUMPTION, params);
+	auxillary_methods::setParam(_divider, DIVIDER, params);
+	auxillary_methods::setParam(_percentage, PERCENTAGE, params);
+	auxillary_methods::setParam(_sheetWidth, SHEET_WIDTH, params);
+	auxillary_methods::setParam(_sheetLength, SHEET_LENGTH, params);
+	auxillary_methods::setParam(_circulation, CIRCULATION, params);
+	auxillary_methods::setParam(_paintReserve, PAINT_RESERVE, params);
 }
 
 template <typename T>

@@ -8,7 +8,8 @@
 
 class LacquerDataManager : public IDataManager {
 private:
-	std::string _name;
+	UnstableNamedValue<std::string> _name;
+
 	UnstableNamedValue<double> _percentage;
 	UnstableNamedValue<double> _lacquerConsumption;
 	UnstableNamedValue<double> _sheetLength;
@@ -24,6 +25,7 @@ public:
 	void clear();
 
 	void setName(std::string const &);
+	void clearName();
 	std::string getName() const;
 
 	double calculate() const;

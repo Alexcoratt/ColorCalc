@@ -1,6 +1,7 @@
 #include <stdexcept>
 
 #include "LacquerDataManager.hpp"
+#include "auxillary_methods.hpp"
 
 #define PERCENTAGE "percentage"
 #define LACQUER_CONSUMPTION "lacquer_consumption"
@@ -13,20 +14,12 @@ LacquerDataManager::LacquerDataManager(ITableConnection * conn) {
 	importData(conn->getPresetTemplate());
 }
 
-template <typename T>
-void setParam(UnstableNamedValue<T> & param, std::string const & key, std::map<std::string, AutoValue> const & params) {
-	param.setName(key);
-	auto value = params.at(key);
-	if (!value.isNull())
-		param.setValue((T)value);
-}
-
 void LacquerDataManager::importData(std::map<std::string, AutoValue> const & params) {
-	setParam(_percentage, PERCENTAGE, params);
-	setParam(_lacquerConsumption, LACQUER_CONSUMPTION, params);
-	setParam(_sheetLength, SHEET_LENGTH, params);
-	setParam(_sheetWidth, SHEET_WIDTH, params);
-	setParam(_circulation, CIRCULATION, params);
+	auxillary_methods::setParam(_percentage, PERCENTAGE, params);
+	auxillary_methods::setParam(_lacquerConsumption, LACQUER_CONSUMPTION, params);
+	auxillary_methods::setParam(_sheetLength, SHEET_LENGTH, params);
+	auxillary_methods::setParam(_sheetWidth, SHEET_WIDTH, params);
+	auxillary_methods::setParam(_circulation, CIRCULATION, params);
 }
 
 template <typename T>
@@ -50,6 +43,10 @@ void LacquerDataManager::clear() {
 	_sheetWidth.clear();
 	_circulation.clear();
 }
+
+void LacquerDataManager::setName(std::string const & name) { _name = name; }
+void LacquerDataManager::clearName() { _name.clear(); }
+std::string LacquerDataManager::getName() const { return _name; }
 
 double LacquerDataManager::getPercentage() const { return _percentage; }
 void LacquerDataManager::setPercentage(double value) {

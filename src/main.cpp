@@ -7,12 +7,12 @@
 #include <vector>
 
 #include <ITableConnection.hpp>
-#include <JsonConnection.hpp>
-#include <PaintDataDispatcher.hpp>
-#include <LacquerDataDispatcher.hpp>
-#include <FoilDataDispatcher.hpp>
-#include <FoilRollsDataDispatcher.hpp>
-#include <PaintConsumptionDispatcher.hpp>
+#include <JSONTableConnection.hpp>
+#include <PaintDataManager.hpp>
+#include <LacquerDataManager.hpp>
+#include <FoilDataManager.hpp>
+#include <FoilRollsDataManager.hpp>
+#include <PaintConsumptionDataManager.hpp>
 
 #include <option_methods.hpp>
 
@@ -31,122 +31,122 @@ namespace fcom = foil_calculation_option_methods;
 namespace from = foil_rolls_option_methods;
 
 int main() {
-	ITableConnection * paintConn = new JsonConnection(STRUCTURE_FILE, USER_PRESETS_FILE, "paint_calculation", false);
-	ITableConnection * paintConsumptionConn = new JsonConnection(STRUCTURE_FILE, STANDARD_PRESETS_FILE, "paint_consumption");
+	ITableConnection * paintConn = new JSONTableConnection(STRUCTURE_FILE, USER_PRESETS_FILE, "paint_calculation", false);
+	ITableConnection * paintConsumptionConn = new JSONTableConnection(STRUCTURE_FILE, STANDARD_PRESETS_FILE, "paint_consumption");
 
-	PaintConsumptionDispatcher paintConsumptionDispatcher(paintConsumptionConn);
-	PaintDataDispatcher paintCalculationDispatcher(paintConn, &paintConsumptionDispatcher);
+	PaintConsumptionDataManager paintConsumptionManager(paintConsumptionConn);
+	PaintDataManager paintCalculationManager(paintConn, &paintConsumptionManager);
 
-	CustomLeafOption<PaintDataDispatcher *> writePaintParametersOption(
+	CustomLeafOption<PaintDataManager *> writePaintParametersOption(
 		"write values of parameters",
 		"Print current values of all paint calculation mode parameters",
 		com::writeParameters,
-		&paintCalculationDispatcher
+		&paintCalculationManager
 	);
 
-	CustomLeafOption<PaintDataDispatcher *> setPaintTypeOption(
+	CustomLeafOption<PaintDataManager *> setPaintTypeOption(
 		"set paint type",
 		"Set type of paint you are going to use",
 		pcom::setPaintType,
-		&paintCalculationDispatcher
+		&paintCalculationManager
 	);
 
-	CustomLeafOption<PaintDataDispatcher *> setMaterialTypeOption(
+	CustomLeafOption<PaintDataManager *> setMaterialTypeOption(
 		"set material type",
 		"Set type of material you are going to use",
 		pcom::setMaterialType,
-		&paintCalculationDispatcher
+		&paintCalculationManager
 	);
 
-	CustomLeafOption<PaintDataDispatcher *> setPaintConsumptionOption(
+	CustomLeafOption<PaintDataManager *> setPaintConsumptionOption(
 		"set paint consumption",
 		"Set paint consumption value manually (paint and material type settings clears if a user enters a new value)",
 		pcom::setConsumption,
-		&paintCalculationDispatcher
+		&paintCalculationManager
 	);
 
-	CustomLeafOption<PaintDataDispatcher *> setPaintDividerOption(
+	CustomLeafOption<PaintDataManager *> setPaintDividerOption(
 		"set divider",
 		"Set divider of formula",
 		pcom::setDivider,
-		&paintCalculationDispatcher
+		&paintCalculationManager
 	);
 
-	CustomLeafOption<PaintDataDispatcher *> setPaintPercentageOption(
+	CustomLeafOption<PaintDataManager *> setPaintPercentageOption(
 		"set printing percent",
 		"Set percentage of sheet sealing",
 		pcom::setPercentage,
-		&paintCalculationDispatcher
+		&paintCalculationManager
 	);
 
-	CustomLeafOption<PaintDataDispatcher *> setPaintWidthOption(
+	CustomLeafOption<PaintDataManager *> setPaintWidthOption(
 		"set sheet width",
 		"Set width value of the sheet",
 		pcom::setSheetWidth,
-		&paintCalculationDispatcher
+		&paintCalculationManager
 	);
 
-	CustomLeafOption<PaintDataDispatcher *> setPaintLengthOption(
+	CustomLeafOption<PaintDataManager *> setPaintLengthOption(
 		"set sheet width",
 		"Set width value of the sheet",
 		pcom::setSheetLength,
-		&paintCalculationDispatcher
+		&paintCalculationManager
 	);
 
-	CustomLeafOption<PaintDataDispatcher *> setPaintCirculationOption(
+	CustomLeafOption<PaintDataManager *> setPaintCirculationOption(
 		"set circulation",
 		"set amount of edition",
 		pcom::setCirculation,
-		&paintCalculationDispatcher
+		&paintCalculationManager
 	);
 
-	CustomLeafOption<PaintDataDispatcher *> setPaintReserveOption(
+	CustomLeafOption<PaintDataManager *> setPaintReserveOption(
 		"set paint reserve",
 		"set minimal amount of paint for an edition",
 		pcom::setReserve,
-		&paintCalculationDispatcher
+		&paintCalculationManager
 	);
 
-	CustomLeafOption<PaintDataDispatcher *> loadPaintCalculationPresetOption(
+	CustomLeafOption<PaintDataManager *> loadPaintCalculationPresetOption(
 		"load preset",
 		"load values of existing preset",
 		com::loadPreset,
-		&paintCalculationDispatcher
+		&paintCalculationManager
 	);
 
-	CustomLeafOption<PaintDataDispatcher *> clearPaintCalculationValuesOption(
+	CustomLeafOption<PaintDataManager *> clearPaintCalculationValuesOption(
 		"remove values",
 		"Clears data from every paint calculation value",
 		com::clearValues,
-		&paintCalculationDispatcher
+		&paintCalculationManager
 	);
 
-	CustomLeafOption<PaintDataDispatcher *> calculatePaintAmountOption(
+	CustomLeafOption<PaintDataManager *> calculatePaintAmountOption(
 		"calculate amount of paint",
 		"Calculates required amount of paint based on other parameters",
 		com::calculateResourceAmount,
-		&paintCalculationDispatcher
+		&paintCalculationManager
 	);
 
-	CustomLeafOption<PaintDataDispatcher *> createPaintPresetOption(
+	CustomLeafOption<PaintDataManager *> createPaintPresetOption(
 		"create paint calculation preset",
 		"Creates a new paint calculation preset based on entered values",
 		com::createPreset,
-		&paintCalculationDispatcher
+		&paintCalculationManager
 	);
 
-	CustomLeafOption<PaintDataDispatcher *> updatePaintPresetOption(
+	CustomLeafOption<PaintDataManager *> updatePaintPresetOption(
 		"update paint calculation preset",
 		"Updated data in an existing paint calculation preset",
 		com::updatePreset,
-		&paintCalculationDispatcher
+		&paintCalculationManager
 	);
 
-	CustomLeafOption<PaintDataDispatcher *> removePaintPresetOption(
+	CustomLeafOption<PaintDataManager *> removePaintPresetOption(
 		"remove paint calculation preset",
 		"Removes an existing paint calculation preset",
 		com::removePreset,
-		&paintCalculationDispatcher
+		&paintCalculationManager
 	);
 
 	BaseOptionContainer paintCalculation("paint calculation", "contains options to work with paint calculation data", {
@@ -168,91 +168,91 @@ int main() {
 		{'-', &removePaintPresetOption}
 	});
 
-	ITableConnection * lacquerConnection = new JsonConnection(STRUCTURE_FILE, STANDARD_PRESETS_FILE, "lacquer_calculation");
-	LacquerDataDispatcher lacquerCalculationDispatcher(lacquerConnection);
+	ITableConnection * lacquerConnection = new JSONTableConnection(STRUCTURE_FILE, STANDARD_PRESETS_FILE, "lacquer_calculation");
+	LacquerDataManager lacquerCalculationManager(lacquerConnection);
 
-	CustomLeafOption<LacquerDataDispatcher *> writeLacquerParametersOption(
+	CustomLeafOption<LacquerDataManager *> writeLacquerParametersOption(
 		"write values of parameters",
 		"Print current values of all lacquer calculation mode parameters",
 		com::writeParameters,
-		&lacquerCalculationDispatcher
+		&lacquerCalculationManager
 	);
 
-	CustomLeafOption<LacquerDataDispatcher *> calculateLacquerAmountOption(
+	CustomLeafOption<LacquerDataManager *> calculateLacquerAmountOption(
 		"calculate amount of lacquer",
 		"Calculates required amount of lacquer based on entered parameters",
 		com::calculateResourceAmount,
-		&lacquerCalculationDispatcher
+		&lacquerCalculationManager
 	);
 
-	CustomLeafOption<LacquerDataDispatcher *> loadLacquerCalculationPresetOption(
+	CustomLeafOption<LacquerDataManager *> loadLacquerCalculationPresetOption(
 		"load lacquer calculation preset",
 		"Loads values of selected preset into internal storage",
 		com::loadPreset,
-		&lacquerCalculationDispatcher
+		&lacquerCalculationManager
 	);
 
-	CustomLeafOption<LacquerDataDispatcher *> clearLacquerCalculationValuesOption(
+	CustomLeafOption<LacquerDataManager *> clearLacquerCalculationValuesOption(
 		"remove lacquer calculation data",
 		"Clears all entered lacquer calculation parameters",
 		com::clearValues,
-		&lacquerCalculationDispatcher
+		&lacquerCalculationManager
 	);
 
-	CustomLeafOption<LacquerDataDispatcher *> setLacquerPercentageOption(
+	CustomLeafOption<LacquerDataManager *> setLacquerPercentageOption(
 		"set lacquer percentage",
 		"Sets a percentage value of the lacquer coverage",
 		lcom::setPercentage,
-		&lacquerCalculationDispatcher
+		&lacquerCalculationManager
 	);
 
-	CustomLeafOption<LacquerDataDispatcher *> setLacquerConsumptionOption(
+	CustomLeafOption<LacquerDataManager *> setLacquerConsumptionOption(
 		"set lacquer consumption",
 		"Sets a consumption value of the lacquer",
 		lcom::setConsumption,
-		&lacquerCalculationDispatcher
+		&lacquerCalculationManager
 	);
 
-	CustomLeafOption<LacquerDataDispatcher *> setLacquerSheetLengthOption(
+	CustomLeafOption<LacquerDataManager *> setLacquerSheetLengthOption(
 		"set sheet length",
 		"Sets a length value of the sheet",
 		lcom::setSheetLength,
-		&lacquerCalculationDispatcher
+		&lacquerCalculationManager
 	);
 
-	CustomLeafOption<LacquerDataDispatcher *> setLacquerSheetWidthOption(
+	CustomLeafOption<LacquerDataManager *> setLacquerSheetWidthOption(
 		"set sheet width",
 		"Sets a width value of the sheet",
 		lcom::setSheetWidth,
-		&lacquerCalculationDispatcher
+		&lacquerCalculationManager
 	);
 
-	CustomLeafOption<LacquerDataDispatcher *> setLacquerCirculationOption(
+	CustomLeafOption<LacquerDataManager *> setLacquerCirculationOption(
 		"set circulation",
 		"Sets a number of sheets",
 		lcom::setCircualtion,
-		&lacquerCalculationDispatcher
+		&lacquerCalculationManager
 	);
 
-	CustomLeafOption<LacquerDataDispatcher *> createLacquerPresetOption(
+	CustomLeafOption<LacquerDataManager *> createLacquerPresetOption(
 		"create lacquer preset",
 		"Creates a new lacquer calculation preset",
 		com::createPreset,
-		&lacquerCalculationDispatcher
+		&lacquerCalculationManager
 	);
 
-	CustomLeafOption<LacquerDataDispatcher *> updateLacquerPresetOption(
+	CustomLeafOption<LacquerDataManager *> updateLacquerPresetOption(
 		"update lacquer preset",
 		"Updates the selected lacquer calculation preset",
 		com::updatePreset,
-		&lacquerCalculationDispatcher
+		&lacquerCalculationManager
 	);
 
-	CustomLeafOption<LacquerDataDispatcher *> removeLacquerPresetOption(
+	CustomLeafOption<LacquerDataManager *> removeLacquerPresetOption(
 		"remove lacquer preset",
 		"Removes the selected lacquer calculation preset",
 		com::removePreset,
-		&lacquerCalculationDispatcher
+		&lacquerCalculationManager
 	);
 
 	BaseOptionContainer lacquerCalculation("lacquer calculation", "contains options to work with lacquer calculation data", {
@@ -270,105 +270,105 @@ int main() {
 		{'-', &removeLacquerPresetOption}
 	});
 
-	ITableConnection * foilConnection = new JsonConnection(STRUCTURE_FILE, STANDARD_PRESETS_FILE, "foil_calculation");
-	FoilDataDispatcher foilDataDispatcher(foilConnection);
+	ITableConnection * foilConnection = new JSONTableConnection(STRUCTURE_FILE, STANDARD_PRESETS_FILE, "foil_calculation");
+	FoilDataManager foilDataManager(foilConnection);
 
-	CustomLeafOption<FoilDataDispatcher *> setFoilCirculationOption(
+	CustomLeafOption<FoilDataManager *> setFoilCirculationOption(
 		"set circulation",
 		"Sets quantity of the edition",
 		fcom::setCirulation,
-		&foilDataDispatcher
+		&foilDataManager
 	);
 
-	CustomLeafOption<FoilDataDispatcher *> setFoilStampLengthOption(
+	CustomLeafOption<FoilDataManager *> setFoilStampLengthOption(
 		"set length",
 		"Sets length of the stamp",
 		fcom::setLength,
-		&foilDataDispatcher
+		&foilDataManager
 	);
 
-	CustomLeafOption<FoilDataDispatcher *> setFoilStampWidthOption(
+	CustomLeafOption<FoilDataManager *> setFoilStampWidthOption(
 		"set width",
 		"Sets width of the stamp",
 		fcom::setWidth,
-		&foilDataDispatcher
+		&foilDataManager
 	);
 
-	CustomLeafOption<FoilDataDispatcher *> setFoilSheetNumberOption(
+	CustomLeafOption<FoilDataManager *> setFoilSheetNumberOption(
 		"set sheet number",
 		"Sets the number of sheets to be printed with one part of the foil",
 		fcom::setSheetNumber,
-		&foilDataDispatcher
+		&foilDataManager
 	);
 
-	CustomLeafOption<FoilDataDispatcher *> setFoilLengthReserveOption(
+	CustomLeafOption<FoilDataManager *> setFoilLengthReserveOption(
 		"set length reserve",
 		"Sets reserve value of length of the foil roller",
 		fcom::setLengthReserve,
-		&foilDataDispatcher
+		&foilDataManager
 	);
 
-	CustomLeafOption<FoilDataDispatcher *> setFoilWidthReserveOption(
+	CustomLeafOption<FoilDataManager *> setFoilWidthReserveOption(
 		"set width reserve",
 		"Sets reserve value of width of the foil roller",
 		fcom::setWidthReserve,
-		&foilDataDispatcher
+		&foilDataManager
 	);
 
-	CustomLeafOption<FoilDataDispatcher *> loadFoilPresetOption(
+	CustomLeafOption<FoilDataManager *> loadFoilPresetOption(
 		"load foil calculation preset",
 		"Loads the selected foil calculation preset",
 		com::loadPreset,
-		&foilDataDispatcher
+		&foilDataManager
 	);
 
-	CustomLeafOption<FoilDataDispatcher *> writeFoilParametersOption(
+	CustomLeafOption<FoilDataManager *> writeFoilParametersOption(
 		"write parameters",
 		"Writes entered foil calculation parameters",
 		com::writeParameters,
-		&foilDataDispatcher
+		&foilDataManager
 	);
 
-	CustomLeafOption<FoilDataDispatcher *> calculateFoilLengthOption(
+	CustomLeafOption<FoilDataManager *> calculateFoilLengthOption(
 		"calculate foil length",
 		"Calculates length of the foil roll",
 		fcom::calculateFoilRollLength,
-		&foilDataDispatcher
+		&foilDataManager
 	);
 
-	CustomLeafOption<FoilDataDispatcher *> writeSuitableFoilRollsOption(
+	CustomLeafOption<FoilDataManager *> writeSuitableFoilRollsOption(
 		"write suitable rolls",
 		"Writes the most suitable rolls of foil in descending order",
 		fcom::writeSuitableRolls,
-		&foilDataDispatcher
+		&foilDataManager
 	);
 
-	CustomLeafOption<FoilDataDispatcher *> createFoilPresetOption(
+	CustomLeafOption<FoilDataManager *> createFoilPresetOption(
 		"create foil preset",
 		"Creates the new foil calculation preset",
 		com::createPreset,
-		&foilDataDispatcher
+		&foilDataManager
 	);
 
-	CustomLeafOption<FoilDataDispatcher *> updateFoilPresetOption(
+	CustomLeafOption<FoilDataManager *> updateFoilPresetOption(
 		"update foil preset",
 		"Updates the selected foil calculation preset",
 		com::updatePreset,
-		&foilDataDispatcher
+		&foilDataManager
 	);
 
-	CustomLeafOption<FoilDataDispatcher *> removeFoilPresetOption(
+	CustomLeafOption<FoilDataManager *> removeFoilPresetOption(
 		"remove foil preset",
 		"Removes the selected foil calculation preset",
 		com::removePreset,
-		&foilDataDispatcher
+		&foilDataManager
 	);
 
-	CustomLeafOption<FoilDataDispatcher *> clearFoilDataOption(
+	CustomLeafOption<FoilDataManager *> clearFoilDataOption(
 		"clears data",
 		"Clears all foil calculation params",
 		com::clearValues,
-		&foilDataDispatcher
+		&foilDataManager
 	);
 
 	BaseOptionContainer foilCalculation("foil calculation", "Contains methods to perform foil calculations", {
@@ -389,63 +389,63 @@ int main() {
 	});
 
 
-	ITableConnection * foilRollsConnection = new JsonConnection(STRUCTURE_FILE, STANDARD_PRESETS_FILE, "foil_rolls");
-	FoilRollsDataDispatcher foilRollsDataDispatcher(foilRollsConnection);
+	ITableConnection * foilRollsConnection = new JSONTableConnection(STRUCTURE_FILE, STANDARD_PRESETS_FILE, "foil_rolls");
+	FoilRollsDataManager foilRollsDataManager(foilRollsConnection);
 
-	CustomLeafOption<FoilRollsDataDispatcher *> setFoilRollLengthOption(
+	CustomLeafOption<FoilRollsDataManager *> setFoilRollLengthOption(
 		"set roll length",
 		"Sets the length of the roll",
 		from::setLength,
-		&foilRollsDataDispatcher
+		&foilRollsDataManager
 	);
 
-	CustomLeafOption<FoilRollsDataDispatcher *> setFoilRollWidthOption(
+	CustomLeafOption<FoilRollsDataManager *> setFoilRollWidthOption(
 		"set roll width",
 		"Sets the width of the roll",
 		from::setWidth,
-		&foilRollsDataDispatcher
+		&foilRollsDataManager
 	);
 
-	CustomLeafOption<FoilRollsDataDispatcher *> loadFoilRollsPresetOption(
+	CustomLeafOption<FoilRollsDataManager *> loadFoilRollsPresetOption(
 		"load foil roll preset",
 		"Loads preset containing data about a roll of foil",
 		com::loadPreset,
-		&foilRollsDataDispatcher
+		&foilRollsDataManager
 	);
 
-	CustomLeafOption<FoilRollsDataDispatcher *> createFoilRollsPresetOption(
+	CustomLeafOption<FoilRollsDataManager *> createFoilRollsPresetOption(
 		"create foil roll preset",
 		"Creates a new preset containing data about a roll of foil",
 		com::createPreset,
-		&foilRollsDataDispatcher
+		&foilRollsDataManager
 	);
 
-	CustomLeafOption<FoilRollsDataDispatcher *> updateFoilRollsPresetOption(
+	CustomLeafOption<FoilRollsDataManager *> updateFoilRollsPresetOption(
 		"update foil roll preset",
 		"Updates the selected foil roll preset with previously entered params",
 		com::updatePreset,
-		&foilRollsDataDispatcher
+		&foilRollsDataManager
 	);
 
-	CustomLeafOption<FoilRollsDataDispatcher *> removeFoilRollsPresetOption(
+	CustomLeafOption<FoilRollsDataManager *> removeFoilRollsPresetOption(
 		"remove foil roll preset",
 		"Removes the selected foil roll preset",
 		com::updatePreset,
-		&foilRollsDataDispatcher
+		&foilRollsDataManager
 	);
 
-	CustomLeafOption<FoilRollsDataDispatcher *> writeFoilRollsDispatcherParams(
+	CustomLeafOption<FoilRollsDataManager *> writeFoilRollsManagerParams(
 		"write parameters",
 		"Writes entered parameters",
 		com::writeParameters,
-		&foilRollsDataDispatcher
+		&foilRollsDataManager
 	);
 
 	BaseOptionContainer foilRolls("foil rolls", "Contains methods to manipulate data about foil rolls being used", {
 		{'L', &setFoilRollLengthOption},
 		{'W', &setFoilRollWidthOption},
 		{'l', &loadFoilRollsPresetOption},
-		{'w', &writeFoilRollsDispatcherParams},
+		{'w', &writeFoilRollsManagerParams},
 		{'+', &createFoilRollsPresetOption},
 		{'/', &updateFoilRollsPresetOption},
 		{'-', &removeFoilRollsPresetOption}

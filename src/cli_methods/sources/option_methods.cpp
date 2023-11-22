@@ -7,8 +7,8 @@
 #include <functional>
 
 #include "DefaultOptionIsChosenExcepion.hpp"
-#include <PaintDataDispatcher.hpp>
-#include <AbstractDataDispatcher.hpp>
+#include <PaintDataManager.hpp>
+#include <IDataManager.hpp>
 #include "UndefinedValueException.hpp"
 #include "option_methods.hpp"
 
@@ -88,7 +88,7 @@ void setVariant(std::vector<std::string> const & variants, std::function<std::st
 	set(variants[readVariant(prompt, variants)]);
 }
 
-void com::clearValues(IDataManager * dispatcher) {
+void com::clearValues(IDataManager * manager) {
 	std::vector<std::string> const variants = {"no", "yes"};
 	int answer = 0;
 
@@ -103,50 +103,50 @@ void com::clearValues(IDataManager * dispatcher) {
 	} catch (DefaultOptionIsChosenException const &) {}
 
 	if (answer == 1) {
-		dispatcher->clear();
+		manager->clear();
 		std::cout << "Submitted" << std::endl << "Fields are cleared" << std::endl;
 	} else
 		std::cout << "Aborted" << std::endl;
 }
 
-void com::calculateResourceAmount(IDataManager const * dispatcher) {
-	double res = dispatcher->calculate();
+void com::calculateResourceAmount(IDataManager const * manager) {
+	double res = manager->calculate();
 	std::cout << "Required amount equals " << res << "kg" << std::endl;
 }
 
-void com::writeParameters(IDataManager const * dispatcher) {
+void com::writeParameters(IDataManager const * manager) {
 	try {
-		auto presetName = dispatcher->getPresetName();
+		auto presetName = manager->getName();
 		std::cout << "Preset name:\t" << presetName << std::endl << std::endl;
 	} catch (UndefinedValueException const &) {}
 
-	auto params = dispatcher->toStringMap();
+	auto params = manager->exportData();
 	for (auto iter = params.begin(); iter != params.end(); ++iter)
 		std::cout << iter->first << ":\t" << iter->second << std::endl;
 }
 
-void com::loadPreset(IDataManager * dispatcher) {
-	std::vector<std::string> presets = dispatcher->getAvailablePresetNames();
+void com::loadPreset(IDataManager * manager) {
+	std::vector<std::string> presets = manager->getConnection()->getPresetNames();
 
 	std::cout << "Select the preset to load" << std::endl;
 	try {
 		setVariant(
 			presets,
-			[&]() { return dispatcher->getPresetName(); },
-			[&](std::string name) { dispatcher->setPreset(name); }
+			[&]() { return manager->getName(); },
+			[&](std::string name) { manager->loadPreset(name); }
 		);
 	} catch (DefaultOptionIsChosenException const &) {}
 
 	std::cout << "Preset ";
 	try {
-		std::string presetName = dispatcher->getPresetName();
+		std::string presetName = manager->getName();
 		std::cout << "named \"" << presetName << "\" is loaded" << std::endl;
 	} catch (UndefinedValueException const &) {
 		std::cout << "Preset is undefined" << std::endl;
 	}
 }
 
-void com::createPreset(IDataManager * dispatcher) {
+void com::createPreset(IDataManager * manager) {
 	std::cout << "Enter name of the new preset (leave field empty to abort operation)" << std::endl;
 
 	try {
@@ -154,14 +154,14 @@ void com::createPreset(IDataManager * dispatcher) {
 			"Enter name (default=abort): ",
 			[](std::string line) { return line; }
 		);
-		dispatcher->createPreset(name);
+		manager->createPreset(name);
 	} catch (DefaultOptionIsChosenException const &) {
 		std::cout << "Aborted" << std::endl;
 	}
 }
 
-void com::updatePreset(IDataManager * dispatcher) {
-	std::vector<std::string> presets = dispatcher->getAvailablePresetNames();
+void com::updatePreset(IDataManager * manager) {
+	std::vector<std::string> presets = manager->getConnection()->getPresetNames();
 
 	std::cout << "Select name of the preset you want to update (leave field empty to abort operation)" << std::endl;
 	std::string presetName;
@@ -171,7 +171,7 @@ void com::updatePreset(IDataManager * dispatcher) {
 			presets,
 			[]() { return "abort"; },
 			[&](std::string name) {
-				dispatcher->updatePreset(name);
+				manager->updatePreset(name);
 				presetName = name;
 			}
 		);
@@ -180,8 +180,8 @@ void com::updatePreset(IDataManager * dispatcher) {
 	}
 }
 
-void com::removePreset(IDataManager * dispatcher) {
-	std::vector<std::string> presets = dispatcher->getAvailablePresetNames();
+void com::removePreset(IDataManager * manager) {
+	std::vector<std::string> presets = manager->getConnection()->getPresetNames();
 
 	std::cout << "Select name of the paint calculation preset you want to remove (leave field empty to abort operation)" << std::endl;
 	std::string presetName;
@@ -191,7 +191,7 @@ void com::removePreset(IDataManager * dispatcher) {
 			presets,
 			[]() { return "abort"; },
 			[&](std::string name) {
-				dispatcher->removePreset(name);
+				manager->removePreset(name);
 				presetName = name;
 			}
 		);
@@ -200,38 +200,38 @@ void com::removePreset(IDataManager * dispatcher) {
 	}
 }
 
-void pcom::setPaintType(PaintDataDispatcher * dispatcher) {
+void pcom::setPaintType(PaintDataManager * manager) {
 	std::cout << "Select paint type" << std::endl;
 	try {
 		setVariant(
-			dispatcher->getPaintTypes(),
-			[&]() { return dispatcher->getPaintType(); },
-			[&](std::string type) { dispatcher->setPaintType(type); }
+			manager->getPaintTypes(),
+			[&]() { return manager->getPaintType(); },
+			[&](std::string type) { manager->setPaintType(type); }
 		);
 	} catch (DefaultOptionIsChosenException const &) {}
 
 	std::cout << "Paint type ";
 	try {
-		std::string type = dispatcher->getPaintType();
+		std::string type = manager->getPaintType();
 		std::cout << "\"" << type << "\" is set" << std::endl;
 	} catch (UndefinedValueException const &) {
 		std::cout << "is undefined" << std::endl;
 	}
 }
 
-void pcom::setMaterialType(PaintDataDispatcher * dispatcher) {
+void pcom::setMaterialType(PaintDataManager * manager) {
 	std::cout << "Select material type" << std::endl;
 	try {
 		setVariant(
-			dispatcher->getMaterialTypes(),
-			[&]() { return dispatcher->getMaterialType(); },
-			[&](std::string type) { dispatcher->setMaterialType(type); }
+			manager->getMaterialTypes(),
+			[&]() { return manager->getMaterialType(); },
+			[&](std::string type) { manager->setMaterialType(type); }
 		);
 	} catch (DefaultOptionIsChosenException const &) {}
 
 	std::cout << "Material type ";
 	try {
-		std::string type = dispatcher->getMaterialType();
+		std::string type = manager->getMaterialType();
 		std::cout << "\"" << type << "\" is set" << std::endl;
 	} catch (UndefinedValueException const &) {
 		std::cout << "is undefined" << std::endl;
@@ -259,12 +259,12 @@ void setValue(std::function<T()> getter, std::function<void(T)> setter, std::fun
 	} catch (DefaultOptionIsChosenException const &) {}
 }
 
-void pcom::setConsumption(PaintDataDispatcher * dispatcher) {
+void pcom::setConsumption(PaintDataManager * manager) {
 	std::cout << "Set paint consumption value" << std::endl;
 
 	setValue<double> (
-		[&]() { return dispatcher->getPaintConsumption(); },
-		[&](double value) { dispatcher->setPaintConsumption(value); },
+		[&]() { return manager->getPaintConsumption(); },
+		[&](double value) { manager->setPaintConsumption(value); },
 		[](std::string line) { return std::stod(line); },
 		[](double value) {
 			if (value > 0)
@@ -275,19 +275,19 @@ void pcom::setConsumption(PaintDataDispatcher * dispatcher) {
 
 	std::cout << "Paint consumption ";
 	try {
-		auto paintConsumption = dispatcher->getPaintConsumption();
+		auto paintConsumption = manager->getPaintConsumption();
 		std::cout << "value " << paintConsumption << " is set" << std::endl;
 	} catch (UndefinedValueException const &) {
 		std::cout << "is undefined" << std::endl;
 	}
 }
 
-void pcom::setDivider(PaintDataDispatcher * dispatcher) {
+void pcom::setDivider(PaintDataManager * manager) {
 	std::cout << "Set divider value" << std::endl;
 
 	setValue<double> (
-		[&]() { return dispatcher->getDivider(); },
-		[&](double value) { dispatcher->setDivider(value); },
+		[&]() { return manager->getDivider(); },
+		[&](double value) { manager->setDivider(value); },
 		[](std::string line) { return std::stod(line); },
 		[](double value) {
 			if (value > 0)
@@ -298,19 +298,19 @@ void pcom::setDivider(PaintDataDispatcher * dispatcher) {
 
 	std::cout << "Divider ";
 	try {
-		auto divider = dispatcher->getDivider();
+		auto divider = manager->getDivider();
 		std::cout << "value " << divider << " is set" << std::endl;
 	} catch (UndefinedValueException const &) {
 		std::cout << "is undefined" << std::endl;
 	}
 }
 
-void pcom::setPercentage(PaintDataDispatcher * dispatcher) {
+void pcom::setPercentage(PaintDataManager * manager) {
 	std::cout << "Set percentage value" << std::endl;
 
 	setValue<double> (
-		[&]() { return dispatcher->getPercentage(); },
-		[&](double value) { dispatcher->setPercentage(value); },
+		[&]() { return manager->getPercentage(); },
+		[&](double value) { manager->setPercentage(value); },
 		[](std::string line) { return std::stod(line); },
 		[](double value) {
 			if (value > 0 && value <= 100)
@@ -321,19 +321,19 @@ void pcom::setPercentage(PaintDataDispatcher * dispatcher) {
 
 	std::cout << "Percentage ";
 	try {
-		auto percentage = dispatcher->getPercentage();
+		auto percentage = manager->getPercentage();
 		std::cout << "value " << percentage << " is set" << std::endl;
 	} catch (UndefinedValueException const &) {
 		std::cout << "is undefined" << std::endl;
 	}
 }
 
-void pcom::setSheetWidth(PaintDataDispatcher * dispatcher) {
+void pcom::setSheetWidth(PaintDataManager * manager) {
 	std::cout << "Set sheet width value" << std::endl;
 
 	setValue<double> (
-		[&]() { return dispatcher->getSheetWidth(); },
-		[&](double value) { dispatcher->setSheetWidth(value); },
+		[&]() { return manager->getSheetWidth(); },
+		[&](double value) { manager->setSheetWidth(value); },
 		[](std::string line) { return std::stod(line); },
 		[](double value) {
 			if (value > 0)
@@ -344,19 +344,19 @@ void pcom::setSheetWidth(PaintDataDispatcher * dispatcher) {
 
 	std::cout << "Sheet width ";
 	try {
-		auto sheetWidth = dispatcher->getSheetWidth();
+		auto sheetWidth = manager->getSheetWidth();
 		std::cout << "value " << sheetWidth << " is set" << std::endl;
 	} catch (UndefinedValueException const &) {
 		std::cout << "is undefined" << std::endl;
 	}
 }
 
-void pcom::setSheetLength(PaintDataDispatcher * dispatcher) {
+void pcom::setSheetLength(PaintDataManager * manager) {
 	std::cout << "Set sheet length value" << std::endl;
 
 	setValue<double> (
-		[&]() { return dispatcher->getSheetLength(); },
-		[&](double value) { dispatcher->setSheetLength(value); },
+		[&]() { return manager->getSheetLength(); },
+		[&](double value) { manager->setSheetLength(value); },
 		[](std::string line) { return std::stod(line); },
 		[](double value) {
 			if (value > 0)
@@ -367,19 +367,19 @@ void pcom::setSheetLength(PaintDataDispatcher * dispatcher) {
 
 	std::cout << "Sheet length ";
 	try {
-		auto sheetLength = dispatcher->getSheetLength();
+		auto sheetLength = manager->getSheetLength();
 		std::cout << "value " << sheetLength << " is set" << std::endl;
 	} catch (UndefinedValueException const &) {
 		std::cout << "is undefined" << std::endl;
 	}
 }
 
-void pcom::setCirculation(PaintDataDispatcher * dispatcher) {
+void pcom::setCirculation(PaintDataManager * manager) {
 	std::cout << "Set circulation value" << std::endl;
 
 	setValue<unsigned long> (
-		[&]() { return dispatcher->getCirculation(); },
-		[&](unsigned long value) { dispatcher->setCirculation(value); },
+		[&]() { return manager->getCirculation(); },
+		[&](unsigned long value) { manager->setCirculation(value); },
 		[](std::string line) { return std::stoul(line); },
 		[](unsigned long value) {
 			if (value > 0)
@@ -390,19 +390,19 @@ void pcom::setCirculation(PaintDataDispatcher * dispatcher) {
 
 	std::cout << "Circulation ";
 	try {
-		auto circulation = dispatcher->getCirculation();
+		auto circulation = manager->getCirculation();
 		std::cout << "value " << circulation << " is set" << std::endl;
 	} catch (UndefinedValueException const &) {
 		std::cout << "is undefined" << std::endl;
 	}
 }
 
-void pcom::setReserve(PaintDataDispatcher * dispatcher) {
+void pcom::setReserve(PaintDataManager * manager) {
 	std::cout << "Set paint reserve value" << std::endl;
 
 	setValue<double>(
-		[&]() { return dispatcher->getPaintReserve(); },
-		[&](double value) { dispatcher->setPaintReserve(value); },
+		[&]() { return manager->getPaintReserve(); },
+		[&](double value) { manager->setPaintReserve(value); },
 		[](std::string line) { return std::stod(line); },
 		[](double value) {
 			if (value > 0)
@@ -413,7 +413,7 @@ void pcom::setReserve(PaintDataDispatcher * dispatcher) {
 
 	std::cout << "Paint reserve ";
 	try {
-		auto paintReserve = dispatcher->getPaintReserve();
+		auto paintReserve = manager->getPaintReserve();
 		std::cout << "value " << paintReserve << " is set" << std::endl;
 	} catch (UndefinedValueException const &) {
 		std::cout << "is undefined" << std::endl;
@@ -421,12 +421,12 @@ void pcom::setReserve(PaintDataDispatcher * dispatcher) {
 }
 
 
-void lcom::setPercentage(LacquerDataDispatcher * dispatcher) {
+void lcom::setPercentage(LacquerDataManager * manager) {
 	std::cout << "Set percentage of lacquer coverage" << std::endl;
 
 	setValue<double>(
-		[&]() { return dispatcher->getPercentage(); },
-		[&](double value) { dispatcher->setPercentage(value); },
+		[&]() { return manager->getPercentage(); },
+		[&](double value) { manager->setPercentage(value); },
 		[](std::string line) { return std::stod(line); },
 		[](double value) {
 			if (value > 0 && value <= 100)
@@ -437,19 +437,19 @@ void lcom::setPercentage(LacquerDataDispatcher * dispatcher) {
 
 	std::cout << "Lacquer coverage percentage ";
 	try {
-		auto value = dispatcher->getPercentage();
+		auto value = manager->getPercentage();
 		std::cout << "value " << value << " is set" << std::endl;
 	} catch (UndefinedValueException const &) {
 		std::cout << "is undefined" << std::endl;
 	}
 }
 
-void lcom::setConsumption(LacquerDataDispatcher * dispatcher) {
+void lcom::setConsumption(LacquerDataManager * manager) {
 	std::cout << "Set consumption of lacquer" << std::endl;
 
 	setValue<double>(
-		[&]() { return dispatcher->getLacquerConsumption(); },
-		[&](double value) { dispatcher->setLacquerConsumption(value); },
+		[&]() { return manager->getLacquerConsumption(); },
+		[&](double value) { manager->setLacquerConsumption(value); },
 		[](std::string line) { return std::stod(line); },
 		[](double value) {
 			if (value > 0)
@@ -460,19 +460,19 @@ void lcom::setConsumption(LacquerDataDispatcher * dispatcher) {
 
 	std::cout << "Lacquer consumption ";
 	try {
-		auto value = dispatcher->getLacquerConsumption();
+		auto value = manager->getLacquerConsumption();
 		std::cout << "value " << value << " is set" << std::endl;
 	} catch (UndefinedValueException const &) {
 		std::cout << "is undefined" << std::endl;
 	}
 }
 
-void lcom::setSheetLength(LacquerDataDispatcher * dispatcher) {
+void lcom::setSheetLength(LacquerDataManager * manager) {
 	std::cout << "Set length of the sheet" << std::endl;
 
 	setValue<double>(
-		[&]() { return dispatcher->getSheetLength(); },
-		[&](double value) { dispatcher->setSheetLength(value); },
+		[&]() { return manager->getSheetLength(); },
+		[&](double value) { manager->setSheetLength(value); },
 		[](std::string line) { return std::stod(line); },
 		[](double value) {
 			if (value > 0)
@@ -483,19 +483,19 @@ void lcom::setSheetLength(LacquerDataDispatcher * dispatcher) {
 
 	std::cout << "Length of the sheet ";
 	try {
-		auto value = dispatcher->getSheetLength();
+		auto value = manager->getSheetLength();
 		std::cout << "value " << value << " is set" << std::endl;
 	} catch (UndefinedValueException const &) {
 		std::cout << "is undefined" << std::endl;
 	}
 }
 
-void lcom::setSheetWidth(LacquerDataDispatcher * dispatcher) {
+void lcom::setSheetWidth(LacquerDataManager * manager) {
 	std::cout << "Set width of the sheet" << std::endl;
 
 	setValue<double>(
-		[&]() { return dispatcher->getSheetWidth(); },
-		[&](double value) { dispatcher->setSheetWidth(value); },
+		[&]() { return manager->getSheetWidth(); },
+		[&](double value) { manager->setSheetWidth(value); },
 		[](std::string line) { return std::stod(line); },
 		[](double value) {
 			if (value > 0)
@@ -506,19 +506,19 @@ void lcom::setSheetWidth(LacquerDataDispatcher * dispatcher) {
 
 	std::cout << "Width of the sheet ";
 	try {
-		auto value = dispatcher->getSheetWidth();
+		auto value = manager->getSheetWidth();
 		std::cout << "value " << value << " is set" << std::endl;
 	} catch (UndefinedValueException const &) {
 		std::cout << "is undefined" << std::endl;
 	}
 }
 
-void lcom::setCircualtion(LacquerDataDispatcher * dispatcher) {
+void lcom::setCircualtion(LacquerDataManager * manager) {
 	std::cout << "Set circulation" << std::endl;
 
 	setValue<std::size_t>(
-		[&]() { return dispatcher->getCirculation(); },
-		[&](std::size_t value) { dispatcher->setCirculation(value); },
+		[&]() { return manager->getCirculation(); },
+		[&](std::size_t value) { manager->setCirculation(value); },
 		[](std::string line) { return std::stoul(line); },
 		[](std::size_t value) {
 			if (value > 0)
@@ -529,7 +529,7 @@ void lcom::setCircualtion(LacquerDataDispatcher * dispatcher) {
 
 	std::cout << "Circulation ";
 	try {
-		auto value = dispatcher->getCirculation();
+		auto value = manager->getCirculation();
 		std::cout << "value " << value << " is set" << std::endl;
 	} catch (UndefinedValueException const &) {
 		std::cout << "is undefined" << std::endl;
@@ -537,12 +537,12 @@ void lcom::setCircualtion(LacquerDataDispatcher * dispatcher) {
 }
 
 
-void fcom::setCirulation(FoilDataDispatcher * dispatcher) {
+void fcom::setCirulation(FoilDataManager * manager) {
 	std::cout << "Set circulation" << std::endl;
 
 	setValue<std::size_t>(
-		[&]() { return dispatcher->getCirculation(); },
-		[&](std::size_t value) { dispatcher->setCirculation(value); },
+		[&]() { return manager->getCirculation(); },
+		[&](std::size_t value) { manager->setCirculation(value); },
 		[](std::string line) { return std::stoul(line); },
 		[](std::size_t value) {
 			if (value > 0)
@@ -553,19 +553,19 @@ void fcom::setCirulation(FoilDataDispatcher * dispatcher) {
 
 	std::cout << "Circulation ";
 	try {
-		auto value = dispatcher->getCirculation();
+		auto value = manager->getCirculation();
 		std::cout << "value " << value << " is set" << std::endl;
 	} catch (UndefinedValueException const &) {
 		std::cout << "is undefined" << std::endl;
 	}
 }
 
-void fcom::setLength(FoilDataDispatcher * dispatcher) {
+void fcom::setLength(FoilDataManager * manager) {
 	std::cout << "Set length of the roll" << std::endl;
 
 	setValue<double>(
-		[&]() { return dispatcher->getLength(); },
-		[&](double value) { dispatcher->setLength(value); },
+		[&]() { return manager->getLength(); },
+		[&](double value) { manager->setLength(value); },
 		[](std::string line) { return std::stod(line); },
 		[](double value) {
 			if (value > 0)
@@ -576,19 +576,19 @@ void fcom::setLength(FoilDataDispatcher * dispatcher) {
 
 	std::cout << "Length of the roll ";
 	try {
-		auto value = dispatcher->getLength();
+		auto value = manager->getLength();
 		std::cout << "value " << value << " is set" << std::endl;
 	} catch (UndefinedValueException const &) {
 		std::cout << "is undefined" << std::endl;
 	}
 }
 
-void fcom::setWidth(FoilDataDispatcher * dispatcher) {
+void fcom::setWidth(FoilDataManager * manager) {
 	std::cout << "Set width of the roll" << std::endl;
 
 	setValue<double>(
-		[&]() { return dispatcher->getWidth(); },
-		[&](double value) { dispatcher->setWidth(value); },
+		[&]() { return manager->getWidth(); },
+		[&](double value) { manager->setWidth(value); },
 		[](std::string line) { return std::stod(line); },
 		[](double value) {
 			if (value > 0)
@@ -599,19 +599,19 @@ void fcom::setWidth(FoilDataDispatcher * dispatcher) {
 
 	std::cout << "Width of the roll ";
 	try {
-		auto value = dispatcher->getWidth();
+		auto value = manager->getWidth();
 		std::cout << "value " << value << " is set" << std::endl;
 	} catch (UndefinedValueException const &) {
 		std::cout << "is undefined" << std::endl;
 	}
 }
 
-void fcom::setSheetNumber(FoilDataDispatcher * dispatcher) {
+void fcom::setSheetNumber(FoilDataManager * manager) {
 	std::cout << "Set number of sheets" << std::endl;
 
 	setValue<std::size_t>(
-		[&]() { return dispatcher->getSheetNumber(); },
-		[&](std::size_t value) { dispatcher->setSheetNumber(value); },
+		[&]() { return manager->getSheetNumber(); },
+		[&](std::size_t value) { manager->setSheetNumber(value); },
 		[](std::string line) { return std::stoul(line); },
 		[](std::size_t value) {
 			if (value > 0)
@@ -622,19 +622,19 @@ void fcom::setSheetNumber(FoilDataDispatcher * dispatcher) {
 
 	std::cout << "Number of sheets ";
 	try {
-		auto value = dispatcher->getSheetNumber();
+		auto value = manager->getSheetNumber();
 		std::cout << "value " << value << " is set" << std::endl;
 	} catch (UndefinedValueException const &) {
 		std::cout << "is undefined" << std::endl;
 	}
 }
 
-void fcom::setLengthReserve(FoilDataDispatcher * dispatcher) {
+void fcom::setLengthReserve(FoilDataManager * manager) {
 	std::cout << "Set length reserve of the roll" << std::endl;
 
 	setValue<double>(
-		[&]() { return dispatcher->getLengthReserve(); },
-		[&](double value) { dispatcher->setLengthReserve(value); },
+		[&]() { return manager->getLengthReserve(); },
+		[&](double value) { manager->setLengthReserve(value); },
 		[](std::string line) { return std::stod(line); },
 		[](double value) {
 			if (value > 0)
@@ -645,19 +645,19 @@ void fcom::setLengthReserve(FoilDataDispatcher * dispatcher) {
 
 	std::cout << "Length reserve of the roll ";
 	try {
-		auto value = dispatcher->getLengthReserve();
+		auto value = manager->getLengthReserve();
 		std::cout << "value " << value << " is set" << std::endl;
 	} catch (UndefinedValueException const &) {
 		std::cout << "is undefined" << std::endl;
 	}
 }
 
-void fcom::setWidthReserve(FoilDataDispatcher * dispatcher) {
+void fcom::setWidthReserve(FoilDataManager * manager) {
 	std::cout << "Set width reserve of the roll" << std::endl;
 
 	setValue<double>(
-		[&]() { return dispatcher->getWidthReserve(); },
-		[&](double value) { dispatcher->setWidthReserve(value); },
+		[&]() { return manager->getWidthReserve(); },
+		[&](double value) { manager->setWidthReserve(value); },
 		[](std::string line) { return std::stod(line); },
 		[](double value) {
 			if (value > 0)
@@ -668,20 +668,20 @@ void fcom::setWidthReserve(FoilDataDispatcher * dispatcher) {
 
 	std::cout << "Width reserve of the roll ";
 	try {
-		auto value = dispatcher->getWidthReserve();
+		auto value = manager->getWidthReserve();
 		std::cout << "value " << value << " is set" << std::endl;
 	} catch (UndefinedValueException const &) {
 		std::cout << "is undefined" << std::endl;
 	}
 }
 
-void fcom::calculateFoilRollLength(FoilDataDispatcher const * dispatcher) {
-	double length = dispatcher->calculate();
+void fcom::calculateFoilRollLength(FoilDataManager const * manager) {
+	double length = manager->calculate();
 	std::cout << "Required roller's length equals " << length << "m" << std::endl;
 }
 
-void fcom::writeSuitableRolls(FoilDataDispatcher const * dispatcher) {
-	auto rollNames = dispatcher->getSuitableFoilRolls();
+void fcom::writeSuitableRolls(FoilDataManager const * manager) {
+	auto rollNames = manager->getSuitableFoilRolls();
 	if (rollNames.size() == 0) {
 		std::cout << "No suitable rolls found\n";
 		return;
@@ -693,12 +693,12 @@ void fcom::writeSuitableRolls(FoilDataDispatcher const * dispatcher) {
 }
 
 
-void from::setLength(FoilRollsDataDispatcher * dispatcher) {
+void from::setLength(FoilRollsDataManager * manager) {
 	std::cout << "Set length of the roll" << std::endl;
 
 	setValue<double>(
-		[&]() { return dispatcher->getLength(); },
-		[&](double value) { dispatcher->setLength(value); },
+		[&]() { return manager->getLength(); },
+		[&](double value) { manager->setLength(value); },
 		[](std::string line) { return std::stod(line); },
 		[](double value) {
 			if (value > 0)
@@ -709,19 +709,19 @@ void from::setLength(FoilRollsDataDispatcher * dispatcher) {
 
 	std::cout << "Width reserve of the roll ";
 	try {
-		auto value = dispatcher->getLength();
+		auto value = manager->getLength();
 		std::cout << "value " << value << " is set" << std::endl;
 	} catch (UndefinedValueException const &) {
 		std::cout << "is undefined" << std::endl;
 	}
 }
 
-void from::setWidth(FoilRollsDataDispatcher * dispatcher) {
+void from::setWidth(FoilRollsDataManager * manager) {
 	std::cout << "Set width of the roll" << std::endl;
 
 	setValue<double>(
-		[&]() { return dispatcher->getWidth(); },
-		[&](double value) { dispatcher->setWidth(value); },
+		[&]() { return manager->getWidth(); },
+		[&](double value) { manager->setWidth(value); },
 		[](std::string line) { return std::stod(line); },
 		[](double value) {
 			if (value > 0)
@@ -732,7 +732,7 @@ void from::setWidth(FoilRollsDataDispatcher * dispatcher) {
 
 	std::cout << "Width reserve of the roll ";
 	try {
-		auto value = dispatcher->getWidth();
+		auto value = manager->getWidth();
 		std::cout << "value " << value << " is set" << std::endl;
 	} catch (UndefinedValueException const &) {
 		std::cout << "is undefined" << std::endl;

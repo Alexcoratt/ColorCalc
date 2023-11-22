@@ -13,6 +13,7 @@ public:
 	void clear();
 
 	void setName(std::string const &);
+	void clearName();
 	std::string getName() const;
 
 	std::vector<std::string> getPaintTypes() const;

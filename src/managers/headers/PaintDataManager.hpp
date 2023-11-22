@@ -12,7 +12,7 @@
 class PaintDataManager : public IDataManager {
 private:
 	PaintConsumptionDataManager const * _paintConsumptionDispatcher;
-	std::string _name;
+	UnstableNamedValue<std::string> _name;
 
 	UnstableNamedValue<std::string> _paintType;
 	UnstableNamedValue<std::string> _materialType;

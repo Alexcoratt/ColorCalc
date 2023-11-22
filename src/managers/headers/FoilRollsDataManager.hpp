@@ -4,16 +4,17 @@
 #include "IDataManager.hpp"
 #include "UnstableNamedValue.hpp"
 
-class FoilRollsDataDispatcher : public IDataManager {
+class FoilRollsDataManager : public IDataManager {
 private:
-	std::string _name;
+	UnstableNamedValue<std::string> _name;
+
 	UnstableNamedValue<double> _length;
 	UnstableNamedValue<double> _width;
 
 public:
-	FoilRollsDataDispatcher(ITableConnection *);
+	FoilRollsDataManager(ITableConnection *);
 
-	void importData(const std::map<std::string, AutoValue> &);
+	void importData(std::map<std::string, AutoValue> const &);
 	std::map<std::string, AutoValue> exportData() const;
 
 	void clear();

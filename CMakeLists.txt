@@ -25,7 +25,7 @@ target_include_directories(${PROJECT_NAME}_lib
     PUBLIC src/connections/headers
     PUBLIC src/managers/headers
     PUBLIC src/values/headers
-    PUBLIC src/auxillary_classes/headers
+    PUBLIC src/auxillary/headers
     PUBLIC src/table_connection_strategies/headers
     PUBLIC src/exceptions
 )
