@@ -22,31 +22,28 @@ PaintDataManager::PaintDataManager(ITableConnection * conn, PaintConsumptionData
 }
 
 void PaintDataManager::importData(std::map<std::string, AutoValue> const & params) {
-	auxillary_methods::setParam(_paintType, PAINT_TYPE, params);
-	auxillary_methods::setParam(_materialType, MATERIAL_TYPE, params);
-	auxillary_methods::setParam(_paintConsumption, PAINT_CONSUMPTION, params);
-	auxillary_methods::setParam(_divider, DIVIDER, params);
-	auxillary_methods::setParam(_percentage, PERCENTAGE, params);
-	auxillary_methods::setParam(_sheetWidth, SHEET_WIDTH, params);
-	auxillary_methods::setParam(_sheetLength, SHEET_LENGTH, params);
-	auxillary_methods::setParam(_circulation, CIRCULATION, params);
-	auxillary_methods::setParam(_paintReserve, PAINT_RESERVE, params);
+	auxillary_methods::setParam(_paintType, params, PAINT_TYPE);
+	auxillary_methods::setParam(_materialType, params, MATERIAL_TYPE);
+	auxillary_methods::setParam(_paintConsumption, params, PAINT_CONSUMPTION);
+	auxillary_methods::setParam(_divider, params, DIVIDER);
+	auxillary_methods::setParam(_percentage, params, PERCENTAGE);
+	auxillary_methods::setParam(_sheetWidth, params, SHEET_WIDTH);
+	auxillary_methods::setParam(_sheetLength, params, SHEET_LENGTH);
+	auxillary_methods::setParam(_circulation, params, CIRCULATION);
+	auxillary_methods::setParam(_paintReserve, params, PAINT_RESERVE);
 }
-
-template <typename T>
-void setValue(UnstableNamedValue<T> const & param, std::map<std::string, AutoValue> & map) { map[param.getName()] = param.getValue(); }
 
 std::map<std::string, AutoValue> PaintDataManager::exportData() const {
 	std::map<std::string, AutoValue> res;
-	setValue(_paintType, res);
-	setValue(_materialType, res);
-	setValue(_paintConsumption, res);
-	setValue(_divider, res);
-	setValue(_percentage, res);
-	setValue(_sheetWidth, res);
-	setValue(_sheetLength, res);
-	setValue(_circulation, res);
-	setValue(_paintReserve, res);
+	auxillary_methods::setMapValue(res, _paintType);
+	auxillary_methods::setMapValue(res, _materialType);
+	auxillary_methods::setMapValue(res, _paintConsumption);
+	auxillary_methods::setMapValue(res, _divider);
+	auxillary_methods::setMapValue(res, _percentage);
+	auxillary_methods::setMapValue(res, _sheetWidth);
+	auxillary_methods::setMapValue(res, _sheetLength);
+	auxillary_methods::setMapValue(res, _circulation);
+	auxillary_methods::setMapValue(res, _paintReserve);
 	return res;
 }
 
@@ -64,7 +61,7 @@ void PaintDataManager::clear() {
 }
 
 void PaintDataManager::setName(std::string const & name) { _name = name; }
-void PaintDataManager::clearName() { clearName(); }
+void PaintDataManager::clearName() { _name.clear(); }
 std::string PaintDataManager::getName() const { return _name; }
 
 std::vector<std::string> PaintDataManager::getPaintTypes() const { return _paintConsumptionDispatcher->getPaintTypes(); }
@@ -92,6 +89,7 @@ void PaintDataManager::setMaterialType(std::string const & type) {
 	clearName();
 }
 
+// FIXME returns 0 if _paintConsumption is unset
 double PaintDataManager::getPaintConsumption() const {
 	try {
 		return _paintConsumption;

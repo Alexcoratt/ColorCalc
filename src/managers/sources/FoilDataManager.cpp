@@ -17,25 +17,22 @@ FoilDataManager::FoilDataManager(ITableConnection * conn) {
 }
 
 void FoilDataManager::importData(std::map<std::string, AutoValue> const & params) {
-	auxillary_methods::setParam(_circulation, CIRCULATION, params);
-	auxillary_methods::setParam(_length, LENGTH, params);
-	auxillary_methods::setParam(_width, WIDTH, params);
-	auxillary_methods::setParam(_sheetNumber, SHEET_NUMBER, params);
-	auxillary_methods::setParam(_lengthReserve, LENGTH_RESERVE, params);
-	auxillary_methods::setParam(_widthReserve, WIDTH_RESERVE, params);
+	auxillary_methods::setParam(_circulation, params, CIRCULATION);
+	auxillary_methods::setParam(_length, params, LENGTH);
+	auxillary_methods::setParam(_width, params, WIDTH);
+	auxillary_methods::setParam(_sheetNumber, params, SHEET_NUMBER);
+	auxillary_methods::setParam(_lengthReserve, params, LENGTH_RESERVE);
+	auxillary_methods::setParam(_widthReserve, params, WIDTH_RESERVE);
 }
-
-template <typename T>
-void setValue(UnstableNamedValue<T> const & param, std::map<std::string, AutoValue> & map) { map[param.getName()] = param.getValue(); }
 
 std::map<std::string, AutoValue> FoilDataManager::exportData() const {
 	std::map<std::string, AutoValue> res;
-	setValue(_circulation, res);
-	setValue(_length, res);
-	setValue(_width, res);
-	setValue(_sheetNumber, res);
-	setValue(_lengthReserve, res);
-	setValue(_widthReserve, res);
+	auxillary_methods::setMapValue(res, _circulation);
+	auxillary_methods::setMapValue(res, _length);
+	auxillary_methods::setMapValue(res, _width);
+	auxillary_methods::setMapValue(res, _sheetNumber);
+	auxillary_methods::setMapValue(res, _lengthReserve);
+	auxillary_methods::setMapValue(res, _widthReserve);
 	return res;
 }
 

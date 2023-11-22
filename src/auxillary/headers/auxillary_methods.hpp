@@ -9,7 +9,7 @@
 namespace auxillary_methods {
 
 	template <typename T>
-	void setParam(UnstableNamedValue<T> & param, std::string const & key, std::map<std::string, AutoValue> const & params) {
+	void setParam(UnstableNamedValue<T> & param, std::map<std::string, AutoValue> const & params, std::string const & key) {
 		param.setName(key);
 		try {
 			auto value = params.at(key);
@@ -18,6 +18,14 @@ namespace auxillary_methods {
 		} catch (std::out_of_range const &) {}
 	}
 
+	template <typename T>
+	void setMapValue(std::map<std::string, AutoValue> & map, UnstableNamedValue<T> const & param) {
+		try {
+			map[param.getName()] = param.getValue();
+		} catch (UndefinedValueException const &) {
+			map[param.getName()] = AutoValue();
+		}
+	}
 }
 
 #endif

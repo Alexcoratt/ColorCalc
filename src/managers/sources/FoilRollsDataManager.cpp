@@ -10,14 +10,14 @@ FoilRollsDataManager::FoilRollsDataManager(ITableConnection * conn) {
 }
 
 void FoilRollsDataManager::importData(std::map<std::string, AutoValue> const & params) {
-	auxillary_methods::setParam(_length, LENGTH, params);
-	auxillary_methods::setParam(_width, WIDTH, params);
+	auxillary_methods::setParam(_length, params, LENGTH);
+	auxillary_methods::setParam(_width, params, WIDTH);
 }
 
 std::map<std::string, AutoValue> FoilRollsDataManager::exportData() const {
 	std::map<std::string, AutoValue> res;
-	res[_length.getName()] = _length.getValue();
-	res[_width.getName()] = _width.getValue();
+	auxillary_methods::setMapValue(res, _length);
+	auxillary_methods::setMapValue(res, _width);
 	return res;
 }
 
