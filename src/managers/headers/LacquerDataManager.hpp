@@ -1,12 +1,32 @@
-#ifndef LACQUER_DATA_DISPATCHER_HPP
-#define LACQUER_DATA_DISPATCHER_HPP
+#ifndef LACQUER_DATA_MANAGER_HPP
+#define LACQUER_DATA_MANAGER_HPP
 
-#include "IConnection.hpp"
-#include "AbstractDataDispatcher.hpp"
+#include "ITableConnection.hpp"
+#include "IDataManager.hpp"
 
-class LacquerDataDispatcher : public AbstractDataDispatcher {
+#include "UnstableNamedValue.hpp"
+
+class LacquerDataManager : public IDataManager {
+private:
+	std::string _name;
+	UnstableNamedValue<double> _percentage;
+	UnstableNamedValue<double> _lacquerConsumption;
+	UnstableNamedValue<double> _sheetLength;
+	UnstableNamedValue<double> _sheetWidth;
+	UnstableNamedValue<unsigned long> _circulation;
+
 public:
-	LacquerDataDispatcher(IConnection *);
+	LacquerDataManager(ITableConnection *);
+
+	void importData(std::map<std::string, AutoValue> const &);
+	std::map<std::string, AutoValue> exportData() const;
+
+	void clear();
+
+	void setName(std::string const &);
+	std::string getName() const;
+
+	double calculate() const;
 
 	double getPercentage() const;
 	void setPercentage(double);
@@ -22,8 +42,6 @@ public:
 
 	std::size_t getCirculation() const;
 	void setCirculation(std::size_t);
-
-	double calculate() const;
 };
 
 #endif

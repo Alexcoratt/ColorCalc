@@ -8,8 +8,6 @@
 
 #include <AutoValue.hpp>
 
-#include "ITableConnectionStrategy.hpp"
-
 // TODO: create ConnectionManager as IConnection's proxy to control saving data into databases
 class ITableConnection {
 public:
@@ -32,7 +30,6 @@ public:
     virtual void createPreset(std::string const &, std::map<std::string, AutoValue> const &) = 0;
     virtual void updatePreset(std::string const &, std::map<std::string, AutoValue> const &) = 0;
     virtual void removePreset(std::string const &) = 0;
-    virtual void setConnectionStrategy(ITableConnectionStrategy *) = 0;
 };
 
 

@@ -1,11 +1,26 @@
-#ifndef FOIL_ROLLS_DATA_DISPATCHER_HPP
-#define FOIL_ROLLS_DATA_DISPATCHER_HPP
+#ifndef FOIL_ROLLS_DATA_MANAGER_HPP
+#define FOIL_ROLLS_DATA_MANAGER_HPP
 
-#include <AbstractDataDispatcher.hpp>
+#include "IDataManager.hpp"
+#include "UnstableNamedValue.hpp"
 
-class FoilRollsDataDispatcher : public AbstractDataDispatcher {
+class FoilRollsDataDispatcher : public IDataManager {
+private:
+	std::string _name;
+	UnstableNamedValue<double> _length;
+	UnstableNamedValue<double> _width;
+
 public:
-	FoilRollsDataDispatcher(IConnection *);
+	FoilRollsDataDispatcher(ITableConnection *);
+
+	void importData(const std::map<std::string, AutoValue> &);
+	std::map<std::string, AutoValue> exportData() const;
+
+	void clear();
+
+	void setName(std::string const &);
+	void clearName();
+	std::string getName() const;
 
 	double calculate() const;
 

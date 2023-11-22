@@ -13,12 +13,12 @@ private:
 	bool _defined;
 
 public:
-	UnstableNamedValue(T const & value, std::string name, bool defined = true) : _value(value), _name(name), _defined(defined) {}
-
-	UnstableNamedValue(std::string name) {
-		_name = name;
+	UnstableNamedValue() {
+		_name = "unnamed";
 		_defined = false;
 	}
+
+	UnstableNamedValue(T const & value, std::string name = "unnamed", bool defined = true) : _value(value), _name(name), _defined(defined) {}
 
 
 	T getValue() const {
@@ -38,6 +38,8 @@ public:
 		setValue(value);
 		return *this;
 	}
+
+	bool operator==(T const & value) const { return _value == value; }
 
 	std::string getName() const { return _name; }
 	void setName(std::string const & name) { _name = name; }

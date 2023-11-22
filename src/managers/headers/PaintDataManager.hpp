@@ -1,21 +1,40 @@
-#ifndef PAINT_DATA_DISPATCHER_HPP
-#define PAINT_DATA_DISPATCHER_HPP
+#ifndef PAINT_DATA_MANAGER_HPP
+#define PAINT_DATA_MANAGER_HPP
 
 #include <AutoValue.hpp>
 
-#include "AbstractDataDispatcher.hpp"
-#include "IConnection.hpp"
+#include "IDataManager.hpp"
+#include "ITableConnection.hpp"
 
-#include "PaintConsumptionDispatcher.hpp"
+#include "PaintConsumptionDataManager.hpp"
+#include "UnstableNamedValue.hpp"
 
-class PaintDataDispatcher : public AbstractDataDispatcher {
+class PaintDataManager : public IDataManager {
 private:
-	PaintConsumptionDispatcher const * _paintConsumptionDispatcher;
+	PaintConsumptionDataManager const * _paintConsumptionDispatcher;
+	std::string _name;
+
+	UnstableNamedValue<std::string> _paintType;
+	UnstableNamedValue<std::string> _materialType;
+	UnstableNamedValue<double> _paintConsumption;
+	UnstableNamedValue<double> _divider;
+	UnstableNamedValue<double> _percentage;
+	UnstableNamedValue<double> _sheetWidth;
+	UnstableNamedValue<double> _sheetLength;
+	UnstableNamedValue<unsigned long> _circulation;
+	UnstableNamedValue<double> _paintReserve;
 
 public:
-	PaintDataDispatcher(IConnection * paintTableConnection, PaintConsumptionDispatcher const *);
+	PaintDataManager(ITableConnection * paintTableConnection, PaintConsumptionDataManager const *);
 
-	std::map<std::string, std::string> toStringMap() const; // override parent's method'
+	void importData(std::map<std::string, AutoValue> const &);
+	std::map<std::string, AutoValue> exportData() const;
+
+	void clear();
+
+	void setName(std::string const &);
+	void clearName();
+	std::string getName() const;
 
 	std::vector<std::string> getPaintTypes() const;
 	std::vector<std::string> getMaterialTypes() const;

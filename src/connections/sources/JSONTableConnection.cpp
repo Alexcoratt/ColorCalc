@@ -5,16 +5,14 @@
 
 #include <NullValue.hpp>
 
-#include "JsonConnection.hpp"
+#include "JSONTableConnection.hpp"
 
 #include <nlohmann/json.hpp>
 
 #include "PresetAlreadyExistsException.hpp"
 #include "PresetDoesNotExistException.hpp"
 
-#include "UndefinedValueException.hpp"
-
-void JsonConnection::download(bool quiet) {
+void JSONTableConnection::download(bool quiet) {
 	try {
 		if (!quiet)
 			std::cout << "Trying to download from " << _valuesFileName << ':' << _tableName << '\t';
@@ -54,7 +52,7 @@ void JsonConnection::download(bool quiet) {
 	}
 }
 
-void JsonConnection::upload(bool quiet) {
+void JSONTableConnection::upload(bool quiet) {
 	if (!quiet)
 		std::cout << "Trying to upload to " << _valuesFileName << ':' << _tableName << '\t';
 	if (isReadOnly())
@@ -91,35 +89,35 @@ void JsonConnection::upload(bool quiet) {
 		std::cout << "OK\n";
 }
 
-void JsonConnection::syncronize(bool quiet) {
+void JSONTableConnection::syncronize(bool quiet) {
 	upload(quiet);
 	download(quiet);
 }
 
-JsonConnection::JsonConnection(std::string const & structureFileName, std::string const & valueFileName, std::string const & tableName, bool readOnly) : _structureFileName(structureFileName), _valuesFileName(valueFileName), _tableName(tableName) {
+JSONTableConnection::JSONTableConnection(std::string const & structureFileName, std::string const & valueFileName, std::string const & tableName, bool readOnly) : _structureFileName(structureFileName), _valuesFileName(valueFileName), _tableName(tableName) {
 	download();
 	_readOnly = readOnly;
 }
 
-JsonConnection::~JsonConnection() {}
-int JsonConnection::getStatus() const { return _status; }
-bool JsonConnection::isReadOnly() const { return _readOnly; }
-bool JsonConnection::hasPreset(std::string const & name) const { return _presets.find(name) != _presets.end(); }
+JSONTableConnection::~JSONTableConnection() {}
+int JSONTableConnection::getStatus() const { return _status; }
+bool JSONTableConnection::isReadOnly() const { return _readOnly; }
+bool JSONTableConnection::hasPreset(std::string const & name) const { return _presets.find(name) != _presets.end(); }
 
-std::vector<std::string> JsonConnection::getPresetNames() const {
+std::vector<std::string> JSONTableConnection::getPresetNames() const {
 	std::vector<std::string> res;
 	for (auto it = _presets.begin(); it != _presets.end(); ++it)
 		res.push_back(it->first);
 	return res;
 }
 
-std::vector<std::string> JsonConnection::getParamNames() const { return _paramNames; }
+std::vector<std::string> JSONTableConnection::getParamNames() const { return _paramNames; }
 
-DataContainer JsonConnection::getPreset(std::string const & name) const {
+std::map<std::string, AutoValue> JSONTableConnection::getPreset(std::string const & name) const {
 	if (!hasPreset(name))
 		throw PresetDoesNotExistException(name);
 
-	DataContainer res(name);
+	std::map<std::string, AutoValue> res;
 	auto const & values = _presets.at(name);
 	auto paramNames = getParamNames();
 	unsigned paramCount = paramNames.size();
@@ -130,23 +128,20 @@ DataContainer JsonConnection::getPreset(std::string const & name) const {
 	return res;
 }
 
-DataContainer JsonConnection::getPresetTemplate() const {
-	DataContainer res;
+std::map<std::string, AutoValue> JSONTableConnection::getPresetTemplate() const {
+	std::map<std::string, AutoValue> res;
 	for (std::string name : getParamNames())
 		res[name] = NullValue();
 	return res;
 }
 
-void JsonConnection::createPreset(DataContainer const & container) {
-	auto const & name = container.name();
-	if (name.isNull())
-		throw UndefinedValueException("name");
+void JSONTableConnection::createPreset(std::string const & name, std::map<std::string, AutoValue> const & params) {
 	if (hasPreset(name))
 		throw PresetAlreadyExistsException(name);
 
 	std::vector<AutoValue> preset;
 	for (auto paramName : getParamNames())
-		preset.push_back(container.at(paramName));
+		preset.push_back(params.at(paramName));
 	_presets[name] = preset;
 
 	std::cout << "Preset named \"" << name << "\" created\n";
@@ -154,16 +149,13 @@ void JsonConnection::createPreset(DataContainer const & container) {
 	upload();
 }
 
-void JsonConnection::updatePreset(DataContainer const & container) {
-	auto const & name = container.name();
-	if (name.isNull())
-		throw UndefinedValueException("name");
+void JSONTableConnection::updatePreset(std::string const & name, std::map<std::string, AutoValue> const & params) {
 	if (!hasPreset(name))
 		throw PresetDoesNotExistException(name);
 
 	std::vector<AutoValue> preset;
 	for (auto paramName : getParamNames())
-		preset.push_back(container.at(paramName));
+		preset.push_back(params.at(paramName));
 	_presets[name] = preset;
 
 	std::cout << "Preset named \"" << name << "\" updated\n";
@@ -171,7 +163,7 @@ void JsonConnection::updatePreset(DataContainer const & container) {
 	upload();
 }
 
-void JsonConnection::removePreset(std::string const & name) {
+void JSONTableConnection::removePreset(std::string const & name) {
 	if (!hasPreset(name))
 		throw PresetDoesNotExistException(name);
 
