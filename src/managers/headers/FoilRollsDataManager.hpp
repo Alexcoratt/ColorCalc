@@ -30,6 +30,8 @@ public:
 
 	double getWidth() const;
 	void setWidth(double);
+
+	std::vector<std::string> getSuitableFoilRolls(double minLength, double minWidth) const;
 };
 
 #endif

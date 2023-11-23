@@ -270,8 +270,70 @@ int main() {
 		{'-', &removeLacquerPresetOption}
 	});
 
+	ITableConnection * foilRollsConnection = new JSONTableConnection(STRUCTURE_FILE, STANDARD_PRESETS_FILE, "foil_rolls");
+	FoilRollsDataManager foilRollsDataManager(foilRollsConnection);
+
+	CustomLeafOption<FoilRollsDataManager *> setFoilRollLengthOption(
+		"set roll length",
+		"Sets the length of the roll",
+		from::setLength,
+		&foilRollsDataManager
+	);
+
+	CustomLeafOption<FoilRollsDataManager *> setFoilRollWidthOption(
+		"set roll width",
+		"Sets the width of the roll",
+		from::setWidth,
+		&foilRollsDataManager
+	);
+
+	CustomLeafOption<FoilRollsDataManager *> loadFoilRollsPresetOption(
+		"load foil roll preset",
+		"Loads preset containing data about a roll of foil",
+		com::loadPreset,
+		&foilRollsDataManager
+	);
+
+	CustomLeafOption<FoilRollsDataManager *> createFoilRollsPresetOption(
+		"create foil roll preset",
+		"Creates a new preset containing data about a roll of foil",
+		com::createPreset,
+		&foilRollsDataManager
+	);
+
+	CustomLeafOption<FoilRollsDataManager *> updateFoilRollsPresetOption(
+		"update foil roll preset",
+		"Updates the selected foil roll preset with previously entered params",
+		com::updatePreset,
+		&foilRollsDataManager
+	);
+
+	CustomLeafOption<FoilRollsDataManager *> removeFoilRollsPresetOption(
+		"remove foil roll preset",
+		"Removes the selected foil roll preset",
+		com::updatePreset,
+		&foilRollsDataManager
+	);
+
+	CustomLeafOption<FoilRollsDataManager *> writeFoilRollsManagerParams(
+		"write parameters",
+		"Writes entered parameters",
+		com::writeParameters,
+		&foilRollsDataManager
+	);
+
+	BaseOptionContainer foilRolls("foil rolls", "Contains methods to manipulate data about foil rolls being used", {
+		{'L', &setFoilRollLengthOption},
+		{'W', &setFoilRollWidthOption},
+		{'l', &loadFoilRollsPresetOption},
+		{'w', &writeFoilRollsManagerParams},
+		{'+', &createFoilRollsPresetOption},
+		{'/', &updateFoilRollsPresetOption},
+		{'-', &removeFoilRollsPresetOption}
+	});
+
 	ITableConnection * foilConnection = new JSONTableConnection(STRUCTURE_FILE, STANDARD_PRESETS_FILE, "foil_calculation");
-	FoilDataManager foilDataManager(foilConnection);
+	FoilDataManager foilDataManager(foilConnection, &foilRollsDataManager);
 
 	CustomLeafOption<FoilDataManager *> setFoilCirculationOption(
 		"set circulation",
@@ -386,69 +448,6 @@ int main() {
 		{'/', &updateFoilPresetOption},
 		{'-', &removeFoilPresetOption},
 		{'R', &clearFoilDataOption}
-	});
-
-
-	ITableConnection * foilRollsConnection = new JSONTableConnection(STRUCTURE_FILE, STANDARD_PRESETS_FILE, "foil_rolls");
-	FoilRollsDataManager foilRollsDataManager(foilRollsConnection);
-
-	CustomLeafOption<FoilRollsDataManager *> setFoilRollLengthOption(
-		"set roll length",
-		"Sets the length of the roll",
-		from::setLength,
-		&foilRollsDataManager
-	);
-
-	CustomLeafOption<FoilRollsDataManager *> setFoilRollWidthOption(
-		"set roll width",
-		"Sets the width of the roll",
-		from::setWidth,
-		&foilRollsDataManager
-	);
-
-	CustomLeafOption<FoilRollsDataManager *> loadFoilRollsPresetOption(
-		"load foil roll preset",
-		"Loads preset containing data about a roll of foil",
-		com::loadPreset,
-		&foilRollsDataManager
-	);
-
-	CustomLeafOption<FoilRollsDataManager *> createFoilRollsPresetOption(
-		"create foil roll preset",
-		"Creates a new preset containing data about a roll of foil",
-		com::createPreset,
-		&foilRollsDataManager
-	);
-
-	CustomLeafOption<FoilRollsDataManager *> updateFoilRollsPresetOption(
-		"update foil roll preset",
-		"Updates the selected foil roll preset with previously entered params",
-		com::updatePreset,
-		&foilRollsDataManager
-	);
-
-	CustomLeafOption<FoilRollsDataManager *> removeFoilRollsPresetOption(
-		"remove foil roll preset",
-		"Removes the selected foil roll preset",
-		com::updatePreset,
-		&foilRollsDataManager
-	);
-
-	CustomLeafOption<FoilRollsDataManager *> writeFoilRollsManagerParams(
-		"write parameters",
-		"Writes entered parameters",
-		com::writeParameters,
-		&foilRollsDataManager
-	);
-
-	BaseOptionContainer foilRolls("foil rolls", "Contains methods to manipulate data about foil rolls being used", {
-		{'L', &setFoilRollLengthOption},
-		{'W', &setFoilRollWidthOption},
-		{'l', &loadFoilRollsPresetOption},
-		{'w', &writeFoilRollsManagerParams},
-		{'+', &createFoilRollsPresetOption},
-		{'/', &updateFoilRollsPresetOption},
-		{'-', &removeFoilRollsPresetOption}
 	});
 
 	BaseOptionContainer root("root", BASE_HELP_TEXT, {

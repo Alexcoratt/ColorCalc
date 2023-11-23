@@ -11,9 +11,10 @@
 #define LENGTH_RESERVE "length_reserve"
 #define WIDTH_RESERVE "width_reserve"
 
-FoilDataManager::FoilDataManager(ITableConnection * conn) {
+FoilDataManager::FoilDataManager(ITableConnection * conn, FoilRollsDataManager const * foilRollsDataManager) {
 	setConnection(conn);
 	importData(conn->getPresetTemplate());
+	_foilRollsDataManager = foilRollsDataManager;
 }
 
 void FoilDataManager::importData(std::map<std::string, AutoValue> const & params) {
@@ -104,10 +105,8 @@ void FoilDataManager::setWidthReserve(double value) {
 	clearName();
 }
 
-std::vector<std::string> FoilDataManager::getSuitableFoilRolls() const {
-	// FIXME
-	std::cerr << "coming soon\n";
-	return {};
-}
-
 double FoilDataManager::calculate() const { return (getLength() + getLengthReserve()) * getCirculation() / getSheetNumber() / 1000; }
+
+std::vector<std::string> FoilDataManager::getSuitableFoilRolls() const {
+	return _foilRollsDataManager->getSuitableFoilRolls(calculate() + getLengthReserve(), getWidth() + getWidthReserve());
+}

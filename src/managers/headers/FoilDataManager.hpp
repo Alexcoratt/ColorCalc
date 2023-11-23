@@ -5,8 +5,12 @@
 #include "ITableConnection.hpp"
 #include "UnstableNamedValue.hpp"
 
+#include "FoilRollsDataManager.hpp"
+
 class FoilDataManager : public IDataManager {
 private:
+	FoilRollsDataManager const * _foilRollsDataManager;
+
 	UnstableNamedValue<std::string> _name;
 
 	UnstableNamedValue<unsigned long> _circulation;
@@ -17,7 +21,7 @@ private:
 	UnstableNamedValue<double> _widthReserve;
 
 public:
-	FoilDataManager(ITableConnection *);
+	FoilDataManager(ITableConnection *, FoilRollsDataManager const *);
 
 	void importData(std::map<std::string, AutoValue> const &);
 	std::map<std::string, AutoValue> exportData() const;
