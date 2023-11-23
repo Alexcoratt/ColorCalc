@@ -1,0 +1,120 @@
+{
+	"structure_sources" : {
+		"standard_structure" : {
+			"type" : "json",
+			"url" : "./tables_structure.json",
+		}
+	},
+
+	"preset_sources" : {
+		"standard_presets" : {
+			"type" : "json",
+			"url" : "./standard_presets.json"
+		},
+		"user_presets" : {
+			"type" : "json",
+			"url" : "./user_presets.json"
+		}
+	},
+
+	"connections" :
+	{
+		"paint_consumption" :
+		{
+			"tables" :
+			[
+				{
+					"name" : "standard_paint_consumption",
+					"source" : "standard_presets",
+					"table" : "paint_consumption",
+					"read_only" : true,
+					"structure" : "standard_structure"
+				}
+			]
+		},
+
+		"paint_calculation" :
+		{
+			"tables" :
+			[
+				{
+					"name" : "standard_paint_calculation",
+					"source" : "standard_presets",
+					"table" : "paint_calculation",
+					"read_only" : true,
+					"structure" : "standard_structure"
+				},
+				{
+					"name" : "user_paint_calculation",
+					"source" : "user_presets",
+					"table" : "paint_calculation",
+					"read_only" : false,
+					"structure" : "standard_structure"
+				}
+			]
+		},
+
+		"lacquer_calculation" :
+		{
+			"tables" :
+			[
+				{
+					"name" : "standard_lacquer_calculation",
+					"source" : "standard_presets",
+					"table" : "lacquer_calculation",
+					"read_only" : true,
+					"structure" : "standard_structure"
+				},
+				{
+					"name" : "user_lacquer_calculation",
+					"source" : "user_presets",
+					"table" : "lacquer_calculation",
+					"read_only" : false,
+					"structure" : "standard_structure"
+				}
+			]
+		},
+
+		"foil_calculation" :
+		{
+			"tables" :
+			[
+				{
+					"name" : "standard_foil_calculation",
+					"source" : "standard_presets",
+					"table" : "foil_calculation",
+					"read_only" : true,
+					"structure" : "standard_structure"
+				},
+				{
+					"name" : "user_foil_calculation",
+					"source" : "user_presets",
+					"table" : "foil_calculation",
+					"read_only" : false,
+					"structure" : "standard_structure"
+				}
+			]
+		},
+
+		"foil_rolls" :
+		{
+			"tables" :
+			[
+				{
+					"name" : "standard_foil_rolls",
+					"source" : "standard_presets",
+					"table" : "foil_rolls",
+					"read_only" : true,
+					"structure" : "standard_structure"
+				},
+				{
+					"name" : "user_foil_rolls",
+					"source" : "user_presets",
+					"table" : "foil_rolls",
+					"read_only" : false,
+					"structure" : "standard_structure"
+				}
+			]
+		}
+	}
+}
