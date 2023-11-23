@@ -28,12 +28,10 @@ public:
 
 	int getStatus() const;
     bool isReadOnly() const;
-    bool hasPreset(std::string const &) const;
 
 	std::vector<std::string> getPresetNames() const;
     std::vector<std::string> getParamNames() const;
     std::map<std::string, AutoValue> getPreset(std::string const &) const;
-	std::map<std::string, AutoValue> getPresetTemplate() const;
     void createPreset(std::string const &, std::map<std::string, AutoValue> const &);
     void updatePreset(std::string const &, std::map<std::string, AutoValue> const &);
     void removePreset(std::string const &);

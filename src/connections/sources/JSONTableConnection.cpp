@@ -102,7 +102,6 @@ JSONTableConnection::JSONTableConnection(std::string const & structureFileName, 
 JSONTableConnection::~JSONTableConnection() {}
 int JSONTableConnection::getStatus() const { return _status; }
 bool JSONTableConnection::isReadOnly() const { return _readOnly; }
-bool JSONTableConnection::hasPreset(std::string const & name) const { return _presets.find(name) != _presets.end(); }
 
 std::vector<std::string> JSONTableConnection::getPresetNames() const {
 	std::vector<std::string> res;
@@ -125,13 +124,6 @@ std::map<std::string, AutoValue> JSONTableConnection::getPreset(std::string cons
 	for (unsigned i = 0; i < paramCount; ++i)
 		res[paramNames[i]] = values[i];
 
-	return res;
-}
-
-std::map<std::string, AutoValue> JSONTableConnection::getPresetTemplate() const {
-	std::map<std::string, AutoValue> res;
-	for (std::string name : getParamNames())
-		res[name] = NullValue();
 	return res;
 }
 
