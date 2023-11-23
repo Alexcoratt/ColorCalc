@@ -37,7 +37,13 @@ std::map<std::string, AutoValue> PaintDataManager::exportData() const {
 	std::map<std::string, AutoValue> res;
 	auxillary_methods::setMapValue(res, _paintType);
 	auxillary_methods::setMapValue(res, _materialType);
-	auxillary_methods::setMapValue(res, _paintConsumption);
+
+	try {
+		res[_paintConsumption.getName()] = getPaintConsumption();
+	} catch (UndefinedValueException const &) {
+		res[_paintConsumption.getName()];
+	}
+
 	auxillary_methods::setMapValue(res, _divider);
 	auxillary_methods::setMapValue(res, _percentage);
 	auxillary_methods::setMapValue(res, _sheetWidth);
@@ -89,12 +95,11 @@ void PaintDataManager::setMaterialType(std::string const & type) {
 	clearName();
 }
 
-// FIXME returns 0 if _paintConsumption is unset
 double PaintDataManager::getPaintConsumption() const {
 	try {
-		return _paintConsumption;
-	} catch (UndefinedValueException const &) {
 		return _paintConsumptionDispatcher->getPaintConsumption(getPaintType(), getMaterialType());
+	} catch (UndefinedValueException const &) {
+		return _paintConsumption;
 	}
 }
 

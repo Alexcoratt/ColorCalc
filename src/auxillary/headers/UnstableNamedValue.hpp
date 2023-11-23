@@ -39,7 +39,11 @@ public:
 		return *this;
 	}
 
-	bool operator==(T const & value) const { return _value == value; }
+	bool operator==(T const & value) const {
+		if (!_defined)
+			return false;
+		return _value == value;
+	}
 
 	std::string getName() const { return _name; }
 	void setName(std::string const & name) { _name = name; }

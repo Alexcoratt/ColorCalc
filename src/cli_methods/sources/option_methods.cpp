@@ -142,7 +142,7 @@ void com::loadPreset(IDataManager * manager) {
 		std::string presetName = manager->getName();
 		std::cout << "named \"" << presetName << "\" is loaded" << std::endl;
 	} catch (UndefinedValueException const &) {
-		std::cout << "Preset is undefined" << std::endl;
+		std::cout << "is undefined" << std::endl;
 	}
 }
 
