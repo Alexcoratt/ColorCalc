@@ -8,6 +8,8 @@
 
 #include <ITableConnection.hpp>
 #include <JSONTableConnection.hpp>
+#include <TableConnectionManager.hpp>
+
 #include <PaintDataManager.hpp>
 #include <LacquerDataManager.hpp>
 #include <FoilDataManager.hpp>
@@ -31,7 +33,10 @@ namespace fcom = foil_calculation_option_methods;
 namespace from = foil_rolls_option_methods;
 
 int main() {
-	ITableConnection * paintConn = new JSONTableConnection(STRUCTURE_FILE, USER_PRESETS_FILE, "paint_calculation", false);
+	ITableConnection * standardPaintConn = new JSONTableConnection(STRUCTURE_FILE, STANDARD_PRESETS_FILE, "paint_calculation");
+	ITableConnection * userPaintConn = new JSONTableConnection(STRUCTURE_FILE, USER_PRESETS_FILE, "paint_calculation", false);
+	ITableConnection * paintConn = new TableConnectionManager{{standardPaintConn, userPaintConn}};
+
 	ITableConnection * paintConsumptionConn = new JSONTableConnection(STRUCTURE_FILE, STANDARD_PRESETS_FILE, "paint_consumption");
 
 	PaintConsumptionDataManager paintConsumptionManager(paintConsumptionConn);
