@@ -18,7 +18,7 @@
 PaintDataManager::PaintDataManager(ITableConnection * conn, PaintConsumptionDataManager const * paintConsumptionDispatcher) {
 	setConnection(conn);
 	importData(conn->getPresetTemplate());
-	_paintConsumptionDispatcher = paintConsumptionDispatcher;
+	_paintConsumptionManager = paintConsumptionDispatcher;
 }
 
 void PaintDataManager::importData(std::map<std::string, AutoValue> const & params) {
@@ -70,8 +70,8 @@ void PaintDataManager::setName(std::string const & name) { _name = name; }
 void PaintDataManager::clearName() { _name.clear(); }
 std::string PaintDataManager::getName() const { return _name; }
 
-std::vector<std::string> PaintDataManager::getPaintTypes() const { return _paintConsumptionDispatcher->getPaintTypes(); }
-std::vector<std::string> PaintDataManager::getMaterialTypes() const { return _paintConsumptionDispatcher->getMaterialTypes(); }
+std::vector<std::string> PaintDataManager::getPaintTypes() const { return _paintConsumptionManager->getPaintTypes(); }
+std::vector<std::string> PaintDataManager::getMaterialTypes() const { return _paintConsumptionManager->getMaterialTypes(); }
 
 std::string PaintDataManager::getPaintType() const { return _paintType; }
 
@@ -97,7 +97,7 @@ void PaintDataManager::setMaterialType(std::string const & type) {
 
 double PaintDataManager::getPaintConsumption() const {
 	try {
-		return _paintConsumptionDispatcher->getPaintConsumption(getPaintType(), getMaterialType());
+		return _paintConsumptionManager->getPaintConsumption(getPaintType(), getMaterialType());
 	} catch (UndefinedValueException const &) {
 		return _paintConsumption;
 	}

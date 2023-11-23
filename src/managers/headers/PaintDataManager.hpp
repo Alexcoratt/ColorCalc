@@ -11,7 +11,7 @@
 
 class PaintDataManager : public IDataManager {
 private:
-	PaintConsumptionDataManager const * _paintConsumptionDispatcher;
+	PaintConsumptionDataManager const * _paintConsumptionManager;
 	UnstableNamedValue<std::string> _name;
 
 	UnstableNamedValue<std::string> _paintType;
