@@ -9,6 +9,7 @@
 #include <PaintConsumptionDataManager.hpp>
 
 #include <option_methods.hpp>
+#include <auxillary_methods.hpp>
 
 #include <IOption.hpp>
 #include <BaseOptionContainer.hpp>
@@ -17,7 +18,7 @@
 #include <IConfigManager.hpp>
 #include <JSONConfigManager.hpp>
 
-#define CONFIG_FILE "data/config.json"
+#define BASE_CONF "color_calc.conf"
 
 namespace com = common_option_methods;
 namespace pcom = paint_calculation_option_methods;
@@ -26,7 +27,9 @@ namespace fcom = foil_calculation_option_methods;
 namespace from = foil_rolls_option_methods;
 
 int main() {
-	IConfigManager * mgr = new JSONConfigManager(CONFIG_FILE);
+	auto basecfg = auxillary_methods::readBaseConf(BASE_CONF);
+
+	IConfigManager * mgr = new JSONConfigManager(basecfg["config_file"]);
 	auto tableConnections = mgr->getConnections();
 
 	PaintConsumptionDataManager paintConsumptionManager(tableConnections["paint_consumption"]);

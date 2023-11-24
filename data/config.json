@@ -2,18 +2,18 @@
 	"structure_sources" : {
 		"standard_structure" : {
 			"type" : "json",
-			"url" : "./tables_structure.json"
+			"url" : "tables_structure.json"
 		}
 	},
 
 	"preset_sources" : {
 		"standard_presets" : {
 			"type" : "json",
-			"url" : "./standard_presets.json"
+			"url" : "standard_presets.json"
 		},
 		"user_presets" : {
 			"type" : "json",
-			"url" : "./user_presets.json"
+			"url" : "user_presets.json"
 		}
 	},
 
