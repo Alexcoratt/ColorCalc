@@ -2,7 +2,7 @@
 	"structure_sources" : {
 		"standard_structure" : {
 			"type" : "json",
-			"url" : "./tables_structure.json",
+			"url" : "./tables_structure.json"
 		}
 	},
 

@@ -35,7 +35,7 @@ target_link_libraries(${PROJECT_NAME}_lib
 )
 
 file(GLOB CLI_SOURCES "src/cli_methods/sources/*.cpp")
-add_executable(${PROJECT_NAME} src/main.cpp ${CLI_SOURCES})
+add_executable(${PROJECT_NAME} src/test_main.cpp ${CLI_SOURCES})
 target_include_directories(${PROJECT_NAME}
     PUBLIC src/cli_methods/headers
 )
