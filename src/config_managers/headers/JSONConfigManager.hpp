@@ -8,7 +8,7 @@ private:
 	std::map<std::string, ITableConnection *> _connections;
 
 public:
-	JSONConfigManager(std::string const & configFileName);
+	JSONConfigManager(std::string const & configFileName, bool quiet = true);
 	~JSONConfigManager();
 
 	std::map<std::string, ITableConnection *> getConnections() const;

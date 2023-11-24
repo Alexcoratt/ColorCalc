@@ -73,7 +73,7 @@ void setVariant(std::vector<std::string> const & variants, std::function<std::st
 	std::string prompt;
 	AutoValue defaultVariant;
 	try {
-		defaultVariant = getIndex(variants, get());
+		defaultVariant = (unsigned long)getIndex(variants, get());
 	} catch (std::invalid_argument const &) {
 		defaultVariant.clear();
 	} catch (UndefinedValueException const &) {
@@ -83,7 +83,7 @@ void setVariant(std::vector<std::string> const & variants, std::function<std::st
 	if (defaultVariant.isNull())
 		prompt = "Enter index of the variant (default=undefined): ";
 	else
-		prompt = "Enter index of the variant (default=" + std::to_string((std::size_t)defaultVariant + 1) + "): ";
+		prompt = "Enter index of the variant (default=" + std::to_string((unsigned long)defaultVariant + 1) + "): ";
 
 	set(variants[readVariant(prompt, variants)]);
 }

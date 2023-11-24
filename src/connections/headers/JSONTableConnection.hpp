@@ -17,13 +17,14 @@ private:
 
 	int _status;
     bool _readOnly;
+	bool _quiet;
 
-	void download(bool quiet = false);
-	void upload(bool quiet = false);
-	void syncronize(bool quiet = false);
+	void download();
+	void upload();
+	void syncronize();
 
 public:
-	JSONTableConnection(std::string const & structureFileName, std::string const & valuesFileName, std::string const & tableName, bool readOnly = true);
+	JSONTableConnection(std::string const & structureFileName, std::string const & valuesFileName, std::string const & tableName, bool readOnly = true, bool quiet = true);
     ~JSONTableConnection();
 
 	int getStatus() const;

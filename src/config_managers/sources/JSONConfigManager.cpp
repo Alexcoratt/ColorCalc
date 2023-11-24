@@ -41,8 +41,8 @@ private:
 public:
 	TableConnectionData(std::string const & name, std::string const & table, Source const & data, Source const & structure, bool readOnly) : _name(name), _table(table), _data(data), _structure(structure), _readOnly(readOnly) {}
 
-	ITableConnection * getTableConnection(std::string const & baseDir) {
-		return new JSONTableConnection{ baseDir + _structure.getUrl(), baseDir + _data.getUrl(), _table, _readOnly };
+	ITableConnection * getTableConnection(std::string const & baseDir, bool quiet) {
+		return new JSONTableConnection{ baseDir + _structure.getUrl(), baseDir + _data.getUrl(), _table, _readOnly, quiet };
 	}
 };
 
@@ -69,12 +69,12 @@ std::map<std::string, std::vector<TableConnectionData>> getConnectionData(nlohma
 	return res;
 }
 
-std::map<std::string, ITableConnection *> getTableConnections(std::map<std::string, std::vector<TableConnectionData>> const & connectionData, std::string const & baseDir) {
+std::map<std::string, ITableConnection *> getTableConnections(std::map<std::string, std::vector<TableConnectionData>> const & connectionData, std::string const & baseDir, bool quiet) {
 	std::map<std::string, ITableConnection *> res;
 	for (auto it = connectionData.begin(); it != connectionData.end(); ++it) {
 		std::vector<ITableConnection *> conns;
 		for (auto data : it->second) {
-			ITableConnection * conn = data.getTableConnection(baseDir);
+			ITableConnection * conn = data.getTableConnection(baseDir, quiet);
 			conns.push_back(conn);
 			releasedConnections.push_back(conn);
 		}
@@ -86,7 +86,7 @@ std::map<std::string, ITableConnection *> getTableConnections(std::map<std::stri
 	return res;
 }
 
-JSONConfigManager::JSONConfigManager(std::string const & configFileName) {
+JSONConfigManager::JSONConfigManager(std::string const & configFileName, bool quiet) {
 	std::ifstream confFile(configFileName);
 	nlohmann::json const conf = nlohmann::json::parse(confFile);
 	confFile.close();
@@ -97,7 +97,7 @@ JSONConfigManager::JSONConfigManager(std::string const & configFileName) {
 		getSources(conf["structure_sources"])
 	);
 
-	_connections = getTableConnections(connectionData, getDir(configFileName));
+	_connections = getTableConnections(connectionData, getDir(configFileName), quiet);
 }
 
 JSONConfigManager::~JSONConfigManager() {

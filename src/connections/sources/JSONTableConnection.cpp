@@ -12,9 +12,9 @@
 #include "PresetAlreadyExistsException.hpp"
 #include "PresetDoesNotExistException.hpp"
 
-void JSONTableConnection::download(bool quiet) {
+void JSONTableConnection::download() {
 	try {
-		if (!quiet)
+		if (!_quiet)
 			std::cout << "Trying to download from " << _valuesFileName << ':' << _tableName << '\t';
 
 		std::ifstream structureFile(_structureFileName);
@@ -44,7 +44,7 @@ void JSONTableConnection::download(bool quiet) {
 
 		_status = 0;
 
-		if (!quiet)
+		if (!_quiet)
 			std::cout << "OK\n";
 	} catch (nlohmann::json_abi_v3_11_2::detail::parse_error const & err) {
 		_status = -1;
@@ -52,8 +52,8 @@ void JSONTableConnection::download(bool quiet) {
 	}
 }
 
-void JSONTableConnection::upload(bool quiet) {
-	if (!quiet)
+void JSONTableConnection::upload() {
+	if (!_quiet)
 		std::cout << "Trying to upload to " << _valuesFileName << ':' << _tableName << '\t';
 	if (isReadOnly())
 		throw std::runtime_error("connection is read-only");
@@ -85,18 +85,19 @@ void JSONTableConnection::upload(bool quiet) {
 	ofile << data.dump(1) << '\n';
 	ofile.close();
 
-	if (!quiet)
+	if (!_quiet)
 		std::cout << "OK\n";
 }
 
-void JSONTableConnection::syncronize(bool quiet) {
-	upload(quiet);
-	download(quiet);
+void JSONTableConnection::syncronize() {
+	upload();
+	download();
 }
 
-JSONTableConnection::JSONTableConnection(std::string const & structureFileName, std::string const & valueFileName, std::string const & tableName, bool readOnly) : _structureFileName(structureFileName), _valuesFileName(valueFileName), _tableName(tableName) {
-	download();
+JSONTableConnection::JSONTableConnection(std::string const & structureFileName, std::string const & valueFileName, std::string const & tableName, bool readOnly, bool quiet) : _structureFileName(structureFileName), _valuesFileName(valueFileName), _tableName(tableName) {
 	_readOnly = readOnly;
+	_quiet = quiet;
+	download();
 }
 
 JSONTableConnection::~JSONTableConnection() {}

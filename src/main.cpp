@@ -28,8 +28,12 @@ namespace from = foil_rolls_option_methods;
 
 int main() {
 	auto basecfg = auxillary_methods::readBaseConf(BASE_CONF);
+	bool quiet = true;
+	try {
+		quiet = basecfg.at("quiet") == "true";
+	} catch (std::out_of_range const &) {}
 
-	IConfigManager * mgr = new JSONConfigManager(basecfg["config_file"]);
+	IConfigManager * mgr = new JSONConfigManager(basecfg.at("config_file"), quiet);
 	auto tableConnections = mgr->getConnections();
 
 	PaintConsumptionDataManager paintConsumptionManager(tableConnections["paint_consumption"]);
@@ -450,6 +454,8 @@ int main() {
 		{'f', &foilCalculation},
 		{'r', &foilRolls}
 	}, true);
+
+	std::cout << "Hello user!\nType h to get help" << std::endl;
 	root.exec(nullptr, std::cin, std::cout, "\n");
 
 	delete mgr;
