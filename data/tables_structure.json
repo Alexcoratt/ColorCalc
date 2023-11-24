@@ -1,0 +1,47 @@
+{
+	"paint_consumption" :
+	[
+		"coated_paper",
+		"label_paper",
+		"paperboard",
+		"non_absorbent_material"
+	],
+
+	"paint_calculation" :
+	[
+		"paint_type",
+		"material_type",
+		"paint_consumption",
+		"divider",
+		"percentage",
+		"sheet_width",
+		"sheet_length",
+		"circulation",
+		"paint_reserve"
+	],
+
+	"lacquer_calculation" :
+	[
+		"percentage",
+		"lacquer_consumption",
+		"sheet_length",
+		"sheet_width",
+		"circulation"
+	],
+
+	"foil_calculation" :
+	[
+		"circulation",
+		"length",
+		"width",
+		"sheet_number",
+		"length_reserve",
+		"width_reserve"
+	],
+
+	"foil_rolls" :
+	[
+		"length",
+		"width"
+	]
+}
