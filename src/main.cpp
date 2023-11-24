@@ -1,11 +1,3 @@
-#include <iostream>
-#include <exception>
-#include <functional>
-#include <fstream>
-#include <stdexcept>
-#include <string>
-#include <vector>
-
 #include <ITableConnection.hpp>
 #include <JSONTableConnection.hpp>
 #include <TableConnectionManager.hpp>
@@ -22,9 +14,10 @@
 #include <BaseOptionContainer.hpp>
 #include <CustomLeafOption.hpp>
 
-#define STRUCTURE_FILE "data/tables_structure.json"
-#define STANDARD_PRESETS_FILE "data/standard_presets.json"
-#define USER_PRESETS_FILE "data/user_presets.json"
+#include <IConfigManager.hpp>
+#include <JSONConfigManager.hpp>
+
+#define CONFIG_FILE "data/config.json"
 
 namespace com = common_option_methods;
 namespace pcom = paint_calculation_option_methods;
@@ -33,14 +26,14 @@ namespace fcom = foil_calculation_option_methods;
 namespace from = foil_rolls_option_methods;
 
 int main() {
-	ITableConnection * standardPaintConn = new JSONTableConnection(STRUCTURE_FILE, STANDARD_PRESETS_FILE, "paint_calculation");
-	ITableConnection * userPaintConn = new JSONTableConnection(STRUCTURE_FILE, USER_PRESETS_FILE, "paint_calculation", false);
-	ITableConnection * paintConn = new TableConnectionManager{{standardPaintConn, userPaintConn}};
+	IConfigManager * mgr = new JSONConfigManager(CONFIG_FILE);
+	auto tableConnections = mgr->getConnections();
 
-	ITableConnection * paintConsumptionConn = new JSONTableConnection(STRUCTURE_FILE, STANDARD_PRESETS_FILE, "paint_consumption");
-
-	PaintConsumptionDataManager paintConsumptionManager(paintConsumptionConn);
-	PaintDataManager paintCalculationManager(paintConn, &paintConsumptionManager);
+	PaintConsumptionDataManager paintConsumptionManager(tableConnections["paint_consumption"]);
+	PaintDataManager paintCalculationManager(tableConnections["paint_calculation"], &paintConsumptionManager);
+	LacquerDataManager lacquerCalculationManager(tableConnections["lacquer_calculation"]);
+	FoilRollsDataManager foilRollsDataManager(tableConnections["foil_rolls"]);
+	FoilDataManager foilDataManager(tableConnections["foil_calculation"], &foilRollsDataManager);
 
 	CustomLeafOption<PaintDataManager *> writePaintParametersOption(
 		"write values of parameters",
@@ -173,8 +166,6 @@ int main() {
 		{'-', &removePaintPresetOption}
 	});
 
-	ITableConnection * lacquerConnection = new JSONTableConnection(STRUCTURE_FILE, STANDARD_PRESETS_FILE, "lacquer_calculation");
-	LacquerDataManager lacquerCalculationManager(lacquerConnection);
 
 	CustomLeafOption<LacquerDataManager *> writeLacquerParametersOption(
 		"write values of parameters",
@@ -275,8 +266,6 @@ int main() {
 		{'-', &removeLacquerPresetOption}
 	});
 
-	ITableConnection * foilRollsConnection = new JSONTableConnection(STRUCTURE_FILE, STANDARD_PRESETS_FILE, "foil_rolls");
-	FoilRollsDataManager foilRollsDataManager(foilRollsConnection);
 
 	CustomLeafOption<FoilRollsDataManager *> setFoilRollLengthOption(
 		"set roll length",
@@ -336,9 +325,6 @@ int main() {
 		{'/', &updateFoilRollsPresetOption},
 		{'-', &removeFoilRollsPresetOption}
 	});
-
-	ITableConnection * foilConnection = new JSONTableConnection(STRUCTURE_FILE, STANDARD_PRESETS_FILE, "foil_calculation");
-	FoilDataManager foilDataManager(foilConnection, &foilRollsDataManager);
 
 	CustomLeafOption<FoilDataManager *> setFoilCirculationOption(
 		"set circulation",
@@ -462,6 +448,8 @@ int main() {
 		{'r', &foilRolls}
 	}, true);
 	root.exec(nullptr, std::cin, std::cout, "\n");
+
+	delete mgr;
 
 	return 0;
 }

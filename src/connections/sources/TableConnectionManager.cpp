@@ -7,6 +7,8 @@
 
 TableConnectionManager::TableConnectionManager(std::vector<ITableConnection *> const & connections) : _connections(connections) {}
 
+std::vector<ITableConnection *> TableConnectionManager::getConnections() { return _connections; }
+
 int TableConnectionManager::getStatus() const {
 	for (auto const * conn : _connections)
 		if (!conn->getStatus())

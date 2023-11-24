@@ -10,6 +10,8 @@ private:
 public:
 	TableConnectionManager(std::vector<ITableConnection *> const &);
 
+	std::vector<ITableConnection *> getConnections();
+
 	int getStatus() const;
 	bool isReadOnly() const;
 

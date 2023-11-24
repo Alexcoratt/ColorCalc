@@ -1,6 +1,7 @@
 #ifndef I_TABLE_CONNECTION_HPP
 #define I_TABLE_CONNECTION_HPP
 
+#include <algorithm>
 #include <cstddef>
 #include <vector>
 #include <string>
