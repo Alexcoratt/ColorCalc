@@ -29,24 +29,13 @@ namespace auxillary_methods {
 		}
 	}
 
-	inline std::map<std::string, std::string> readBaseConf(std::string const & filename) {
-		std::map<std::string, std::string> res;
-		std::ifstream file(filename);
+	inline std::string getDir(std::string const & url, char divider = '/') {
+		if (!url.size())
+			return "";
 
-		if (file.fail()) {
-			file.close();
-			throw std::runtime_error("Critical error: Base config file is not found");
-		}
-
-		while(!file.eof()) {
-			std::string key;
-			std::string value;
-			std::getline(file, key, '=');
-			std::getline(file, value);
-			res[key] = value;
-		}
-		file.close();
-		return res;
+		std::size_t right = url.size();
+		for (; right != 0 && url.at(right - 1) != divider; --right);
+		return url.substr(0, right);
 	}
 
 }

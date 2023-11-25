@@ -17,6 +17,7 @@
 
 #include <IConfigManager.hpp>
 #include <JSONConfigManager.hpp>
+#include <BaseConfigManager.hpp>
 
 #define BASE_CONF "color_calc.conf"
 
@@ -26,14 +27,24 @@ namespace lcom = lacquer_calculation_option_methods;
 namespace fcom = foil_calculation_option_methods;
 namespace from = foil_rolls_option_methods;
 
-int main() {
-	auto basecfg = auxillary_methods::readBaseConf(BASE_CONF);
-	bool quiet = true;
-	try {
-		quiet = basecfg.at("quiet") == "true";
-	} catch (std::out_of_range const &) {}
+int main(int argc, char ** argv) {
+	char const * baseConfFileName;
+	if (argc > 1)
+		baseConfFileName = argv[1];
+	else
+		baseConfFileName = BASE_CONF;
 
-	IConfigManager * mgr = new JSONConfigManager(basecfg.at("config_file"), quiet);
+
+	IConfigManager * mgr;
+	try {
+		BaseConfigManager baseConf{baseConfFileName};
+		auto baseDir = auxillary_methods::getDir(baseConfFileName, baseConf.getPlatform() == "windows" ? '\\' : '/');
+		mgr = new JSONConfigManager(baseDir + baseConf.getConfigFileName(), baseConf.getQuiet());
+	} catch (std::exception const & err) {
+		std::cerr << err.what() << '\n';
+		return -1;
+	}
+
 	auto tableConnections = mgr->getConnections();
 
 	PaintConsumptionDataManager paintConsumptionManager(tableConnections["paint_consumption"]);
@@ -448,14 +459,14 @@ int main() {
 		{'R', &clearFoilDataOption}
 	});
 
-	BaseOptionContainer root("root", BASE_HELP_TEXT, {
+	BaseOptionContainer root("root container", BASE_HELP_TEXT, {
 		{'p', &paintCalculation},
 		{'l', &lacquerCalculation},
 		{'f', &foilCalculation},
 		{'r', &foilRolls}
 	}, true);
 
-	std::cout << "Hello user!\nType h to get help" << std::endl;
+	std::cout << "Hello user!\nWelcome to ColorCalc_CLI\n";
 	root.exec(nullptr, std::cin, std::cout, "\n");
 
 	delete mgr;

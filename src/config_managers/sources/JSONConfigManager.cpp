@@ -5,6 +5,7 @@
 #include <JSONConfigManager.hpp>
 #include <JSONTableConnection.hpp>
 #include <TableConnectionManager.hpp>
+#include <auxillary_methods.hpp>
 
 static std::list<ITableConnection *> releasedConnections;
 
@@ -20,15 +21,6 @@ public:
 
 	std::string getUrl() const { return _url; }
 };
-
-std::string getDir(std::string const & url) {
-	if (!url.size())
-		return "";
-
-	std::size_t right = url.size();
-	for (; right != 0 && url.at(right - 1) != '/'; --right);
-	return url.substr(0, right);
-}
 
 struct TableConnectionData {
 private:
@@ -97,7 +89,7 @@ JSONConfigManager::JSONConfigManager(std::string const & configFileName, bool qu
 		getSources(conf["structure_sources"])
 	);
 
-	_connections = getTableConnections(connectionData, getDir(configFileName), quiet);
+	_connections = getTableConnections(connectionData, auxillary_methods::getDir(configFileName), quiet);
 }
 
 JSONConfigManager::~JSONConfigManager() {
