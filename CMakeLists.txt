@@ -10,17 +10,29 @@ add_subdirectory(modules/DynValues)
 set(JSON_BuildTests OFF CACHE INTERNAL "")
 add_subdirectory(modules/json)
 
-file(GLOB CONNECTION_SOURCES "src/connections/sources/*.cpp")
-file(GLOB MANAGER_SOURCES "src/managers/sources/*.cpp")
-file(GLOB VALUE_SOURCES "src/values/sources/*.cpp")
-file(GLOB CONFIG_MANAGER_SOURCES "src/config_managers/sources/*.cpp")
+#file(GLOB CONNECTION_SOURCES "src/connections/sources/*.cpp")
+#file(GLOB CONNECTION_HEADERS "src/connections/headers/*.hpp")
+file(GLOB CONNECTIONS "src/connections/*/*.?pp")
+
+#file(GLOB MANAGER_SOURCES "src/managers/sources/*.cpp")
+#file(GLOB MANAGER_HEADERS "src/managers/headers/*.hpp")
+file(GLOB MANAGERS "src/managers/*/*.?pp")
+
+#file(GLOB VALUE_SOURCES "src/values/sources/*.cpp")
+#file(GLOB VALUE_HEADERS "src/values/headers/*.hpp")
+file(GLOB VALUES "src/values/*/*.?pp")
+
+#file(GLOB CONFIG_MANAGER_SOURCES "src/config_managers/sources/*.cpp")
+#file(GLOB CONFIG_MANAGER_HEADERS "src/config_managers/headers/*.hpp")
+file(GLOB CONFIG_MANAGERS "src/config_managers/*/*.?pp")
 
 add_library(${PROJECT_NAME}_lib STATIC
-    ${CONNECTION_SOURCES}
-    ${MANAGER_SOURCES}
-    ${VALUE_SOURCES}
-    ${CONFIG_MANAGER_SOURCES}
+    ${CONNECTIONS}
+    ${MANAGERS}
+    ${VALUES}
+    ${CONFIG_MANAGERS}
 )
+
 target_include_directories(${PROJECT_NAME}_lib
     PUBLIC src/connections/headers
     PUBLIC src/managers/headers
@@ -29,8 +41,9 @@ target_include_directories(${PROJECT_NAME}_lib
     PUBLIC src/config_managers/headers
     PUBLIC src/exceptions
 )
+
 target_link_libraries(${PROJECT_NAME}_lib
-    PUBLIC nlohmann_json::nlohmann_json
+    PRIVATE nlohmann_json::nlohmann_json
     PUBLIC DynValues_lib
 )
 
@@ -40,8 +53,8 @@ target_include_directories(${PROJECT_NAME}
     PUBLIC src/cli_methods/headers
 )
 target_link_libraries(${PROJECT_NAME}
-    PUBLIC SimpleCLI_lib
-    PUBLIC ${PROJECT_NAME}_lib
+    PRIVATE SimpleCLI_lib
+    PRIVATE ${PROJECT_NAME}_lib
 )
 
 target_link_options(${PROJECT_NAME} PRIVATE -static-libgcc -static-libstdc++)
