@@ -21,7 +21,9 @@ std::vector<std::string> PaintConsumptionDataManager::getMaterialTypes() const {
 
 double PaintConsumptionDataManager::getPaintConsumption(std::string const & paintType, std::string const & materialType) const {
 	try {
-		return getConnection()->getPreset(paintType).at(materialType);
+		auto value = getConnection()->getPreset(paintType).at(materialType);
+		if (!value.isNull())
+			return value;
 	} catch (std::out_of_range const &) {
 	} catch (PresetDoesNotExistException const &) {}
 	throw UndefinedValueException("paint consumption of \"" + paintType + "\" with \"" + materialType + "\"");
