@@ -34,6 +34,7 @@ public:
 
 
 	virtual void loadPreset(std::string const & name) {
+		clear();
 		importData(getConnection()->getPreset(name));
 		setName(name);
 	};
