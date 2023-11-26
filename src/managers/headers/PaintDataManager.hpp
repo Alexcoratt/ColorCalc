@@ -41,30 +41,39 @@ public:
 
 	std::string getPaintType() const;
 	void setPaintType(std::string const &);
+	void clearPaintType();
 
 	std::string getMaterialType() const;
 	void setMaterialType(std::string const &);
+	void clearMaterialType();
 
 	double getPaintConsumption() const;
 	void setPaintConsumption(double);
+	void clearPaintConsumption();
 
 	double getDivider() const;
 	void setDivider(double);
+	void clearDivider();
 
 	double getPercentage() const;
 	void setPercentage(double);
+	void clearPercentage();
 
 	double getSheetWidth() const;
 	void setSheetWidth(double);
+	void clearSheetWidth();
 
 	double getSheetLength() const;
 	void setSheetLength(double);
+	void clearSheetLength();
 
 	std::size_t getCirculation() const;
 	void setCirculation(std::size_t const &);
+	void clearCirculation();
 
 	double getPaintReserve() const;
 	void setPaintReserve(double);
+	void clearPaintReserve();
 
 	double calculate() const;
 };

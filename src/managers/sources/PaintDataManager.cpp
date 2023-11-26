@@ -19,6 +19,7 @@ PaintDataManager::PaintDataManager(ITableConnection * conn, PaintConsumptionData
 	setConnection(conn);
 	importData(conn->getPresetTemplate());
 	_paintConsumptionManager = paintConsumptionDispatcher;
+	_name.setName("preset name");
 }
 
 void PaintDataManager::importData(std::map<std::string, AutoValue> const & params) {
@@ -54,7 +55,7 @@ std::map<std::string, AutoValue> PaintDataManager::exportData() const {
 }
 
 void PaintDataManager::clear() {
-	clearName();
+	_name.clear();
 	_paintType.clear();
 	_materialType.clear();
 	_paintConsumption.clear();
@@ -81,7 +82,16 @@ void PaintDataManager::setPaintType(std::string const & type) {
 
 	_paintType = type;
 	_paintConsumption.clear();
-	clearName();
+	_name.clear();
+}
+
+void PaintDataManager::clearPaintType() {
+	if (!_paintType.isDefined())
+		return;
+
+	_paintType.clear();
+	_paintConsumption.clear();
+	_name.clear();
 }
 
 std::string PaintDataManager::getMaterialType() const { return _materialType; }
@@ -92,7 +102,16 @@ void PaintDataManager::setMaterialType(std::string const & type) {
 
 	_materialType = type;
 	_paintConsumption.clear();
-	clearName();
+	_name.clear();
+}
+
+void PaintDataManager::clearMaterialType() {
+	if (!_materialType.isDefined())
+		return;
+
+	_materialType.clear();
+	_paintConsumption.clear();
+	_name.clear();
 }
 
 double PaintDataManager::getPaintConsumption() const {
@@ -111,9 +130,18 @@ void PaintDataManager::setPaintConsumption(double value) {
 	_paintConsumption = value;
 	_paintType.clear();
 	_materialType.clear();
-	clearName();
+	_name.clear();
 }
 
+void PaintDataManager::clearPaintConsumption() {
+	if (!_paintConsumption.isDefined())
+		return;
+
+	_paintConsumption.clear();
+	_paintType.clear();
+	_materialType.clear();
+	_name.clear();
+}
 
 double PaintDataManager::getDivider() const { return _divider; }
 void PaintDataManager::setDivider(double value) {
@@ -121,7 +149,15 @@ void PaintDataManager::setDivider(double value) {
 		return;
 
 	_divider = value;
-	clearName();
+	_name.clear();
+}
+
+void PaintDataManager::clearDivider() {
+	if (!_divider.isDefined())
+		return;
+
+	_divider.clear();
+	_name.clear();
 }
 
 double PaintDataManager::getPercentage() const { return _percentage; }
@@ -130,7 +166,15 @@ void PaintDataManager::setPercentage(double value) {
 		return;
 
 	_percentage = value;
-	clearName();
+	_name.clear();
+}
+
+void PaintDataManager::clearPercentage() {
+	if (!_percentage.isDefined())
+		return;
+
+	_percentage.clear();
+	_name.clear();
 }
 
 double PaintDataManager::getSheetWidth() const { return _sheetWidth; }
@@ -139,7 +183,15 @@ void PaintDataManager::setSheetWidth(double value) {
 		return;
 
 	_sheetWidth = value;
-	clearName();
+	_name.clear();
+}
+
+void PaintDataManager::clearSheetWidth() {
+	if (!_sheetWidth.isDefined())
+		return;
+
+	_sheetWidth.clear();
+	_name.clear();
 }
 
 double PaintDataManager::getSheetLength() const { return _sheetLength; }
@@ -148,7 +200,15 @@ void PaintDataManager::setSheetLength(double value) {
 		return;
 
 	_sheetLength = value;
-	clearName();
+	_name.clear();
+}
+
+void PaintDataManager::clearSheetLength() {
+	if (!_sheetLength.isDefined())
+		return;
+
+	_sheetLength.clear();
+	_name.clear();
 }
 
 std::size_t PaintDataManager::getCirculation() const { return _circulation; }
@@ -157,7 +217,15 @@ void PaintDataManager::setCirculation(std::size_t const & value) {
 		return;
 
 	_circulation = value;
-	clearName();
+	_name.clear();
+}
+
+void PaintDataManager::clearCirculation() {
+	if (!_circulation.isDefined())
+		return;
+
+	_circulation.clear();
+	_name.clear();
 }
 
 double PaintDataManager::getPaintReserve() const { return _paintReserve; }
@@ -166,7 +234,15 @@ void PaintDataManager::setPaintReserve(double value) {
 		return;
 
 	_paintReserve = value;
-	clearName();
+	_name.clear();
+}
+
+void PaintDataManager::clearPaintReserve() {
+	if (!_paintReserve.isDefined())
+		return;
+
+	_paintReserve.clear();
+	_name.clear();
 }
 
 double PaintDataManager::calculate() const {
