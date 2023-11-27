@@ -54,12 +54,28 @@ void LacquerDataManager::setPercentage(double value) {
 	_name.clear();
 }
 
+void LacquerDataManager::clearPercentage() {
+	if (!_percentage.isDefined())
+		return;
+
+	_percentage.clear();
+	_name.clear();
+}
+
 double LacquerDataManager::getLacquerConsumption() const { return _lacquerConsumption; }
 void LacquerDataManager::setLacquerConsumption(double value) {
 	if (_lacquerConsumption == value)
 		return;
 
 	_lacquerConsumption = value;
+	_name.clear();
+}
+
+void LacquerDataManager::clearLacquerConsumption() {
+	if (!_lacquerConsumption.isDefined())
+		return;
+
+	_lacquerConsumption.clear();
 	_name.clear();
 }
 
@@ -72,6 +88,14 @@ void LacquerDataManager::setSheetLength(double value) {
 	_name.clear();
 }
 
+void LacquerDataManager::clearSheetLength() {
+	if (!_sheetLength.isDefined())
+		return;
+
+	_sheetLength.clear();
+	_name.clear();
+}
+
 double LacquerDataManager::getSheetWidth() const { return _sheetWidth; }
 void LacquerDataManager::setSheetWidth(double value) {
 	if (_sheetWidth == value)
@@ -81,12 +105,28 @@ void LacquerDataManager::setSheetWidth(double value) {
 	_name.clear();
 }
 
+void LacquerDataManager::clearSheetWidth() {
+	if (!_sheetWidth.isDefined())
+		return;
+
+	_sheetWidth.clear();
+	_name.clear();
+}
+
 std::size_t LacquerDataManager::getCirculation() const { return _circulation; }
 void LacquerDataManager::setCirculation(std::size_t value) {
 	if (_circulation == value)
 		return;
 
 	_circulation = value;
+	_name.clear();
+}
+
+void LacquerDataManager::clearCirculation() {
+	if (!_circulation.isDefined())
+		return;
+
+	_circulation.clear();
 	_name.clear();
 }
 

@@ -32,18 +32,23 @@ public:
 
 	double getPercentage() const;
 	void setPercentage(double);
+	void clearPercentage();
 
 	double getLacquerConsumption() const;
 	void setLacquerConsumption(double);
+	void clearLacquerConsumption();
 
 	double getSheetLength() const;
 	void setSheetLength(double);
+	void clearSheetLength();
 
 	double getSheetWidth() const;
 	void setSheetWidth(double);
+	void clearSheetWidth();
 
 	std::size_t getCirculation() const;
 	void setCirculation(std::size_t);
+	void clearCirculation();
 };
 
 #endif
