@@ -38,7 +38,7 @@ std::map<std::string, AutoValue> FoilDataManager::exportData() const {
 }
 
 void FoilDataManager::clear() {
-	clearName();
+	_name.clear();
 	_circulation.clear();
 	_length.clear();
 	_width.clear();
@@ -57,7 +57,15 @@ void FoilDataManager::setCirculation(std::size_t const & value) {
 		return;
 
 	_circulation = value;
-	clearName();
+	_name.clear();
+}
+
+void FoilDataManager::clearCirculation() {
+	if (!_circulation.isDefined())
+		return;
+
+	_circulation.clear();
+	_name.clear();
 }
 
 double FoilDataManager::getLength() const { return _length; }
@@ -66,7 +74,15 @@ void FoilDataManager::setLength(double value) {
 		return;
 
 	_length = value;
-	clearName();
+	_name.clear();
+}
+
+void FoilDataManager::clearLength() {
+	if (!_length.isDefined())
+		return;
+
+	_length.clear();
+	_name.clear();
 }
 
 double FoilDataManager::getWidth() const { return _width; }
@@ -75,7 +91,15 @@ void FoilDataManager::setWidth(double value) {
 		return;
 
 	_width = value;
-	clearName();
+	_name.clear();
+}
+
+void FoilDataManager::clearWidth() {
+	if (!_width.isDefined())
+		return;
+
+	_width.clear();
+	_name.clear();
 }
 
 std::size_t FoilDataManager::getSheetNumber() const { return _sheetNumber; }
@@ -84,7 +108,15 @@ void FoilDataManager::setSheetNumber(std::size_t const & value) {
 		return;
 
 	_sheetNumber = value;
-	clearName();
+	_name.clear();
+}
+
+void FoilDataManager::clearSheetNumber() {
+	if (!_sheetNumber.isDefined())
+		return;
+
+	_sheetNumber.clear();
+	_name.clear();
 }
 
 double FoilDataManager::getLengthReserve() const { return _lengthReserve; }
@@ -93,7 +125,15 @@ void FoilDataManager::setLengthReserve(double value) {
 		return;
 
 	_lengthReserve = value;
-	clearName();
+	_name.clear();
+}
+
+void FoilDataManager::clearLengthReserve() {
+	if (!_lengthReserve.isDefined())
+		return;
+
+	_lengthReserve.clear();
+	_name.clear();
 }
 
 double FoilDataManager::getWidthReserve() const { return _widthReserve; }
@@ -102,7 +142,15 @@ void FoilDataManager::setWidthReserve(double value) {
 		return;
 
 	_widthReserve = value;
-	clearName();
+	_name.clear();
+}
+
+void FoilDataManager::clearWidthReserve() {
+	if (!_widthReserve.isDefined())
+		return;
+
+	_widthReserve.clear();
+	_name.clear();
 }
 
 double FoilDataManager::calculate() const { return (getLength() + getLengthReserve()) * getCirculation() / getSheetNumber() / 1000; }
