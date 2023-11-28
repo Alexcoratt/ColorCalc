@@ -96,10 +96,10 @@ public:
 		auto leftRoll = _conn->getPreset(leftName);
 		auto rightRoll = _conn->getPreset(rightName);
 
-		double lLength = std::stod(leftRoll.at("length"));
+		double lLength = std::stod(leftRoll.at("length")) * 1000;
 		double lWidth = std::stod(leftRoll.at("width"));
 
-		double rLength = std::stod(rightRoll.at("length"));
+		double rLength = std::stod(rightRoll.at("length")) * 1000;
 		double rWidth = std::stod(rightRoll.at("width"));
 
 		double lWaste = getWaste(lLength, lWidth, _minLength, _minWidth);

@@ -4,8 +4,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 project(ColorCalc CXX)
 
-add_subdirectory(modules/SimpleCLI)
-add_subdirectory(modules/DynValues)
+add_subdirectory(modules/simplecli)
+add_subdirectory(modules/dynvalues)
 
 set(JSON_BuildTests OFF CACHE INTERNAL "")
 add_subdirectory(modules/json)
@@ -50,7 +50,7 @@ target_link_libraries(${PROJECT_NAME}_lib
 file(GLOB CLI_SOURCES "src/cli_methods/sources/*.cpp")
 add_executable(${PROJECT_NAME} src/main.cpp ${CLI_SOURCES})
 target_include_directories(${PROJECT_NAME}
-    PUBLIC src/cli_methods/headers
+    PRIVATE src/cli_methods/headers
 )
 target_link_libraries(${PROJECT_NAME}
     PRIVATE SimpleCLI_lib

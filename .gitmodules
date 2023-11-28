@@ -1,3 +1,9 @@
 [submodule "json"]
 	path = modules/json
 	url = https://github.com/nlohmann/json
+[submodule "modules/dynvalues"]
+	path = modules/dynvalues
+	url = https://github.com/Alexcoratt/DynValues
+[submodule "modules/simplecli"]
+	path = modules/simplecli
+	url = https://github.com/Alexcoratt/SimpleCLI
