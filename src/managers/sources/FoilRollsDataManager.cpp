@@ -24,7 +24,7 @@ std::map<std::string, AutoValue> FoilRollsDataManager::exportData() const {
 }
 
 void FoilRollsDataManager::clear() {
-	clearName();
+	_name.clear();
 	_length.clear();
 	_width.clear();
 }
@@ -41,7 +41,15 @@ void FoilRollsDataManager::setLength(double value) {
 		return;
 
 	_length = value;
-	clearName();
+	_name.clear();
+}
+
+void FoilRollsDataManager::clearLength() {
+	if (!_length.isDefined())
+		return;
+
+	_length.clear();
+	_name.clear();
 }
 
 double FoilRollsDataManager::getWidth() const { return _width; }
@@ -50,7 +58,15 @@ void FoilRollsDataManager::setWidth(double value) {
 		return;
 
 	_width = value;
-	clearName();
+	_name.clear();
+}
+
+void FoilRollsDataManager::clearWidth() {
+	if (!_width.isDefined())
+		return;
+
+	_width.clear();
+	_name.clear();
 }
 
 // class created for comparing foil rolls using std::sort

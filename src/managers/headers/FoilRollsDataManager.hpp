@@ -27,9 +27,11 @@ public:
 
 	double getLength() const;
 	void setLength(double);
+	void clearLength();
 
 	double getWidth() const;
 	void setWidth(double);
+	void clearWidth();
 
 	std::vector<std::string> getSuitableFoilRolls(double minLength, double minWidth) const;
 };
