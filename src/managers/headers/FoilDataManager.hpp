@@ -34,8 +34,8 @@ public:
 
 	double calculate() const;
 
-	std::size_t getCirculation() const;
-	void setCirculation(std::size_t const &);
+	unsigned long getCirculation() const;
+	void setCirculation(unsigned long const &);
 	void clearCirculation();
 
 	double getLength() const;
@@ -46,8 +46,8 @@ public:
 	void setWidth(double);
 	void clearWidth();
 
-	std::size_t getSheetNumber() const;
-	void setSheetNumber(std::size_t const &);
+	unsigned long getSheetNumber() const;
+	void setSheetNumber(unsigned long const &);
 	void clearSheetNumber();
 
 	double getLengthReserve() const;

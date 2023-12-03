@@ -46,8 +46,8 @@ public:
 	void setSheetWidth(double);
 	void clearSheetWidth();
 
-	std::size_t getCirculation() const;
-	void setCirculation(std::size_t);
+	unsigned long getCirculation() const;
+	void setCirculation(unsigned long);
 	void clearCirculation();
 };
 

@@ -51,8 +51,8 @@ void FoilDataManager::setName(std::string const & name) { _name = name; }
 void FoilDataManager::clearName() { _name.clear(); }
 std::string FoilDataManager::getName() const { return _name; }
 
-std::size_t FoilDataManager::getCirculation() const { return _circulation; }
-void FoilDataManager::setCirculation(std::size_t const & value) {
+unsigned long FoilDataManager::getCirculation() const { return _circulation; }
+void FoilDataManager::setCirculation(unsigned long const & value) {
 	if (_circulation == value)
 		return;
 
@@ -102,8 +102,8 @@ void FoilDataManager::clearWidth() {
 	_name.clear();
 }
 
-std::size_t FoilDataManager::getSheetNumber() const { return _sheetNumber; }
-void FoilDataManager::setSheetNumber(std::size_t const & value) {
+unsigned long FoilDataManager::getSheetNumber() const { return _sheetNumber; }
+void FoilDataManager::setSheetNumber(unsigned long const & value) {
 	if (_sheetNumber == value)
 		return;
 

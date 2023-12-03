@@ -113,8 +113,8 @@ void LacquerDataManager::clearSheetWidth() {
 	_name.clear();
 }
 
-std::size_t LacquerDataManager::getCirculation() const { return _circulation; }
-void LacquerDataManager::setCirculation(std::size_t value) {
+unsigned long LacquerDataManager::getCirculation() const { return _circulation; }
+void LacquerDataManager::setCirculation(unsigned long value) {
 	if (_circulation == value)
 		return;
 

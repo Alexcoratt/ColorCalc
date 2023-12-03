@@ -67,8 +67,8 @@ public:
 	void setSheetLength(double);
 	void clearSheetLength();
 
-	std::size_t getCirculation() const;
-	void setCirculation(std::size_t const &);
+	unsigned long getCirculation() const;
+	void setCirculation(unsigned long const &);
 	void clearCirculation();
 
 	double getPaintReserve() const;

@@ -211,8 +211,8 @@ void PaintDataManager::clearSheetLength() {
 	_name.clear();
 }
 
-std::size_t PaintDataManager::getCirculation() const { return _circulation; }
-void PaintDataManager::setCirculation(std::size_t const & value) {
+unsigned long PaintDataManager::getCirculation() const { return _circulation; }
+void PaintDataManager::setCirculation(unsigned long const & value) {
 	if (_circulation == value)
 		return;
 
