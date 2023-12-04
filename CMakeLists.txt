@@ -10,21 +10,10 @@ add_subdirectory(modules/dynvalues)
 set(JSON_BuildTests OFF CACHE INTERNAL "")
 add_subdirectory(modules/json)
 
-#file(GLOB CONNECTION_SOURCES "src/connections/sources/*.cpp")
-#file(GLOB CONNECTION_HEADERS "src/connections/headers/*.hpp")
-file(GLOB CONNECTIONS "src/connections/*/*.?pp")
-
-#file(GLOB MANAGER_SOURCES "src/managers/sources/*.cpp")
-#file(GLOB MANAGER_HEADERS "src/managers/headers/*.hpp")
-file(GLOB MANAGERS "src/managers/*/*.?pp")
-
-#file(GLOB VALUE_SOURCES "src/values/sources/*.cpp")
-#file(GLOB VALUE_HEADERS "src/values/headers/*.hpp")
-file(GLOB VALUES "src/values/*/*.?pp")
-
-#file(GLOB CONFIG_MANAGER_SOURCES "src/config_managers/sources/*.cpp")
-#file(GLOB CONFIG_MANAGER_HEADERS "src/config_managers/headers/*.hpp")
-file(GLOB CONFIG_MANAGERS "src/config_managers/*/*.?pp")
+file(GLOB CONNECTIONS "src/connections/sources/*.cpp")
+file(GLOB MANAGERS "src/managers/sources/*.cpp")
+file(GLOB VALUES "src/values/sources/*.cpp")
+file(GLOB CONFIG_MANAGERS "src/config_managers/sources/*.cpp")
 
 add_library(${PROJECT_NAME}_lib STATIC
     ${CONNECTIONS}
