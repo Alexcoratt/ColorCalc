@@ -19,8 +19,8 @@ namespace fcom = foil_calculation_option_methods;
 namespace from = foil_rolls_option_methods;
 
 template <typename T>
-inline std::size_t getIndex(std::vector<T> const & vect, T search) {
-	std::size_t count = 0;
+inline unsigned long getIndex(std::vector<T> const & vect, T search) {
+	unsigned long count = 0;
 	for (T value : vect) {
 		if (value == search)
 			return count;
@@ -48,20 +48,20 @@ T readValue(std::string const & prompt, std::function<T(std::string)> converter,
 	throw DefaultOptionIsChosenException();
 }
 
-std::size_t readVariant(std::string const & prompt, std::vector<std::string> variants) {
+unsigned long readVariant(std::string const & prompt, std::vector<std::string> variants) {
 	if (variants.size() == 0) {
 		std::cout << "No available variants\n";
 		throw DefaultOptionIsChosenException();
 	}
 	std::cout << "Avilable variants" << std::endl;
-	std::size_t count = 0;
+	unsigned long count = 0;
 	for (std::string const & variant : variants)
 		std::cout << ++count << '\t' << variant << std::endl;
 
-	return readValue<std::size_t>(
+	return readValue<unsigned long>(
 		prompt,
 		[](std::string line) { return std::stoul(line) - 1; },
-		[&variants](std::size_t value) {
+		[&variants](unsigned long value) {
 			if (value < variants.size())
 				return true;
 			throw std::invalid_argument("there is no such option");
@@ -516,11 +516,11 @@ void lcom::setSheetWidth(LacquerDataManager * manager) {
 void lcom::setCircualtion(LacquerDataManager * manager) {
 	std::cout << "Set circulation" << std::endl;
 
-	setValue<std::size_t>(
+	setValue<unsigned long>(
 		[&]() { return manager->getCirculation(); },
-		[&](std::size_t value) { manager->setCirculation(value); },
+		[&](unsigned long value) { manager->setCirculation(value); },
 		[](std::string line) { return std::stoul(line); },
-		[](std::size_t value) {
+		[](unsigned long value) {
 			if (value > 0)
 				return true;
 			throw std::invalid_argument("value must be greater than 0");
@@ -540,11 +540,11 @@ void lcom::setCircualtion(LacquerDataManager * manager) {
 void fcom::setCirulation(FoilDataManager * manager) {
 	std::cout << "Set circulation" << std::endl;
 
-	setValue<std::size_t>(
+	setValue<unsigned long>(
 		[&]() { return manager->getCirculation(); },
-		[&](std::size_t value) { manager->setCirculation(value); },
+		[&](unsigned long value) { manager->setCirculation(value); },
 		[](std::string line) { return std::stoul(line); },
-		[](std::size_t value) {
+		[](unsigned long value) {
 			if (value > 0)
 				return true;
 			throw std::invalid_argument("value must be greater than 0");
@@ -609,11 +609,11 @@ void fcom::setWidth(FoilDataManager * manager) {
 void fcom::setSheetNumber(FoilDataManager * manager) {
 	std::cout << "Set number of sheets" << std::endl;
 
-	setValue<std::size_t>(
+	setValue<unsigned long>(
 		[&]() { return manager->getSheetNumber(); },
-		[&](std::size_t value) { manager->setSheetNumber(value); },
+		[&](unsigned long value) { manager->setSheetNumber(value); },
 		[](std::string line) { return std::stoul(line); },
-		[](std::size_t value) {
+		[](unsigned long value) {
 			if (value > 0)
 				return true;
 			throw std::invalid_argument("value must be greater than 0");
