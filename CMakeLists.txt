@@ -7,6 +7,8 @@ project(ColorCalc CXX)
 add_subdirectory(modules/simplecli)
 add_subdirectory(modules/dynvalues)
 
+set(JSONCPP_WITH_TESTS OFF)
+set(BUILD_SHARED_LIBS OFF)
 add_subdirectory(modules/jsoncpp)
 get_target_property(JSON_INC_PATH jsoncpp_static INTERFACE_INCLUDE_DIRECTORIES)
 include_directories(${JSON_INC_PATH})
@@ -46,3 +48,7 @@ target_link_libraries(${PROJECT_NAME}
 )
 
 target_link_options(${PROJECT_NAME} PRIVATE -static-libgcc -static-libstdc++)
+
+if (WIN32)
+    set(CMAKE_EXE_LINKER_FLAGS "-Wl,-Bstatic -lpthread -Wl,-Bdynamic")
+endif()
