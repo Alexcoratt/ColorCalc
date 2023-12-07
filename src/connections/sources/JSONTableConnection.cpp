@@ -82,7 +82,7 @@ void JSONTableConnection::upload() {
 			if (value.isDouble())
 				preset.append((double)value);
 			else if (value.isUnsignedLongInt())
-				preset.append((unsigned long)value);
+				preset.append(Json::UInt((unsigned long)value));
 			else if (value.isInt())
 				preset.append((int)value);
 			else if (value.isString())
