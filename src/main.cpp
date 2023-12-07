@@ -38,7 +38,12 @@ int main(int argc, char ** argv) {
 	IConfigManager * mgr;
 	try {
 		BaseConfigManager baseConf{baseConfFileName};
-		auto baseDir = auxillary_methods::getDir(baseConfFileName, baseConf.getPlatform() == "windows" ? '\\' : '/');
+
+		bool winPlatform = baseConf.getPlatform() == "windows";
+		if (winPlatform)
+			std::system("chcp 65001");
+		auto baseDir = auxillary_methods::getDir(baseConfFileName, winPlatform ? '\\' : '/');
+
 		mgr = new JSONConfigManager(baseDir + baseConf.getConfigFileName(), baseConf.getQuiet());
 	} catch (std::exception const & err) {
 		std::cerr << err.what() << '\n';

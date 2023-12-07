@@ -1,99 +1,99 @@
 {
- "foil_calculation": {
-  "gui_test": [
-   5000,
-   203.0,
-   80.0,
-   5,
-   40.0,
-   10.0
-  ],
-  "test_preset": [
-   5000,
-   203,
-   200,
-   5,
-   40,
-   20
-  ]
- },
- "foil_rolls": null,
- "lacquer_calculation": {
-  "test": [
-   24.0,
-   543.0,
-   43.0,
-   34.0,
-   43252
-  ]
- },
- "paint_calculation": {
-  "gui_test": [
-   null,
-   null,
-   0.12,
-   0.5,
-   70.0,
-   1200.0,
-   700.0,
-   5325,
-   1.5
-  ],
-  "gui_test3": [
-   "metallized_paint",
-   "paperboard",
-   0.717,
-   2.0,
-   70.0,
-   1200.0,
-   700.0,
-   530,
-   1.5
-  ],
-  "pupok": [
-   "folic_paint",
-   "label_paper",
-   null,
-   4.0,
-   80.0,
-   900.0,
-   1200.0,
-   5000,
-   1.2
-  ],
-  "test": [
-   "folic_paint",
-   "non_absorbent_material",
-   null,
-   4,
-   80,
-   900,
-   1200,
-   5000,
-   1.2
-  ],
-  "test2": [
-   null,
-   null,
-   0.322,
-   4,
-   80,
-   900,
-   1200,
-   5000,
-   1.2
-  ],
-  "test5": [
-   "metallized_paint",
-   "label_paper",
-   0.638,
-   2.0,
-   100.0,
-   500.0,
-   700.0,
-   5000,
-   1.5
-  ]
- },
- "paint_consumption": null
+	"foil_calculation" : 
+	{
+		"gui_test" : 
+		[
+			5000,
+			203.0,
+			80.0,
+			5,
+			40.0,
+			10.0
+		],
+		"test_preset" : 
+		[
+			5000,
+			203,
+			200,
+			5,
+			40,
+			20
+		]
+	},
+	"foil_rolls" : null,
+	"lacquer_calculation" : 
+	{
+		"test" : 
+		[
+			24.0,
+			543.0,
+			43.0,
+			34.0,
+			43252
+		]
+	},
+	"paint_calculation" : 
+	{
+		"gui_test" : 
+		[
+			null,
+			null,
+			0.12,
+			0.5,
+			70.0,
+			1200.0,
+			700.0,
+			5325.0,
+			1.5
+		],
+		"gui_test3" : 
+		[
+			"metallized_paint",
+			"paperboard",
+			0.71699999999999997,
+			2.0,
+			70.0,
+			1200.0,
+			700.0,
+			530.0,
+			1.5
+		],
+		"test" : 
+		[
+			"folic_paint",
+			"non_absorbent_material",
+			null,
+			4.0,
+			80.0,
+			900.0,
+			1200.0,
+			5000.0,
+			1.2
+		],
+		"test2" : 
+		[
+			null,
+			null,
+			0.32200000000000001,
+			4.0,
+			80.0,
+			900.0,
+			1200.0,
+			5000.0,
+			1.2
+		],
+		"test5" : 
+		[
+			"metallized_paint",
+			"label_paper",
+			0.63800000000000001,
+			2.0,
+			100.0,
+			500.0,
+			700.0,
+			5000.0,
+			1.5
+		]
+	},
+	"paint_consumption" : null
 }

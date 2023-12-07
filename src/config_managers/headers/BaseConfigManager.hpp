@@ -22,7 +22,7 @@ inline BaseConfigManager::BaseConfigManager(std::string const & filename) {
 
 	if (file.fail()) {
 		file.close();
-		throw std::runtime_error("Critical error: Base config file is not found");
+		throw std::runtime_error("Fatal error: Base config file is not found");
 	}
 
 	while(!file.eof()) {
