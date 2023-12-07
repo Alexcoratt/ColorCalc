@@ -7,18 +7,17 @@ project(ColorCalc CXX)
 add_subdirectory(modules/simplecli)
 add_subdirectory(modules/dynvalues)
 
-set(JSON_BuildTests OFF CACHE INTERNAL "")
-add_subdirectory(modules/json)
+add_subdirectory(modules/jsoncpp)
+get_target_property(JSON_INC_PATH jsoncpp_static INTERFACE_INCLUDE_DIRECTORIES)
+include_directories(${JSON_INC_PATH})
 
 file(GLOB CONNECTIONS "src/connections/sources/*.cpp")
 file(GLOB MANAGERS "src/managers/sources/*.cpp")
-file(GLOB VALUES "src/values/sources/*.cpp")
 file(GLOB CONFIG_MANAGERS "src/config_managers/sources/*.cpp")
 
 add_library(${PROJECT_NAME}_lib STATIC
     ${CONNECTIONS}
     ${MANAGERS}
-    ${VALUES}
     ${CONFIG_MANAGERS}
 )
 
@@ -32,7 +31,7 @@ target_include_directories(${PROJECT_NAME}_lib
 )
 
 target_link_libraries(${PROJECT_NAME}_lib
-    PRIVATE nlohmann_json::nlohmann_json
+    PRIVATE jsoncpp_static
     PUBLIC DynValues_lib
 )
 
@@ -46,4 +45,4 @@ target_link_libraries(${PROJECT_NAME}
     PRIVATE ${PROJECT_NAME}_lib
 )
 
-target_link_options(${PROJECT_NAME} PRIVATE -static-libgcc -static-libstdc++)
+#target_link_options(${PROJECT_NAME} PRIVATE -static-libgcc -static-libstdc++)

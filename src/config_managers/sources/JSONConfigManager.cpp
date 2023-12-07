@@ -1,6 +1,6 @@
 #include <list>
 
-#include <nlohmann/json.hpp>
+#include <json/json.h>
 
 #include <JSONConfigManager.hpp>
 #include <JSONTableConnection.hpp>
@@ -38,25 +38,37 @@ public:
 	}
 };
 
-std::map<std::string, Source> getSources(nlohmann::json const & sources) {
+Json::Value getJsonValue(Json::Value const & value, char const * key, Json::Value defaultValue = Json::nullValue) { return value.get(key, defaultValue); }
+
+Json::Value getJsonValue(Json::ValueIterator const & iter, char const * key, Json::Value defaultValue = Json::nullValue) { return iter->get(key, defaultValue); }
+
+Json::Value getJsonValue(Json::ValueConstIterator const & iter, char const * key, Json::Value defaultValue = Json::nullValue) { return iter->get(key, defaultValue); }
+
+std::map<std::string, Source> getSources(Json::Value const & sources) {
 	std::map<std::string, Source> res;
-	for (auto it = sources.begin(); it != sources.end(); ++it)
-		res[it.key()] = Source{ it.value()["type"], it.value()["url"] };
+	for (auto it = sources.begin(); it != sources.end(); ++it) {
+		res[it.key().asString()] = Source{ getJsonValue(it, "type").asString(), getJsonValue(it, "url").asString() };
+	}
 	return res;
 }
 
-std::map<std::string, std::vector<TableConnectionData>> getConnectionData(nlohmann::json const & connections, std::map<std::string, Source> const & presetSources, std::map<std::string, Source> const & structureSources) {
+std::map<std::string, std::vector<TableConnectionData>> getConnectionData(Json::Value const & connections, std::map<std::string, Source> const & presetSources, std::map<std::string, Source> const & structureSources) {
 	std::map<std::string, std::vector<TableConnectionData>> res;
 	for (auto connectionIter = connections.begin(); connectionIter != connections.end(); ++connectionIter) {
-		auto const & tables = connectionIter.value()["tables"];
+		auto const & tables = connectionIter->get("tables", Json::nullValue);
 		std::vector<TableConnectionData> tablesData;
 		for (auto tableIter = tables.begin(); tableIter != tables.end(); ++tableIter) {
-			auto const & table = tableIter.value();
 			tablesData.push_back(
-				TableConnectionData{ table["name"], table["table"], presetSources.at(table["source"]), structureSources.at(table["structure"]), table["read_only"] }
+				TableConnectionData{
+					getJsonValue(tableIter, "name").asString(),
+					getJsonValue(tableIter, "table").asString(),
+					presetSources.at(getJsonValue(tableIter, "source").asString()),
+					structureSources.at(getJsonValue(tableIter, "structure").asString()),
+					getJsonValue(tableIter, "read_only").asBool()
+				}
 			);
 		}
-		res[connectionIter.key()] = tablesData;
+		res[connectionIter.key().asString()] = tablesData;
 	}
 	return res;
 }
@@ -80,7 +92,9 @@ std::map<std::string, ITableConnection *> getTableConnections(std::map<std::stri
 
 JSONConfigManager::JSONConfigManager(std::string const & configFileName, bool quiet) {
 	std::ifstream confFile(configFileName);
-	nlohmann::json const conf = nlohmann::json::parse(confFile);
+	Json::Value conf;
+	confFile >> conf;
+	//nlohmann::json const conf = nlohmann::json::parse(confFile);
 	confFile.close();
 
 	std::map<std::string, std::vector<TableConnectionData>> connectionData = getConnectionData(

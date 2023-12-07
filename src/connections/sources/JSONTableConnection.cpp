@@ -4,10 +4,11 @@
 #include <stdexcept>
 
 #include <NullValue.hpp>
+#include <UnsignedLongIntValue.hpp>
 
 #include "JSONTableConnection.hpp"
 
-#include <nlohmann/json.hpp>
+#include <json/json.h>
 
 #include "PresetAlreadyExistsException.hpp"
 #include "PresetDoesNotExistException.hpp"
@@ -18,35 +19,44 @@ void JSONTableConnection::download() {
 			std::cout << "Trying to download from " << _valuesFileName << ':' << _tableName << '\t';
 
 		std::ifstream structureFile(_structureFileName);
-		_paramNames = nlohmann::json::parse(structureFile).at(_tableName);
+		Json::Value structureJson;
+		structureFile >> structureJson;
 		structureFile.close();
 
+		auto structureTable = structureJson[_tableName];
+		for (auto iter = structureTable.begin(); iter != structureTable.end(); ++iter)
+			_paramNames.push_back(iter->asString());
+
 		std::ifstream valuesFile(_valuesFileName);
-		nlohmann::json presets = nlohmann::json::parse(valuesFile).at(_tableName);
+		Json::Value valuesJson;
+		valuesFile >> valuesJson;
 		valuesFile.close();
 
-		for (auto it = presets.begin(); it != presets.end(); ++it) {
+		auto valuesTable = valuesJson[_tableName];
+		//nlohmann::json presets = nlohmann::json::parse(valuesFile).at(_tableName);
+
+		for (auto it = valuesTable.begin(); it != valuesTable.end(); ++it) {
 			std::vector<AutoValue> values;
-			for (nlohmann::basic_json<> const & value : it.value()) {
-				if (value.is_number_float())
-					values.push_back(value.get<double>());
-				else if (value.is_number_unsigned())
-					values.push_back(value.get<unsigned long>());
-				else if (value.is_number_integer())
-					values.push_back(value.get<int>());
-				else if (value.is_string())
-					values.push_back(value.get<std::string>());
+			for (auto presetIter = it->begin(); presetIter != it->end(); ++presetIter) {
+				if (presetIter->isDouble())
+					values.push_back(presetIter->asDouble());
+				else if (presetIter->isUInt())
+					values.push_back(UnsignedLongIntValue(presetIter->asUInt()));
+				else if (presetIter->isInt())
+					values.push_back(presetIter->asInt());
+				else if (presetIter->isString())
+					values.push_back(presetIter->asString());
 				else
 					values.push_back(NullValue());
 			}
-			_presets[it.key()] = values;
+			_presets[it.key().asString()] = values;
 		}
 
 		_status = 0;
 
 		if (!_quiet)
 			std::cout << "OK\n";
-	} catch (nlohmann::json_abi_v3_11_2::detail::parse_error const & err) {
+	} catch (std::exception const & err) {
 		_status = -1;
 		std::cerr << err.what() << std::endl;
 	}
@@ -58,31 +68,33 @@ void JSONTableConnection::upload() {
 	if (isReadOnly())
 		throw std::runtime_error("connection is read-only");
 
-	std::ifstream ifile(_valuesFileName);
-	nlohmann::json data = nlohmann::json::parse(ifile);
-	ifile.close();
+	std::ifstream presetFile(_valuesFileName);
+	Json::Value data;
+	presetFile >> data;
+	presetFile.close();
+	//nlohmann::json data = nlohmann::json::parse(ifile);
 
-	data[_tableName] = nlohmann::basic_json<>();
+	data[_tableName] = Json::Value{};
 	for (auto it = _presets.begin(); it != _presets.end(); ++it) {
 		std::string presetName {it->first};
-		nlohmann::json preset;
+		Json::Value preset;
 		for (auto value : it->second) {
 			if (value.isDouble())
-				preset.push_back((double)value);
+				preset.append((double)value);
 			else if (value.isUnsignedLongInt())
-				preset.push_back((unsigned long)value);
+				preset.append((unsigned long)value);
 			else if (value.isInt())
-				preset.push_back((int)value);
+				preset.append((int)value);
 			else if (value.isString())
-				preset.push_back((std::string)value);
+				preset.append((std::string)value);
 			else
-				preset.push_back(nlohmann::json::value_t::null);
+				preset.append(Json::nullValue);
 		}
 		data[_tableName][presetName] = preset;
 	}
 
 	std::ofstream ofile(_valuesFileName);
-	ofile << data.dump(1) << '\n';
+	ofile << data << '\n';
 	ofile.close();
 
 	if (!_quiet)
