@@ -30,6 +30,8 @@ public:
 	int getStatus() const;
     bool isReadOnly() const;
 
+	std::string getName() const;
+
 	std::vector<std::string> getPresetNames() const;
     std::vector<std::string> getParamNames() const;
     std::map<std::string, AutoValue> getPreset(std::string const &) const;

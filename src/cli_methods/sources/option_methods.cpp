@@ -5,10 +5,13 @@
 #include <string>
 #include <vector>
 #include <functional>
+#include <string.h>
 
 #include "DefaultOptionIsChosenExcepion.hpp"
 #include <PaintDataManager.hpp>
 #include <IDataManager.hpp>
+#include <TableConnectionManager.hpp>
+
 #include "UndefinedValueException.hpp"
 #include "option_methods.hpp"
 
@@ -32,8 +35,8 @@ inline unsigned long getIndex(std::vector<T> const & vect, T search) {
 template <typename T>
 T readValue(std::string const & prompt, std::function<T(std::string)> converter, std::function<bool(T)> checker = [](T) { return true; }) {
 	std::string line;
-	std::cin.ignore();
-	while (std::cout << prompt && std::getline(std::cin, line)) {
+	std::cout << prompt;
+	while (std::getline(std::cin, line)) {
 		if (!line.size())
 			break;
 		try {
@@ -44,6 +47,7 @@ T readValue(std::string const & prompt, std::function<T(std::string)> converter,
 			std::cerr << "Invalid value \'" << line << "\'" << std::endl;
 			std::cerr << "Error: " << err.what() << std::endl;
 		}
+		std::cout << prompt;
 	}
 	throw DefaultOptionIsChosenException();
 }
@@ -154,7 +158,25 @@ void com::createPreset(IDataManager * manager) {
 			"Enter name (default=abort): ",
 			[](std::string line) { return line; }
 		);
-		manager->createPreset(name);
+
+		ITableConnection * conn = manager->getConnection();
+		auto tcm = dynamic_cast<TableConnectionManager *>(conn);
+		if (tcm) {
+			std::vector<ITableConnection *> nestedConns = tcm->getConnections();
+			unsigned int const NESTED_CONNS_COUNT = nestedConns.size();
+			std::vector<std::string> connNames{NESTED_CONNS_COUNT};
+			for (unsigned int i = 0; i < NESTED_CONNS_COUNT; ++i)
+				connNames[i] = nestedConns.at(i)->getName();
+
+			unsigned int selectedConnIndex = 0;
+			try {
+				selectedConnIndex = readVariant("Enter index of the variant (default=1): ", connNames);
+			} catch (DefaultOptionIsChosenException const &) {}
+			nestedConns.at(selectedConnIndex)->createPreset(name, manager->exportData());
+			manager->loadPreset(name);
+		} else {
+			manager->createPreset(name);
+		}
 	} catch (DefaultOptionIsChosenException const &) {
 		std::cout << "Aborted" << std::endl;
 	}

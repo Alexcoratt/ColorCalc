@@ -16,13 +16,14 @@ public:
     virtual int getStatus() const = 0;
     virtual bool isReadOnly() const = 0;
 
+    virtual std::string getName() const = 0;
+
     virtual std::vector<std::string> getParamNames() const = 0;
     virtual std::vector<std::string> getPresetNames() const = 0;
 
     virtual bool hasPreset(std::string const & name) const;
 
     virtual std::map<std::string, AutoValue> getPreset(std::string const &) const = 0;
-
 	virtual std::map<std::string, AutoValue> getPresetTemplate() const;
 
     virtual void createPreset(std::string const &, std::map<std::string, AutoValue> const &) = 0;

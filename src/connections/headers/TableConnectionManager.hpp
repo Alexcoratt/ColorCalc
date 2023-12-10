@@ -11,9 +11,12 @@ public:
 	TableConnectionManager(std::vector<ITableConnection *> const &);
 
 	std::vector<ITableConnection *> getConnections();
+	std::vector<ITableConnection const *> getConnections() const;
 
 	int getStatus() const;
 	bool isReadOnly() const;
+
+	std::string getName() const;
 
 	std::vector<std::string> getParamNames() const;
 	std::vector<std::string> getPresetNames() const;

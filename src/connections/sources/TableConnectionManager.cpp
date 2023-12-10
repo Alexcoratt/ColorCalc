@@ -8,6 +8,11 @@
 TableConnectionManager::TableConnectionManager(std::vector<ITableConnection *> const & connections) : _connections(connections) {}
 
 std::vector<ITableConnection *> TableConnectionManager::getConnections() { return _connections; }
+std::vector<ITableConnection const *> TableConnectionManager::getConnections() const {
+	std::vector<ITableConnection const *> res{_connections.size()};
+	std::copy(_connections.begin(), _connections.end(), res.begin());
+	return res;
+}
 
 int TableConnectionManager::getStatus() const {
 	for (auto const * conn : _connections)
@@ -21,6 +26,17 @@ bool TableConnectionManager::isReadOnly() const {
 		if (!conn->isReadOnly())
 			return false;
 	return true;
+}
+
+std::string TableConnectionManager::getName() const {
+	std::string name = "TableConnectionManager:\n";
+	unsigned int count = 0;
+	for (ITableConnection * const conn : _connections) {
+		name.push_back('\t');
+		name.append(std::to_string(++count)).append(") ").append(conn->getName());
+		name.push_back('\n');
+	}
+	return name;
 }
 
 std::vector<std::string> TableConnectionManager::getParamNames() const {

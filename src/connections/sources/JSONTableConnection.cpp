@@ -116,6 +116,8 @@ JSONTableConnection::~JSONTableConnection() {}
 int JSONTableConnection::getStatus() const { return _status; }
 bool JSONTableConnection::isReadOnly() const { return _readOnly; }
 
+std::string JSONTableConnection::getName() const { return _valuesFileName + ":" + _tableName; }
+
 std::vector<std::string> JSONTableConnection::getPresetNames() const {
 	std::vector<std::string> res;
 	for (auto it = _presets.begin(); it != _presets.end(); ++it)
