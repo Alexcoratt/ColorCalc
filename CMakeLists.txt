@@ -47,8 +47,8 @@ target_link_libraries(${PROJECT_NAME}
     PRIVATE ${PROJECT_NAME}_lib
 )
 
-target_link_options(${PROJECT_NAME} PRIVATE -static-libgcc -static-libstdc++)
-
 if (WIN32)
-    set(CMAKE_EXE_LINKER_FLAGS "-Wl,-Bstatic -lpthread -Wl,-Bdynamic")
+    set(CMAKE_EXE_LINKER_FLAGS "-static-libstdc++ -Wl,-Bstatic -lpthread -Wl,-Bdynamic")
+else()
+    set(CMAKE_EXE_LINKER_FLAGS "-static-libstdc++")
 endif()
