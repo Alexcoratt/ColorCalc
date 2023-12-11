@@ -12,6 +12,7 @@
 
 #include "PresetAlreadyExistsException.hpp"
 #include "PresetDoesNotExistException.hpp"
+#include "ReadOnlyConnectionException.hpp"
 
 void JSONTableConnection::download() {
 	try {
@@ -66,7 +67,7 @@ void JSONTableConnection::upload() {
 	if (!_quiet)
 		std::cout << "Trying to upload to " << _valuesFileName << ':' << _tableName << '\t';
 	if (isReadOnly())
-		throw std::runtime_error("connection is read-only");
+		throw ReadOnlyConnectionException(this);
 
 	std::ifstream presetFile(_valuesFileName);
 	Json::Value data;
